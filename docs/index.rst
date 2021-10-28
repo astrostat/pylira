@@ -1,7 +1,7 @@
 Documentation
 =============
 
-This is the documentation for pylira.
+This is the documentation for Pylira.
 
 .. toctree::
   :maxdepth: 2
