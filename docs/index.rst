@@ -7,5 +7,6 @@ This is the documentation for pylira.
   :maxdepth: 2
 
   pylira/index.rst
+  pylira/developer.rst
   pylira/references.rst
   pylira/changelog.rst
