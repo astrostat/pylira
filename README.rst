@@ -5,6 +5,7 @@ A Python package for Bayesian low-counts image reconstruction and analysis
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
+Docs can be found here https://pylira.readthedocs.io/en/latest/
 
 License
 -------
