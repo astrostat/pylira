@@ -8,6 +8,7 @@ import os
 import sys
 
 from setuptools import setup
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 
 # First provide helpful messages if contributors try and run legacy commands
@@ -74,5 +75,16 @@ except Exception:
     version = '{version}'
 """.lstrip()
 
-setup(use_scm_version={'write_to': os.path.join('pylira', 'version.py'),
-                       'write_to_template': VERSION_TEMPLATE})
+ext_modules = [
+    Pybind11Extension(
+        name="_lira",
+        sources=["pylira/src/lira.cpp"],
+    ),
+]
+
+setup(
+    use_scm_version={'write_to': os.path.join('pylira', 'version.py'),
+                     'write_to_template': VERSION_TEMPLATE},
+    ext_modules=ext_modules,
+    cmdclass={"build_ext": build_ext},
+)
