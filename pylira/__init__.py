@@ -7,4 +7,4 @@ from ._astropy_init import *   # noqa
 # ----------------------------------------------------------------------------
 from _lira import add, subtract
 
-__all__ = []
+__all__ = ["add", "subtract"]
