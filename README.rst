@@ -5,7 +5,7 @@ A Python package for Bayesian low-counts image reconstruction and analysis
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
-.. |docs| image:: https://readthedocs.org/projects/docs/badge/?version=latest
+.. image:: https://readthedocs.org/projects/docs/badge/?version=latest
     :alt: Documentation Status
     :scale: 100%
     :target: https://pylira.readthedocs.io/en/latest/?badge=latest
