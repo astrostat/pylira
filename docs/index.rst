@@ -1,7 +1,7 @@
-Documentation
-=============
+Welcome to the Pylira Documentation
+===================================
 
-This is the documentation for Pylira.
+Pylira is a Python package for Bayesian low-counts image reconstruction and analysis.
 
 .. toctree::
   :maxdepth: 2
