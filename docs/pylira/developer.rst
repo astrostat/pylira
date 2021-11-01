@@ -4,6 +4,24 @@ Developer Documentation
 
 This is the developer documentation.
 
+Setup
+-----
+For the development you can rely on one of the pre-defined test environments::
+
+    tox --devenv venv-pylira-dev -e py39
+    source venv-pylira-dev/bin/activate
+
+This will create a new ``venv-pylira-env`` environment, that you can activate
+using the ``source`` command. To leave the environment again use ``deactivate``.
+The command requires that you ahve Python 3.9 installed on your system. In case
+you do not have it installed you could change the command to the corresponding
+Python version like::
+
+    tox --devenv venv-pylira-dev -e py38
+    tox --devenv venv-pylira-dev -e py37
+
+However it is recommanded to use a rather new Python version for development.
+
 Running Tests
 -------------
 
