@@ -15,4 +15,3 @@ def test_c_extension_struct():
 
     p.setName("Charly")
     assert p.getName() == "Charly"
-
