@@ -1,3 +1,5 @@
+import numpy as np
+from numpy.testing import assert_allclose
 import pylira
 
 
@@ -7,6 +9,15 @@ def test_import_name():
 
 def test_c_extension_function():
     assert pylira.add(3, 4) == 7
+
+
+def test_c_extension_function_numpy():
+    a = np.array([1, 2, 3])
+    b = np.array([4, 3, 2])
+    result = pylira.add(a, b)
+
+    assert result.dtype == "int32"
+    assert_allclose(result, 5)
 
 
 def test_c_extension_struct():
