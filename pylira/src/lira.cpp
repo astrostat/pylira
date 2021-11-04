@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 
 
 int add(int i, int j) {
@@ -30,7 +31,7 @@ PYBIND11_MODULE(_lira, m) {
            subtract
     )pbdoc";
 
-    m.def("add", &add, R"pbdoc(
+    m.def("add", py::vectorize(add), R"pbdoc(
         Add two numbers
 
         Some other explanation about the add function.
