@@ -11,12 +11,22 @@ def test_c_extension_function():
     assert pylira.add(3, 4) == 7
 
 
-def test_c_extension_function_numpy():
+def test_c_extension_function_numpy_vectorize():
     a = np.array([1, 2, 3])
     b = np.array([4, 3, 2])
     result = pylira.add(a, b)
 
     assert result.dtype == "int32"
+    assert_allclose(result, 5)
+
+
+def test_c_extension_function_numpy():
+    a = np.array([1, 2, 3])
+    b = np.array([4, 3, 2])
+    result = pylira.add_arrays(a, b)
+
+    # this casts the type on input
+    assert result.dtype == "float64"
     assert_allclose(result, 5)
 
 

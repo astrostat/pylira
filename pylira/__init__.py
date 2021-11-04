@@ -5,6 +5,6 @@
 # ----------------------------------------------------------------------------
 from ._astropy_init import *   # noqa
 # ----------------------------------------------------------------------------
-from _lira import add, subtract, Pet
+from _lira import add, subtract, Pet, add_arrays
 
-__all__ = ["add", "subtract", "Pet"]
+__all__ = ["add", "subtract", "Pet", "add_arrays"]
