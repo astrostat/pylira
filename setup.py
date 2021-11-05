@@ -78,7 +78,8 @@ except Exception:
 ext_modules = [
     Pybind11Extension(
         name="_lira",
-        sources=["pylira/src/lira.cpp"],
+        sources=["pylira/src/lirabind.cpp"],
+        include_dirs=["pylira/src/",]
     ),
 ]
 
