@@ -2,8 +2,12 @@
 #include <pybind11/numpy.h>
 #include "lira.h"
 
+namespace py = pybind11;
+using namespace pybind11::literals;
+
 using np_arr_d = py::array_t<double>;
 using d_ptr = double*;
+
 
 np_arr_d
 image_analysis(
@@ -23,7 +27,7 @@ image_analysis(
   double t_ms_ttlcnt_exp,
   double t_ms_al_kap1,
   double t_ms_al_kap2,
-  double t_ms_al_kap3,
+  double t_ms_al_kap3)
 {
     auto obs_buf = t_obs.request();
     auto start_buf = t_start.request();
@@ -84,10 +88,10 @@ image_analysis(
         &t_ms_ttlcnt_exp,
         &t_ms_al_kap2,
         &t_ms_al_kap1,
-        &t_ms_al_kap3,
+        &t_ms_al_kap3
         );
 
-    post_mean.resize({ nrows_obs, ncols_obs });
+    post_mean.resize({nrows_obs, ncols_obs});
 
     return post_mean;
 }
@@ -107,22 +111,10 @@ PYBIND11_MODULE(_lira, m) {
            subtract
     )pbdoc";
 
-    m.def("add", py::vectorize(add), R"pbdoc(
-        Add two numbers
+    m.def("image_analysis", &image_analysis, "observed_im"_a, "start_im"_a, "psf_im"_a, "expmap_im"_a, "baseline_im"_a, "out_img_file"_a, "out_param_file"_a, "alpha_init"_a, "max_iter"_a = 3000, "burn_in"_a = 1000, "save_thin"_a = true, "fit_bkgscl"_a = true, "ms_ttlcnt_pr"_a = 1, "ms_ttlcnt_exp"_a = 0.05, "ms_al_kap1"_a = 0.0, "ms_al_kap2"_a = 1000.0, "ms_al_kap3"_a = 3, R"liradoc(
+        Uses LIRA to generate images of the added component by comparing the observed image against the baseline.
+        Parameters
+        ----------
 
-        Some other explanation about the add function.
-    )pbdoc");
-
-    m.def("subtract", [](int i, int j) { return i - j; }, R"pbdoc(
-        Subtract two numbers
-
-        Some other explanation about the subtract function.
-    )pbdoc");
-
-    py::class_<Pet>(m, "Pet")
-        .def(py::init<const std::string &>())
-        .def("setName", &Pet::setName)
-        .def("getName", &Pet::getName);
-
-    m.def("add_arrays", &add_arrays, "Add two NumPy arrays");
+    )liradoc");
 };

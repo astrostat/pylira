@@ -6,6 +6,7 @@
 
 import os
 import sys
+from pathlib import Path
 
 from setuptools import setup
 from pybind11.setup_helpers import Pybind11Extension, build_ext
@@ -75,11 +76,15 @@ except Exception:
     version = '{version}'
 """.lstrip()
 
+PATH_TO_R = Path("/opt/homebrew/Cellar/r/4.1.2")
+
 ext_modules = [
     Pybind11Extension(
         name="_lira",
         sources=["pylira/src/lirabind.cpp"],
-        include_dirs=["pylira/src/",]
+        include_dirs=["pylira/src/", str(PATH_TO_R / "include")],
+        library_dirs=[str(PATH_TO_R / "lib")],
+        libraries=["Rmath", "R"]
     ),
 ]
 
