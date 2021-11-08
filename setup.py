@@ -84,7 +84,7 @@ ext_modules = [
     Pybind11Extension(
         name="_lira",
         sources=["pylira/src/lirabind.cpp"],
-        include_dirs=["pylira/src/", str(PATH_TO_R / "include")],
+        include_dirs=["pylira/src/", str(PATH_TO_R / "include"), "/usr/lib/R/include"],
         library_dirs=[str(PATH_TO_R / "lib")],
         libraries=["Rmath", "R"]
     ),
