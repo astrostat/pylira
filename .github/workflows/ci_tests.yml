@@ -71,8 +71,15 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install tox codecov
     - name: Install R dependency
+      if: contains(matrix.os, 'ubuntu')
       run: |
         sudo apt-get install r-base-dev r-base r-mathlib
+        R RHOME
+    - name: Install R dependency MacOS
+      if: contains(matrix.os, 'macos')
+      run: |
+        brew update
+        brew install r
         R RHOME
     - name: Test with tox
       run: |

@@ -76,17 +76,30 @@ except Exception:
     version = '{version}'
 """.lstrip()
 
-# TODO: this is the standard installation path for MacOS and brew
-#  add the same for Linux
-PATH_TO_R_MAC = Path("/opt/homebrew/Cellar/r/4.1.2")
 
+include_dirs = [
+    "pylira/src/",
+    "/Library/Frameworks/R.framework/Resources/include",
+    "/opt/homebrew/Cellar/r/4.1.2/include",
+    "/usr/lib/R/include",
+    "/usr/share/R/include/",
+    "/usr/include/R",
+    "/usr/include/R/include",
+
+]
+
+library_dirs = [
+    "/Library/Frameworks/R.framework/Resources/lib",
+    "/opt/homebrew/Cellar/r/4.1.2/lib",
+    "/usr/lib/R/lib",
+]
 
 ext_modules = [
     Pybind11Extension(
         name="_lira",
         sources=["pylira/src/lirabind.cpp"],
-        include_dirs=["pylira/src/", str(PATH_TO_R / "include"), "/usr/lib/R/include"],
-        library_dirs=[str(PATH_TO_R / "lib"), "/usr/lib/R/lib"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
         libraries=["Rmath", "R"]
     ),
 ]
