@@ -76,6 +76,8 @@ except Exception:
     version = '{version}'
 """.lstrip()
 
+# TODO: this is the standard installation path for MacOS and brew
+#  add the same for Linux
 PATH_TO_R = Path("/opt/homebrew/Cellar/r/4.1.2")
 
 ext_modules = [
