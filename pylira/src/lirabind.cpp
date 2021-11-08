@@ -11,14 +11,14 @@ using d_ptr = double*;
 
 np_arr_d
 image_analysis(
-  np_arr_d t_obs,
-  np_arr_d t_start,
-  np_arr_d t_psf,
-  np_arr_d t_expmap,
-  np_arr_d t_baseline,
-  std::string t_out_file,
-  std::string t_param_file,
-  np_arr_d t_alpha_init,
+  np_arr_d &t_obs,
+  np_arr_d &t_start,
+  np_arr_d &t_psf,
+  np_arr_d &t_expmap,
+  np_arr_d &t_baseline,
+  const std::string &t_out_file,
+  const std::string &t_param_file,
+  np_arr_d &t_alpha_init,
   int t_max_iter,
   int t_burn_in,
   int t_save_thin,
@@ -31,7 +31,7 @@ image_analysis(
 {
     auto obs_buf = t_obs.request();
     auto start_buf = t_start.request();
-    auto psf_buf = t_start.request();
+    auto psf_buf = t_psf.request();
     auto baseline_buf = t_baseline.request();
     auto expmap_buf = t_expmap.request();
     auto alpha_buf = t_alpha_init.request();
@@ -111,7 +111,7 @@ PYBIND11_MODULE(_lira, m) {
            subtract
     )pbdoc";
 
-    m.def("image_analysis", &image_analysis, "observed_im"_a, "start_im"_a, "psf_im"_a, "expmap_im"_a, "baseline_im"_a, "out_img_file"_a, "out_param_file"_a, "alpha_init"_a, "max_iter"_a = 3000, "burn_in"_a = 1000, "save_thin"_a = true, "fit_bkgscl"_a = true, "ms_ttlcnt_pr"_a = 1, "ms_ttlcnt_exp"_a = 0.05, "ms_al_kap1"_a = 0.0, "ms_al_kap2"_a = 1000.0, "ms_al_kap3"_a = 3, R"liradoc(
+    m.def("image_analysis", &image_analysis, "observed_im"_a, "start_im"_a, "psf_im"_a, "expmap_im"_a, "baseline_im"_a, "out_img_file"_a, "out_param_file"_a, "alpha_init"_a, "max_iter"_a = 3000, "burn_in"_a = 1000, "save_thin"_a = true, "fit_bkgscl"_a = true, "ms_ttlcnt_pr"_a = 1, "ms_ttlcnt_exp"_a = 0.05, "ms_al_kap1"_a = 0.0, "ms_al_kap2"_a = 1000.0, "ms_al_kap3"_a = 3.0, R"liradoc(
         Uses LIRA to generate images of the added component by comparing the observed image against the baseline.
         Parameters
         ----------
