@@ -1017,7 +1017,7 @@ double comp_mrf_prior(cntType *src, mrfType *mrf, controlType *cont) {
             logprior -= (log(src->img[i][j]) * log(src->img[i + k][j + l]) *
                          mrf->wts[i][j][k + 1][l + 1]);
           } /* if an adjacent neighbor */
-            /****************** a  wrapped neighbor *****************/
+          /****************** a  wrapped neighbor *****************/
           else if (k * k + l * l > 0 && cont->wrap) {
             logprior -=
                 (log(src->img[i][j]) *
@@ -1070,7 +1070,7 @@ void redistribute_Counts(psfType *psf, cntType *obs, cntType *deblur,
             sum += deblur->img[i - psf->D + k][j - psf->R + l] *
                    psf->mat[psf->nrow - k - 1][psf->ncol - l - 1];
           } /* if not too close to the edge */
-            /********** if too close to the edge **************/
+          /********** if too close to the edge **************/
           else {
             if (cont->wrap) {
               psf->inv[k][l] = /* Bayes Theorem on staroids. */
