@@ -185,28 +185,7 @@ void update_deblur_image(expmapType *expmap, cntType *deblur, cntType *src,
 			 cntType *bkg, scalemodelType *bkg_scale);
 void print_param_file_header(FILE *param_file, controlType *cont,
   expmapType *expmap, msType *ms);
-void image_analysis_ascii(double *outmap, double *post_mean,
-    char **cnt_filename,
-    char **src_filename, char **psf_filename,
-    char **map_filename, char **bkg_filename,
-    char **out_filename, char **param_filename,
-    int *max_iter,
-    int *burn,
-    int *save_iters,
-    int *save_thin,
-    int *nrow,
-    int *ncol,
-    int *nrow_psf,
-    int *ncol_psf,
-    int *em,
-    int *fit_bkg_scl,
-    double *alpha_init,
-    int *alpha_init_len,
-    double *ms_ttlcnt_pr,
-    double *ms_ttlcnt_exp,
-    double *ms_al_kap2,
-    double *ms_al_kap1,
-    double *ms_al_kap3);
+
 void image_analysis_R(double *outmap,
     double *post_mean,
     double *cnt_vector,
@@ -233,6 +212,7 @@ void image_analysis_R(double *outmap,
     double *ms_al_kap2,
     double *ms_al_kap1,
     double *ms_al_kap3);
+
 void bayes_image_analysis(double *outmap,
     double *post_mean,
     char *out_file_nm,
@@ -1927,126 +1907,6 @@ void print_param_file_header(FILE *param_file, controlType *cont,
 
   // fprintf(param_file, "\n");
 }
-
-
-/***************************************************************/
-/******  MAIN INTERFACE FOR READING DATA FROM ASCII FILES  *****/
-/***************************************************************/
-
-
-void image_analysis_ascii(double *outmap,
-  double *post_mean,
-  char **cnt_filename,
-  char **src_filename,
-  char **psf_filename,
-  char **map_filename,
-  char **bkg_filename,
-  char **out_filename,
-  char **param_filename,
-  int *max_iter,
-  int *burn,
-  int *save_iters,
-  int *save_thin,
-  int *nrow,
-  int *ncol,
-  int *nrow_psf,
-  int *ncol_psf,
-  int *em,
-  int *fit_bkg_scl,
-  double *alpha_init,
-  int *alpha_init_len,
-  double *ms_ttlcnt_pr,
-  double *ms_ttlcnt_exp,
-  double *ms_al_kap2,
-  double *ms_al_kap1,
-  double *ms_al_kap3)
-{
-  controlType cont;         /* the control variables */
-  psfType psf;              /* The psf */
-  expmapType expmap;        /* The exposure map */
-  cntType obs;              /* The observed counts and model */
-  cntType deblur;           /* The deblurred counts and model */
-  cntType src;              /* The source counts and model (starting values) */
-  cntType bkg;              /* The background counts and model */
-  mrfType mrf;              /* the Markov Rand Field Prior */
-  msType ms;                /* The Multiscale Prior */
-  llikeType llike;          /* The log likelihood */
-  scalemodelType bkg_scale; /* The Background Scale Model */
-
-  char  *cnt_file_nm = *cnt_filename;     /* name of the counts file */
-  char  *src_file_nm = *src_filename;     /* name of source file (starting value) */
-  char  *psf_file_nm = *psf_filename;     /* name of the psf file */
-  char  *map_file_nm = *map_filename;     /* name of the exposure file */
-  char  *bkg_file_nm = *bkg_filename;     /* name of background file (starting value)*/
-  // char  *mrf_file_nm = *mrf_filename;     /* name of high res datafile for MRF prior */
-  // char *prec_file_nm = *prec_filename;    /* name of precision file:outpt fr MRF prior*/
-  // char  *dbg_file_nm = *dbg_filename;     /* name of the temp dump output file */
-
-  int i, j;                                /* indexing variables */
-
-  /***************************************************************/
-  /***********************  OPEN THE FILES ***********************/
-  /***************************************************************/
-
-  if (!( obs.file=fopen( cnt_file_nm, "r")))
-    c_error("Could not open the COUNT (observation) file");
-  if (!( src.file=fopen( src_file_nm, "r")))
-    c_error("Could not open the SOURCE (starting value) file");
-  if (!(psf.file=fopen(psf_file_nm, "r")))
-    Rprintf("\nNo PSF file specified. Using default value of 1\n");
-  if (!(expmap.file=fopen(map_file_nm, "r")))
-    Rprintf("\nNo exposure map file specified. Using uniform exposure as default\n");
-  if (!( bkg.file=fopen( bkg_file_nm, "r")))
-    Rprintf("\nNo background file specified. Using zero background\n");
-
-  // if (!(cont.debug=fopen( dbg_file_nm, "w")))
-  //   c_error("Could not open the DEBUG OUTPUT file");
-
-
-  /******************************************************************/
-  /**********       READ INPUTS AND ALLOCATE MEMORY        **********/
-  /**********            READ AND NORMALIZE PSF            **********/
-  /**********  READ COUNTS & SET STARTING VALUE FOR IMAGE  **********/
-  /** READ EXP MAP & COMPUTE PROB COUNTS NOT SPILLING OFF DETECTOR **/
-  /******************************************************************/
-
-  /* (NS) moved to bayes_image_analysis (MAIN ANALYSIS LOOP) */
-  // GetRNGstate();    /********** Initialize R Random Seed ************/
-
-  /***************************************************************/
-  /***********************  Set control values *******************/
-  /***************************************************************/
-
-  initialize_control(&cont, &expmap, &psf, &ms, max_iter, burn, save_iters, save_thin,
-    nrow, ncol, nrow_psf, ncol_psf, em, fit_bkg_scl, alpha_init, alpha_init_len,
-    ms_ttlcnt_pr, ms_ttlcnt_exp, ms_al_kap2,ms_al_kap1,ms_al_kap3);
-  allocate_memory(&psf, &expmap, &obs, &deblur, &src, &bkg,
-    &ms, &mrf, &bkg_scale, &cont);
-  read_psf(&psf);
-  read_data_or_image(0, &obs);
-  read_data_or_image(1, &src);
-  read_bkg(&bkg);
-  read_expmap(&expmap);
-
-  /***************************************************************/
-  /* Re-Norm bkg->img into same units as src->img [AVC Oct 2009] */
-  /* probably more elegant to have it in its own little module ***/
-  /* But for now it is done here: ********************************/
-    for(i=0; i < expmap.nrow; i++){
-      for(j=0; j < expmap.ncol; j++){
-        bkg.img[i][j] *= expmap.max_val;
-      }
-    }
-  /* End Renorm of bkg->img */
-  /***************************************************************/
-
-  // if(cont.mrf) read_hires(&src, &mrf);
-
-  bayes_image_analysis(outmap, post_mean, *out_filename, *param_filename, &cont, &psf,
-    &expmap, &obs, &deblur, &src, &bkg, &mrf, &ms, &llike, &bkg_scale);
-
-}/* main ascii interface */
-
 
 
 /***************************************************************/
