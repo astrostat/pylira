@@ -58,3 +58,11 @@ You can also build the documentation with Sphinx directly using::
     pip install -e .[docs]
     cd docs
     make html
+
+Formatting Code
+---------------
+
+To format the C++ code use::
+
+    clang-format -i -style=file pylira/src/*
+

@@ -13,7 +13,7 @@
 #define MH_sd_inflate 2.0 /* an inflation factor for sd of MH jumping rule */
 #define MH_iter 10        /* number of MH proposals per iteration */
 #define NR_END 1
-#define FREE_ARG char *
+#define FREE_ARG char*
 #define PAR_NOT_SET -42
 
 /***************************************************************/
@@ -21,36 +21,36 @@
 /***************************************************************/
 
 struct psfType {
-  double **mat; /* the point spread function */
-  double **inv; /* the matrix of inv probablities */
+  double** mat; /* the point spread function */
+  double** inv; /* the matrix of inv probablities */
   int L;        /* the no of steps left allowed in psf */
   int R;        /* the no of steps right allowed in psf */
   int U;        /* the no of steps up allowed in psf */
   int D;        /* the no of steps down allowed in psf */
   int nrow;     /* the no of rows in psf */
   int ncol;     /* the no of columns in psf */
-  FILE *file;   /* the psf file */
+  FILE* file;   /* the psf file */
 };
 
 struct expmapType {
-  double **map;    /* the exposure map -- re-normed by max_val [AVC Oct 2009]*/
-  double **pr_det; /* the probability cnt does not spill off detector */
-  double **prod;   /* the product of map and pr_det */
+  double** map;    /* the exposure map -- re-normed by max_val [AVC Oct 2009]*/
+  double** pr_det; /* the probability cnt does not spill off detector */
+  double** prod;   /* the product of map and pr_det */
   int ncol;        /* number of columns in exposure map */
   int nrow;        /* number of rows in exposure map */
   double max_val;  /* max value of input exposure map; for normalizing [AVC Oct
                       2009] */
-  FILE *file;      /* the exposure map file */
+  FILE* file;      /* the exposure map file */
 };
 
 struct cntType {
-  double **data;    /* the counts */
-  double **img;     /* the image (expected counts) */
+  double** data;    /* the counts */
+  double** img;     /* the image (expected counts) */
   int ncol;         /* number of columns in data */
   int nrow;         /* number of rows in data */
-  FILE *file;       /* the data or image file */
+  FILE* file;       /* the data or image file */
   int outmap_index; /* the index varialbe for R output stream of image map */
-  char *name;       /* name of the structure */
+  char* name;       /* name of the structure */
 };
 
 struct llikeType {
@@ -62,31 +62,30 @@ struct msType {
   int power;         /* log_2 of cnt.nrow */
   int spin;          /* 1 for cycle spinning, 0 for no cycle spinning */
   int fit_al;        /* 1 to fit alpha, 0 to fix alpha at start values */
-  double *al;        /* the vector of multiscale smoothing parameters */
-  double *al_init;   /* starting values for vector of smoothing parameters */
-  double ***ag;      /* the multiscale aggregations */
+  double* al;        /* the vector of multiscale smoothing parameters */
+  double* al_init;   /* starting values for vector of smoothing parameters */
+  double*** ag;      /* the multiscale aggregations */
   double ttlcnt_pr;  /* the prior on the total cnt in exposure = ttlcnt_exp */
   double ttlcnt_exp; /* the prior exposure in units of the actual exposure */
                      /* the above propr params are the shape and scale of */
-                     /* the gamma prior, with expectation = ..._pr / ..._exp */
-  double al_kap1; /* these define the prior on alpha:                        */
+  /* the gamma prior, with expectation = ..._pr / ..._exp */
+  double al_kap1; /* these define the prior on alpha: */
   double al_kap2; /* p(alpha) = (alpha ^ kap1) * exp( -kap2 * alpha ^ kap3 ) */
   double al_kap3; /*                                                         */
 };
 
 struct mrfType {
-  int is_hi_res; /* 1 if there is high res data, 0 if there is not */
-  double **mean; /* mean under markov random field */
-  double *
-      *prec; /* relative precision under markov random field, prec = 1 var */
-  double **hi_res; /* the log-scale matrix of high resolution data */
-  double ****wts;  /* the hyper-matrix of neighbor weights */
+  int is_hi_res;   /* 1 if there is high res data, 0 if there is not */
+  double** mean;   /* mean under markov random field */
+  double** prec;   /* relative precision under markov random field, prec = 1 var */
+  double** hi_res; /* the log-scale matrix of high resolution data */
+  double**** wts;  /* the hyper-matrix of neighbor weights */
   double mn_wt;    /* the mean of all the weights in wts */
   int n_wts;       /* the number of weights in wts */
   double scl_prec; /* the scale for mrf_prec = 1 / var */
   double max_wt;   /* the maximum weight, weights are adjusted to be < max_wt */
-  FILE *file;      /* the high resoultion data file */
-  FILE *out;       /* the computed precision file */
+  FILE* file;      /* the high resoultion data file */
+  FILE* out;       /* the computed precision file */
 };
 
 struct scalemodelType {
@@ -97,22 +96,23 @@ struct scalemodelType {
 
 struct controlType {
   // FILE *file;          /* the input file of control variables */
-  FILE *debug;    /* a file to dump temporary output into */
-  int iter;       /* the main iteration number */
-  int max_iter;   /* the max number of iter for EM / number of Gibbs draws */
-  int burn;       /* the number of burn-in draws to ignore when computing the
-                     posterior mean image */
-  int save_iters; /* 1 to print iters of src.img to R stream  & out file */
-  int save_thin;  /* if save_iters, print every (save_thin)th to R & out file */
-  int pipe_to_R;  /* one to pipe output to R, zero to only send to out file */
-  int model;      /* control variable for choice of model (ie, prior) */
-                  /*        0 for ml, 1 for ms, 2 for mrf */
-  int em;         /* control variable: 1 for EM, 0 for MCMC */
-  int wrap;       /* control variable, 1 to wrap col and row, 0 to spill cnts
-                     of detector */
-  int ml;         /* control variable: 1 for maximum likelihood, 0 otherwise */
-  int ms;         /* control variable: 1 for multi scale, 0 otherwise */
-  int mrf;        /* control variable: 1 for Markov Rand Field, 0 otherwise */
+  FILE* debug;     /* a file to dump temporary output into */
+  int iter;        /* the main iteration number */
+  int max_iter;    /* the max number of iter for EM / number of Gibbs draws */
+  int burn;        /* the number of burn-in draws to ignore when computing the
+                      posterior mean image */
+  int save_iters;  /* 1 to print iters of src.img to R stream  & out file */
+  int save_thin;   /* if save_iters, print every (save_thin)th to R & out file
+                    */
+  int pipe_to_R;   /* one to pipe output to R, zero to only send to out file */
+  int model;       /* control variable for choice of model (ie, prior) */
+                   /*        0 for ml, 1 for ms, 2 for mrf */
+  int em;          /* control variable: 1 for EM, 0 for MCMC */
+  int wrap;        /* control variable, 1 to wrap col and row, 0 to spill cnts
+                      of detector */
+  int ml;          /* control variable: 1 for maximum likelihood, 0 otherwise */
+  int ms;          /* control variable: 1 for multi scale, 0 otherwise */
+  int mrf;         /* control variable: 1 for Markov Rand Field, 0 otherwise */
   int fit_bkg_scl; /* 1 to fit a scale parameter to the background model */
 };
 
@@ -130,79 +130,72 @@ typedef struct controlType controlType;
 /***************************************************************/
 
 void c_error(char error_text[]);
-void print_mat(char label_text[], double **mat, int nrow, int ncol);
-void fprint_mat(FILE *outfile, double **mat, int nrow, int ncol);
-void write_img_to_Routput(double *outmap, cntType *cnt);
+void print_mat(char label_text[], double** mat, int nrow, int ncol);
+void fprint_mat(FILE* outfile, double** mat, int nrow, int ncol);
+void write_img_to_Routput(double* outmap, cntType* cnt);
 int wrap(int i, int max);
-double **matrix(long nrl, long nrh, long ncl, long nch);
-void free_matrix(double **m, long nrl, long nrh, long ncl, long nch);
-void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
-                     cntType *deblur, cntType *src, cntType *bkg, msType *ms,
-                     mrfType *mrf, scalemodelType *bkg_scale,
-                     controlType *cont);
-void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
-                        msType *ms, int *max_iter, int *burn, int *save_iters,
-                        int *save_thin, int *nrow, int *ncol, int *nrow_psf,
-                        int *ncol_psf, int *em, int *fit_bkg_scl,
-                        double *alpha_init, int *alpha_init_len,
-                        double *ms_ttlcnt_pr, double *ms_ttlcnt_exp,
-                        double *ms_al_kap2, double *ms_al_kap1,
-                        double *ms_al_kap3);
-void set_psf_from_R(double *psf_vector, psfType *psf);
-void set_obs_from_R(double *cnt_vector, cntType *obs);
-void set_image_from_R(double *img_vector, cntType *img);
-void set_expmap_from_R(double *map_vector, expmapType *expmap);
-void compute_expmap(psfType *psf, expmapType *expmap, controlType *cont);
-double comp_ms_prior(cntType *src, msType *ms);
-double comp_mrf_prior(cntType *src, mrfType *mrf, controlType *cont);
-void redistribute_Counts(psfType *psf, cntType *obs, cntType *deblur,
-                         controlType *cont, llikeType *llike);
-void redistribute_counts_multinomial_calcs(int i, int j, psfType *psf,
-                                           cntType *obs, cntType *deblur,
-                                           controlType *cont);
-int check_monotone_convg(FILE *param_file, llikeType *llike, msType *ms,
-                         controlType *cont);
-void add_cnts_2_adjust_4_exposure(expmapType *expmap, cntType *cnts,
-                                  controlType *cont);
-void remove_bkg_from_data(cntType *deblur, cntType *src, cntType *bkg,
-                          scalemodelType *bkg_scale, controlType *cont);
-void update_image_mrf(expmapType *expmap, cntType *src, mrfType *mrf,
-                      controlType *cont);
-double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
-                       msType *ms, controlType *cont);
-void update_alpha_ms(FILE *param_file, msType *ms, controlType *cont);
-double update_alpha_ms_MH(double prop_mean, msType *ms, int level, int dim);
-double lpost_alpha(double alpha, msType *ms, int level, int dim);
-double dlpost_alpha(double alpha, msType *ms, int level, int dim);
-double ddlpost_alpha(double alpha, msType *ms, int level, int dim);
-double lpost_lalpha(double alpha, msType *ms, int level, int dim);
-double dlpost_lalpha(double alpha, msType *ms, int level, int dim);
-double ddlpost_lalpha(double alpha, msType *ms, int level, int dim);
-void update_image_ml(expmapType *expmap, cntType *src, controlType *cont);
+double** matrix(long nrl, long nrh, long ncl, long nch);
+void free_matrix(double** m, long nrl, long nrh, long ncl, long nch);
+void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* deblur,
+                     cntType* src, cntType* bkg, msType* ms, mrfType* mrf,
+                     scalemodelType* bkg_scale, controlType* cont);
+void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msType* ms,
+                        int* max_iter, int* burn, int* save_iters, int* save_thin,
+                        int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
+                        int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
+                        double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
+                        double* ms_al_kap1, double* ms_al_kap3);
+void set_psf_from_R(double* psf_vector, psfType* psf);
+void set_obs_from_R(double* cnt_vector, cntType* obs);
+void set_image_from_R(double* img_vector, cntType* img);
+void set_expmap_from_R(double* map_vector, expmapType* expmap);
+void compute_expmap(psfType* psf, expmapType* expmap, controlType* cont);
+double comp_ms_prior(cntType* src, msType* ms);
+double comp_mrf_prior(cntType* src, mrfType* mrf, controlType* cont);
+void redistribute_Counts(psfType* psf, cntType* obs, cntType* deblur, controlType* cont,
+                         llikeType* llike);
+void redistribute_counts_multinomial_calcs(int i, int j, psfType* psf, cntType* obs,
+                                           cntType* deblur, controlType* cont);
+int check_monotone_convg(FILE* param_file, llikeType* llike, msType* ms,
+                         controlType* cont);
+void add_cnts_2_adjust_4_exposure(expmapType* expmap, cntType* cnts, controlType* cont);
+void remove_bkg_from_data(cntType* deblur, cntType* src, cntType* bkg,
+                          scalemodelType* bkg_scale, controlType* cont);
+void update_image_mrf(expmapType* expmap, cntType* src, mrfType* mrf,
+                      controlType* cont);
+double update_image_ms(FILE* param_file, expmapType* expmap, cntType* src, msType* ms,
+                       controlType* cont);
+void update_alpha_ms(FILE* param_file, msType* ms, controlType* cont);
+double update_alpha_ms_MH(double prop_mean, msType* ms, int level, int dim);
+double lpost_alpha(double alpha, msType* ms, int level, int dim);
+double dlpost_alpha(double alpha, msType* ms, int level, int dim);
+double ddlpost_alpha(double alpha, msType* ms, int level, int dim);
+double lpost_lalpha(double alpha, msType* ms, int level, int dim);
+double dlpost_lalpha(double alpha, msType* ms, int level, int dim);
+double ddlpost_lalpha(double alpha, msType* ms, int level, int dim);
+void update_image_ml(expmapType* expmap, cntType* src, controlType* cont);
 /* Per Jason Kramer 13 Mar 2009 */
-void update_scale_model(scalemodelType *scalemodel, expmapType *expmap,
-                        cntType *src, controlType *cont);
-void update_deblur_image(expmapType *expmap, cntType *deblur, cntType *src,
-                         cntType *bkg, scalemodelType *bkg_scale);
-void print_param_file_header(FILE *param_file, controlType *cont,
-                             expmapType *expmap, msType *ms);
+void update_scale_model(scalemodelType* scalemodel, expmapType* expmap, cntType* src,
+                        controlType* cont);
+void update_deblur_image(expmapType* expmap, cntType* deblur, cntType* src,
+                         cntType* bkg, scalemodelType* bkg_scale);
+void print_param_file_header(FILE* param_file, controlType* cont, expmapType* expmap,
+                             msType* ms);
 
-void image_analysis_R(double *outmap, double *post_mean, double *cnt_vector,
-                      double *src_vector, double *psf_vector,
-                      double *map_vector, double *bkg_vector,
-                      char **out_filename, char **param_filename, int *max_iter,
-                      int *burn, int *save_iters, int *save_thin, int *nrow,
-                      int *ncol, int *nrow_psf, int *ncol_psf, int *em,
-                      int *fit_bkg_scl, double *alpha_init, int *alpha_init_len,
-                      double *ms_ttlcnt_pr, double *ms_ttlcnt_exp,
-                      double *ms_al_kap2, double *ms_al_kap1,
-                      double *ms_al_kap3);
+void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
+                      double* src_vector, double* psf_vector, double* map_vector,
+                      double* bkg_vector, char** out_filename, char** param_filename,
+                      int* max_iter, int* burn, int* save_iters, int* save_thin,
+                      int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
+                      int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
+                      double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
+                      double* ms_al_kap1, double* ms_al_kap3);
 
-void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
-                          char *param_file_nm, controlType *cont, psfType *psf,
-                          expmapType *expmap, cntType *obs, cntType *deblur,
-                          cntType *src, cntType *bkg, mrfType *mrf, msType *ms,
-                          llikeType *llike, scalemodelType *bkg_scale);
+void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
+                          char* param_file_nm, controlType* cont, psfType* psf,
+                          expmapType* expmap, cntType* obs, cntType* deblur,
+                          cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
+                          llikeType* llike, scalemodelType* bkg_scale);
 
 /***************************************************************/
 /*********************** ERROR FUNCTION    *********************/
@@ -216,13 +209,12 @@ void c_error(char error_text[]) { /* Print an Error Message */
 /***************   PRINT MATRIX TO STD OUTPUT  *****************/
 /***************************************************************/
 
-void print_mat(char label_text[], double **mat, int nrow, int ncol) {
+void print_mat(char label_text[], double** mat, int nrow, int ncol) {
   int i, j; /* indexing variables */
 
   Rprintf("%s:\n", label_text);
   for (i = 0; i < nrow; i++) {
-    for (j = 0; j < ncol; j++)
-      Rprintf(" %10g", mat[i][j]);
+    for (j = 0; j < ncol; j++) Rprintf(" %10g", mat[i][j]);
     Rprintf("\n");
   } /* row loop */
 
@@ -232,12 +224,11 @@ void print_mat(char label_text[], double **mat, int nrow, int ncol) {
 /*****************   PRINT MATRIX TO FILE  *********************/
 /***************************************************************/
 
-void fprint_mat(FILE *outfile, double **mat, int nrow, int ncol) {
+void fprint_mat(FILE* outfile, double** mat, int nrow, int ncol) {
   int i, j; /* indexing variables */
 
   for (i = 0; i < nrow; i++) {
-    for (j = 0; j < ncol; j++)
-      fprintf(outfile, "%f  ", (float)mat[i][j]);
+    for (j = 0; j < ncol; j++) fprintf(outfile, "%f  ", (float)mat[i][j]);
     fprintf(outfile, "\n");
   } /* row loop */
 
@@ -247,12 +238,11 @@ void fprint_mat(FILE *outfile, double **mat, int nrow, int ncol) {
 /**********   WRITE IMAGE TO MAP R OUTPUT STREAM     ***********/
 /***************************************************************/
 
-void write_img_to_Routput(double *outmap, cntType *cnt) {
+void write_img_to_Routput(double* outmap, cntType* cnt) {
   int i, j; /* indexing variables */
 
   for (i = 0; i < cnt->nrow; i++)
-    for (j = 0; j < cnt->ncol; j++)
-      outmap[cnt->outmap_index++] = cnt->img[i][j];
+    for (j = 0; j < cnt->ncol; j++) outmap[cnt->outmap_index++] = cnt->img[i][j];
 
 } /* write_img_to_Routput */
 
@@ -263,8 +253,7 @@ void write_img_to_Routput(double *outmap, cntType *cnt) {
 int wrap(int i,  /* the index */
          int max /* the max of the index */
 ) {
-  while (i < 0)
-    i += max;
+  while (i < 0) i += max;
   return (i % max); /* modular division */
 } /* wrap */
 
@@ -272,34 +261,31 @@ int wrap(int i,  /* the index */
 /*********  ALLOCATE AND FREE MEMORY FOR MATRICIES *************/
 /***************************************************************/
 
-double **matrix(long nrl, long nrh, long ncl, long nch)
+double** matrix(long nrl, long nrh, long ncl, long nch)
 /* allocate a double matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
   long i, nrow = nrh - nrl + 1, ncol = nch - ncl + 1;
-  double **m;
+  double** m;
 
   /* allocate pointers to rows */
-  m = (double **)malloc((size_t)((nrow + NR_END) * sizeof(double *)));
-  if (!m)
-    c_error("allocation failure 1 in matrix()");
+  m = (double**)malloc((size_t)((nrow + NR_END) * sizeof(double*)));
+  if (!m) c_error("allocation failure 1 in matrix()");
   m += NR_END;
   m -= nrl;
 
   /* allocate rows and set pointers to them */
-  m[nrl] = (double *)S_alloc(nrow * ncol + NR_END, sizeof(double));
-  if (!m[nrl])
-    c_error("allocation failure 2 in matrix()");
+  m[nrl] = (double*)S_alloc(nrow * ncol + NR_END, sizeof(double));
+  if (!m[nrl]) c_error("allocation failure 2 in matrix()");
   m[nrl] += NR_END;
   m[nrl] -= ncl;
 
-  for (i = nrl + 1; i <= nrh; i++)
-    m[i] = m[i - 1] + ncol;
+  for (i = nrl + 1; i <= nrh; i++) m[i] = m[i - 1] + ncol;
 
   /* return pointer to array of pointers to rows */
   return m;
 }
 
-void free_matrix(double **m, long nrl, long nrh, long ncl, long nch) {
+void free_matrix(double** m, long nrl, long nrh, long ncl, long nch) {
   /* free a double matrix allocated by matrix() */
 
   free((FREE_ARG)(m[nrl] + ncl - NR_END));
@@ -310,14 +296,12 @@ void free_matrix(double **m, long nrl, long nrh, long ncl, long nch) {
 /*************   INITIALIZE CONTROL STRUCTURE     **************/
 /***************************************************************/
 
-void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
-                        msType *ms, int *max_iter, int *burn, int *save_iters,
-                        int *save_thin, int *nrow, int *ncol, int *nrow_psf,
-                        int *ncol_psf, int *em, int *fit_bkg_scl,
-                        double *alpha_init, int *alpha_init_len,
-                        double *ms_ttlcnt_pr, double *ms_ttlcnt_exp,
-                        double *ms_al_kap2, double *ms_al_kap1,
-                        double *ms_al_kap3) {
+void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msType* ms,
+                        int* max_iter, int* burn, int* save_iters, int* save_thin,
+                        int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
+                        int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
+                        double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
+                        double* ms_al_kap1, double* ms_al_kap3) {
   float ftemp; /* temp float for file reading */
   int i, j;    /* index variables */
 
@@ -330,8 +314,8 @@ void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
   psf->nrow = *nrow_psf;
   psf->ncol = *ncol_psf;
   // cont->model        = *model;
-  /* (NS 3Aug09) Hard coding model to multi-scale prior, as discussed at Irvine
-   * CBAS mtg July09 */
+  /* (NS 3Aug09) Hard coding model to multi-scale prior, as discussed at
+   * Irvine CBAS mtg July09 */
   cont->model = 1;
   cont->em = *em;
   cont->fit_bkg_scl = *fit_bkg_scl;
@@ -345,34 +329,21 @@ void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
     /* Allocate memory and initialize starting values for multiscale
      * smoothing parameters, if they have been entered */
     if (alpha_init != NULL && alpha_init_len != NULL) {
-      ms->al_init = (double *)S_alloc((long)*alpha_init_len, sizeof(double));
-      if (!ms->al_init)
-        c_error("Memory Allocation Error for ms.al");
+      ms->al_init = (double*)S_alloc((long)*alpha_init_len, sizeof(double));
+      if (!ms->al_init) c_error("Memory Allocation Error for ms.al");
 
-      for (i = 0; i < *alpha_init_len; i++) {
-        ms->al_init[i] = alpha_init[i];
-      }
+      for (i = 0; i < *alpha_init_len; i++) { ms->al_init[i] = alpha_init[i]; }
     }
     /* set other multiscale prior parameters */
-    if (ms_ttlcnt_pr != NULL) {
-      ms->ttlcnt_pr = *ms_ttlcnt_pr;
-    }
-    if (ms_ttlcnt_exp != NULL) {
-      ms->ttlcnt_exp = *ms_ttlcnt_exp;
-    }
-    if (ms_al_kap2 != NULL) {
-      ms->al_kap2 = *ms_al_kap2;
-    }
+    if (ms_ttlcnt_pr != NULL) { ms->ttlcnt_pr = *ms_ttlcnt_pr; }
+    if (ms_ttlcnt_exp != NULL) { ms->ttlcnt_exp = *ms_ttlcnt_exp; }
+    if (ms_al_kap2 != NULL) { ms->al_kap2 = *ms_al_kap2; }
 
     ms->al_kap1 = PAR_NOT_SET;
-    if (ms_al_kap1 != NULL) {
-      ms->al_kap1 = *ms_al_kap1;
-    }
+    if (ms_al_kap1 != NULL) { ms->al_kap1 = *ms_al_kap1; }
 
     ms->al_kap3 = PAR_NOT_SET;
-    if (ms_al_kap3 != NULL) {
-      ms->al_kap3 = *ms_al_kap3;
-    }
+    if (ms_al_kap3 != NULL) { ms->al_kap3 = *ms_al_kap3; }
   }
 
   // if (cont->model == 2) {
@@ -394,8 +365,7 @@ void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
   cont->mrf = 0;
   cont->wrap = 1;
   cont->pipe_to_R = 0;
-  if (cont->fit_bkg_scl)
-    Rprintf("\nA scale parameter will be fit to the bkg model.\n");
+  if (cont->fit_bkg_scl) Rprintf("\nA scale parameter will be fit to the bkg model.\n");
 
   if (cont->em)
     Rprintf("\nThe maximum number of EM iterations is %d.\n", cont->max_iter);
@@ -429,10 +399,9 @@ void initialize_control(controlType *cont, expmapType *expmap, psfType *psf,
 /*************   ALLOCATE MEMORY     ***************************/
 /***************************************************************/
 
-void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
-                     cntType *deblur, cntType *src, cntType *bkg, msType *ms,
-                     mrfType *mrf, scalemodelType *bkg_scale,
-                     controlType *cont) {
+void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* deblur,
+                     cntType* src, cntType* bkg, msType* ms, mrfType* mrf,
+                     scalemodelType* bkg_scale, controlType* cont) {
   int ag_dim;  /* the dimension of the current MS aggrigation */
   float ftemp; /* temp float for file reading */
   int i, j;    /* index variables */
@@ -441,22 +410,22 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
   psf->R = psf->ncol - psf->L - 1;
   psf->U = (int)floor(psf->nrow / 2);
   psf->D = psf->nrow - psf->U - 1;
-  psf->mat = (double **)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
-  psf->inv = (double **)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
+  psf->mat = (double**)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
+  psf->inv = (double**)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
 
   /*********** EXPOSURE MAP INITIALIZATION AND MEMORY ALLOCATION  ******/
 
   Rprintf("\nThe data matrix is %d by %d.\n", expmap->nrow, expmap->ncol);
-  expmap->map = (double **)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
-  expmap->pr_det = (double **)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
-  expmap->prod = (double **)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
+  expmap->map = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
+  expmap->pr_det = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
+  expmap->prod = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
 
   /******* OBSERVED CNT INITIALIZATION AND MEMORY ALLOCATION   *******/
 
   obs->ncol = expmap->ncol;
   obs->nrow = expmap->nrow;
-  obs->data = (double **)matrix(0, obs->nrow - 1, 0, obs->ncol - 1);
-  obs->img = (double **)matrix(0, obs->nrow - 1, 0, obs->ncol - 1);
+  obs->data = (double**)matrix(0, obs->nrow - 1, 0, obs->ncol - 1);
+  obs->img = (double**)matrix(0, obs->nrow - 1, 0, obs->ncol - 1);
   obs->outmap_index = 0;
   obs->name = "Obs";
 
@@ -464,8 +433,8 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
 
   deblur->ncol = expmap->ncol;
   deblur->nrow = expmap->nrow;
-  deblur->data = (double **)matrix(0, deblur->nrow - 1, 0, deblur->ncol - 1);
-  deblur->img = (double **)matrix(0, deblur->nrow - 1, 0, deblur->ncol - 1);
+  deblur->data = (double**)matrix(0, deblur->nrow - 1, 0, deblur->ncol - 1);
+  deblur->img = (double**)matrix(0, deblur->nrow - 1, 0, deblur->ncol - 1);
   deblur->outmap_index = 0;
   deblur->name = "Deblur";
 
@@ -473,8 +442,8 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
 
   src->ncol = expmap->ncol;
   src->nrow = expmap->nrow;
-  src->data = (double **)matrix(0, src->nrow - 1, 0, src->ncol - 1);
-  src->img = (double **)matrix(0, src->nrow - 1, 0, src->ncol - 1);
+  src->data = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
+  src->img = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
   src->outmap_index = 0;
   src->name = "Source";
 
@@ -482,8 +451,8 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
 
   bkg->ncol = expmap->ncol;
   bkg->nrow = expmap->nrow;
-  bkg->data = (double **)matrix(0, bkg->nrow - 1, 0, bkg->ncol - 1);
-  bkg->img = (double **)matrix(0, bkg->nrow - 1, 0, bkg->ncol - 1);
+  bkg->data = (double**)matrix(0, bkg->nrow - 1, 0, bkg->ncol - 1);
+  bkg->img = (double**)matrix(0, bkg->nrow - 1, 0, bkg->ncol - 1);
   bkg->outmap_index = 0;
   bkg->name = "Bkgd";
 
@@ -494,19 +463,18 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
 
     mrf->is_hi_res = 1;
     if (mrf->is_hi_res)
-      Rprintf(
-          "\nHigh Resolution Data will be used to set MRF correlations.\n\n");
+      Rprintf("\nHigh Resolution Data will be used to set MRF "
+              "correlations.\n\n");
     mrf->max_wt = 10000;
 
     /**************** mrf memory allocation ********************/
-    mrf->mean = (double **)matrix(0, src->nrow - 1, 0, src->ncol - 1);
-    mrf->prec = (double **)matrix(0, src->nrow - 1, 0, src->ncol - 1);
-    mrf->hi_res = (double **)matrix(0, src->nrow - 1, 0, src->ncol - 1);
-    mrf->wts = (double ****)S_alloc((long)src->nrow, sizeof(double ***));
+    mrf->mean = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
+    mrf->prec = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
+    mrf->hi_res = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
+    mrf->wts = (double****)S_alloc((long)src->nrow, sizeof(double***));
     for (i = 0; i < src->nrow; i++) {
-      mrf->wts[i] = (double ***)S_alloc((long)src->ncol, sizeof(double **));
-      for (j = 0; j < src->ncol; j++)
-        mrf->wts[i][j] = (double **)matrix(0, 2, 0, 2);
+      mrf->wts[i] = (double***)S_alloc((long)src->ncol, sizeof(double**));
+      for (j = 0; j < src->ncol; j++) mrf->wts[i][j] = (double**)matrix(0, 2, 0, 2);
     } /* i loop over rows */
 
   } /* cont->mrf */
@@ -514,38 +482,35 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
   /*********** MS INITIALIZATION AND MEMORY ALLOCATION   **********/
 
   if (cont->ms == 1) {
-
     ms->spin = 1; /* initialize cycle spinning  */
 
     if (src->ncol != src->nrow)
-      c_error(
-          "For multiscale model, the number of rows and columns must be equal");
+      c_error("For multiscale model, the number of rows and columns must "
+              "be equal");
 
     /*************** compute ms power *******************/
     for (ms->power = 1; ms->power > 0; ms->power++) {
-      if (pow(2.0, (double)ms->power) == src->nrow)
-        break;
+      if (pow(2.0, (double)ms->power) == src->nrow) break;
       if (pow(2.0, (double)ms->power) > src->nrow)
-        c_error("For multiscale model number of rows & columns must be a power "
+        c_error("For multiscale model number of rows & columns must be "
+                "a power "
                 "of 2");
     } /*loop over ms.power */
 
-    Rprintf(
-        "\nThe data file should contain a  2^%d by 2^%d matrix of counts.\n",
-        ms->power, ms->power);
+    Rprintf("\nThe data file should contain a  2^%d by 2^%d matrix of "
+            "counts.\n",
+            ms->power, ms->power);
 
     /************* ms memory allocation ****************/
-    ms->al = (double *)S_alloc((long)ms->power, sizeof(double));
-    if (!ms->al)
-      c_error("Memory Allocation Error for ms.al");
+    ms->al = (double*)S_alloc((long)ms->power, sizeof(double));
+    if (!ms->al) c_error("Memory Allocation Error for ms.al");
 
-    ms->ag = (double ***)S_alloc((long)ms->power, sizeof(double **));
-    if (!ms->ag)
-      c_error("Memory Allocation Error for ms.ag");
+    ms->ag = (double***)S_alloc((long)ms->power, sizeof(double**));
+    if (!ms->ag) c_error("Memory Allocation Error for ms.ag");
 
     ag_dim = src->nrow;
     for (i = 0; i <= ms->power; i++) {
-      ms->ag[i] = (double **)matrix(0, ag_dim - 1, 0, ag_dim - 1);
+      ms->ag[i] = (double**)matrix(0, ag_dim - 1, 0, ag_dim - 1);
       if (ag_dim >= 2.0)
         ag_dim /= 2.0;
       else
@@ -571,12 +536,10 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
     Rprintf("Gamma(%f, %f).\n", ms->ttlcnt_pr, ms->ttlcnt_exp);
 
     ms->fit_al = 1; /**** fit or fix alpha ****/
-    ms->al_kap1 = ms->al_kap1 == PAR_NOT_SET
-                      ? 0.0
-                      : ms->al_kap1; /**** the prior for alpha ****/
+    ms->al_kap1 =
+        ms->al_kap1 == PAR_NOT_SET ? 0.0 : ms->al_kap1; /**** the prior for alpha ****/
     ms->al_kap3 = ms->al_kap3 == PAR_NOT_SET ? 3.0 : ms->al_kap3;
-    Rprintf("\nThe hyper-prior smoothing parameter (kappa 2) is %g.\n\n",
-            ms->al_kap2);
+    Rprintf("\nThe hyper-prior smoothing parameter (kappa 2) is %g.\n\n", ms->al_kap2);
 
   } /* if cont->ms == 1 */
 
@@ -588,9 +551,8 @@ void allocate_memory(psfType *psf, expmapType *expmap, cntType *obs,
 
 } /* allocate_memory */
 
-
 /* Read and Normalize the PSF from R vector psf_vector */
-void set_psf_from_R(double *psf_vector, psfType *psf) {
+void set_psf_from_R(double* psf_vector, psfType* psf) {
   double sum = 0.0; /* for normalizing */
   int i, j;
 
@@ -604,14 +566,12 @@ void set_psf_from_R(double *psf_vector, psfType *psf) {
 
   /*****  RENORMALIZE AND PRINT PSF *******/
   for (i = 0; i < psf->nrow; i++)
-    for (j = 0; j < psf->ncol; j++)
-      psf->mat[i][j] /= sum;
-  if (verbose > 3)
-    print_mat("PSF", psf->mat, psf->nrow, psf->ncol);
+    for (j = 0; j < psf->ncol; j++) psf->mat[i][j] /= sum;
+  if (verbose > 3) print_mat("PSF", psf->mat, psf->nrow, psf->ncol);
 }
 
 /* Read the observed data from R vector cnt_vector */
-void set_obs_from_R(double *cnt_vector, cntType *obs) {
+void set_obs_from_R(double* cnt_vector, cntType* obs) {
   int i, j; /* counting variables */
 
   for (i = 0; i < obs->nrow; i++) {
@@ -633,7 +593,7 @@ void set_obs_from_R(double *cnt_vector, cntType *obs) {
 }
 
 /* Read an image from R vector img_vector */
-void set_image_from_R(double *img_vector, cntType *img) {
+void set_image_from_R(double* img_vector, cntType* img) {
   int i, j; /* counting varialbes */
 
   for (i = 0; i < img->nrow; i++) {
@@ -655,7 +615,7 @@ void set_image_from_R(double *img_vector, cntType *img) {
 }
 
 /* Read the exposure map from R vector map_vector */
-void set_expmap_from_R(double *map_vector, expmapType *expmap) {
+void set_expmap_from_R(double* map_vector, expmapType* expmap) {
   double max = 0.0; /* max used to normalize */
   int i, j;         /* counting variables */
 
@@ -663,21 +623,18 @@ void set_expmap_from_R(double *map_vector, expmapType *expmap) {
     for (j = 0; j < expmap->ncol; j++) {
       /* There is no bounds checking. R must check bounds! */
       expmap->map[i][j] = map_vector[i * expmap->ncol + j];
-      if (expmap->map[i][j] > max)
-        max = expmap->map[i][j];
+      if (expmap->map[i][j] > max) max = expmap->map[i][j];
     }
   }
 
   /*****  RENORMALIZE AND PRINT EXPOSURE MAP *******/
   /* (NS) "normalize" just means maximum = 1, not total = 1 */
   for (i = 0; i < expmap->nrow; i++)
-    for (j = 0; j < expmap->ncol; j++)
-      expmap->map[i][j] /= max;
+    for (j = 0; j < expmap->ncol; j++) expmap->map[i][j] /= max;
 
   expmap->max_val = max; /* [added AVC Oct 2009] */
 
-  if (verbose > 3)
-    print_mat("Exposure Map", expmap->map, expmap->nrow, expmap->ncol);
+  if (verbose > 3) print_mat("Exposure Map", expmap->map, expmap->nrow, expmap->ncol);
 }
 
 /***************************************************************/
@@ -685,13 +642,12 @@ void set_expmap_from_R(double *map_vector, expmapType *expmap) {
 /*********  PROB OF COUNTS NOT SPILLING OFF DETECTOR  **********/
 /***************************************************************/
 
-void compute_expmap(psfType *psf, expmapType *expmap, controlType *cont) {
+void compute_expmap(psfType* psf, expmapType* expmap, controlType* cont) {
   int i, j, k, l; /* counting variables */
 
   /***** COMPUTE PROB THAT CNTS DO NOT SPILL OFF THE DETECTOR ****/
   for (i = 0; i < expmap->nrow; i++) {
     for (j = 0; j < expmap->ncol; j++) {
-
       if (cont->wrap) /* if wrap, all det probs are one */
         expmap->pr_det[i][j] = 1.0;
 
@@ -707,7 +663,8 @@ void compute_expmap(psfType *psf, expmapType *expmap, controlType *cont) {
         }     /* k loop over psf rows */
         if (expmap->pr_det[i][j] == 0.0) {
           REprintf("Pixel: (%d, %d)\n", i, j);
-          c_error("Photons originating in above pixel cannot be detected");
+          c_error("Photons originating in above pixel cannot be "
+                  "detected");
         } /* error */
       }   /* else if not wrap */
 
@@ -726,8 +683,7 @@ void compute_expmap(psfType *psf, expmapType *expmap, controlType *cont) {
 /******** (USED TO COMPUTE PRIOR PROB OF STARTING VALUE) *******/
 /***************************************************************/
 
-double comp_ms_prior(cntType *src, msType *ms) {
-
+double comp_ms_prior(cntType* src, msType* ms) {
   int level;           /* current level of aggrigation */
   int dim;             /* dimension of the current level of aggrigation */
   double sum;          /* sum of Poisson intensities in 2x2 set of pixels */
@@ -738,8 +694,7 @@ double comp_ms_prior(cntType *src, msType *ms) {
 
   dim = src->nrow;
   for (i = 0; i < dim; i++)
-    for (j = 0; j < dim; j++)
-      ms->ag[0][i][j] = src->img[i][j];
+    for (j = 0; j < dim; j++) ms->ag[0][i][j] = src->img[i][j];
 
   /***** COMPUTE AGGRIGATIONS, PROPORTIONS, AND LOG PRIOR *********/
   for (level = 0; level < ms->power; level++) {
@@ -748,16 +703,13 @@ double comp_ms_prior(cntType *src, msType *ms) {
       for (j = 0; j < dim; j++) {
         sum = 0.0;
         for (k = 0; k < 2; k++) {
-          for (l = 0; l < 2; l++) {
-            sum += ms->ag[level][2 * i + k][2 * j + l];
-          }
+          for (l = 0; l < 2; l++) { sum += ms->ag[level][2 * i + k][2 * j + l]; }
         }
         for (k = 0; k < 2; k++) {
           for (l = 0; l < 2; l++) {
             ms->ag[level][2 * i + k][2 * j + l] =
                 ms->ag[level][2 * i + k][2 * j + l] / sum;
-            logprior +=
-                (ms->al[level] - 1) * log(ms->ag[level][2 * i + k][2 * j + l]);
+            logprior += (ms->al[level] - 1) * log(ms->ag[level][2 * i + k][2 * j + l]);
           } /* l loop */
         }
         ms->ag[level + 1][i][j] = sum;
@@ -777,8 +729,7 @@ double comp_ms_prior(cntType *src, msType *ms) {
 /****  COMPUTE MARKOV RANDOM FIELD LOG PRIOR PROBABILITY    ****/
 /***************************************************************/
 
-double comp_mrf_prior(cntType *src, mrfType *mrf, controlType *cont) {
-
+double comp_mrf_prior(cntType* src, mrfType* mrf, controlType* cont) {
   double sum;          /* sum of Poisson intensities in 2x2 set of pixels */
   double logprior = 0; /* the log prior value */
   int i, j, k, l;      /* counting variables */
@@ -802,10 +753,9 @@ double comp_mrf_prior(cntType *src, mrfType *mrf, controlType *cont) {
           } /* if an adjacent neighbor */
           /****************** a  wrapped neighbor *****************/
           else if (k * k + l * l > 0 && cont->wrap) {
-            logprior -=
-                (log(src->img[i][j]) *
-                 log(src->img[wrap(i + k, src->nrow)][wrap(j + l, src->ncol)]) *
-                 mrf->wts[i][j][k + 1][l + 1]);
+            logprior -= (log(src->img[i][j]) *
+                         log(src->img[wrap(i + k, src->nrow)][wrap(j + l, src->ncol)]) *
+                         mrf->wts[i][j][k + 1][l + 1]);
           } /* a wrapped neighbor */
         }   /* l loop */
       }     /* k loop */
@@ -826,20 +776,17 @@ double comp_mrf_prior(cntType *src, mrfType *mrf, controlType *cont) {
 /*********       REDISTRIBUTE obs.data to deblur.data   ********/
 /***************************************************************/
 
-void redistribute_Counts(psfType *psf, cntType *obs, cntType *deblur,
-                         controlType *cont, llikeType *llike) {
-
+void redistribute_Counts(psfType* psf, cntType* obs, cntType* deblur, controlType* cont,
+                         llikeType* llike) {
   float sum;      /* sum used to nomralize psf.inv*/
   int i, j, k, l; /* counting varialbes for psf coordinates*/
 
   /************* INITIALIZE deblur.data *************/
   for (i = 0; i < deblur->nrow; i++)
-    for (j = 0; j < deblur->ncol; j++)
-      deblur->data[i][j] = 0.0;
+    for (j = 0; j < deblur->ncol; j++) deblur->data[i][j] = 0.0;
 
   for (i = 0; i < obs->nrow; i++) { /* LOOP OVER THE OBSERVED DATA CELLS */
     for (j = 0; j < obs->ncol; j++) {
-
       /******** USE BAYES THM TO COMPUTE INV PDF *********/
       sum = 0;                          /* to normalize psf->inv */
       for (k = 0; k < psf->nrow; k++) { /* COMPUTE THE INV PROB PSF */
@@ -877,15 +824,13 @@ void redistribute_Counts(psfType *psf, cntType *obs, cntType *deblur,
       }
 
       /************* UPDATE LOG LIKELIHOOD *********/
-      if (obs->data[i][j] > 0)
-        llike->cur += obs->data[i][j] * log(sum);
+      if (obs->data[i][j] > 0) llike->cur += obs->data[i][j] * log(sum);
       llike->cur -= sum;
 
       /******* NORMALIZE THE INV PROB PSF **************/
 
       for (k = 0; k < psf->nrow; k++)
-        for (l = 0; l < psf->ncol; l++)
-          psf->inv[k][l] /= sum;
+        for (l = 0; l < psf->ncol; l++) psf->inv[k][l] /= sum;
 
       /**********  PRINT THE INV PROB PSF ************/
       if (verbose > 9) {
@@ -915,8 +860,7 @@ void redistribute_Counts(psfType *psf, cntType *obs, cntType *deblur,
 
 void redistribute_counts_multinomial_calcs(
     int i, int j, /* row and col of current cell in cnt.data  */
-    psfType *psf, cntType *obs, cntType *deblur, controlType *cont) {
-
+    psfType* psf, cntType* obs, cntType* deblur, controlType* cont) {
   double count = obs->data[i][j]; /* the obs count in current cell (i,j) */
   double p_tot = 1.0;             /* total remaining probability */
   double p_cur;                   /* conditional prob for current cell */
@@ -956,16 +900,16 @@ void redistribute_counts_multinomial_calcs(
   /******             IN psf.inv                  *****/
   /****************************************************/
   for (k = 0; k < psf->nrow; k++)
-    for (l = 0; l < psf->ncol; l++)
-      /******** if  not too close to the edge *********/
+    for (l = 0; l < psf->ncol; l++) /******** if  not too close to the edge *********/
       if ((0 <= i - psf->D + k) && (i - psf->D + k < obs->nrow) &&
           (0 <= j - psf->R + l) && (j - psf->R + l < obs->ncol)) {
         deblur->data[i - psf->D + k][j - psf->R + l] += psf->inv[k][l];
       } /* if !2 close to edge */
       /********** if too close to the edge **************/
       else if (cont->wrap) {
-        deblur->data[wrap(i - psf->D + k, obs->nrow)]
-                    [wrap(j - psf->R + l, obs->ncol)] += psf->inv[k][l];
+        deblur
+            ->data[wrap(i - psf->D + k, obs->nrow)][wrap(j - psf->R + l, obs->ncol)] +=
+            psf->inv[k][l];
       } /* if (cont.wrap) */
 
 } /* redistribute_counts_multinomial_sampler */
@@ -974,8 +918,8 @@ void redistribute_counts_multinomial_calcs(
 /*********      CHECK FOR (MONOTONE) CONVERGENCE       *********/
 /***************************************************************/
 
-int check_monotone_convg(FILE *param_file, llikeType *llike, msType *ms,
-                         controlType *cont) {
+int check_monotone_convg(FILE* param_file, llikeType* llike, msType* ms,
+                         controlType* cont) {
   int convg = 0; /* 1 if converged */
 
   if (verbose > 0 && (cont->iter % cont->save_thin == 0)) {
@@ -1009,17 +953,15 @@ int check_monotone_convg(FILE *param_file, llikeType *llike, msType *ms,
 /************  ADD CNT TO ACCOUNT FOR EXPOSURE MAP  ************/
 /***************************************************************/
 
-void add_cnts_2_adjust_4_exposure(expmapType *expmap, cntType *cnts,
-                                  controlType *cont) {
-
+void add_cnts_2_adjust_4_exposure(expmapType* expmap, cntType* cnts,
+                                  controlType* cont) {
   double exp_missing_cnt; /* the expected number of missing cnts */
   int i, j;               /* index variables */
 
   for (i = 0; i < cnts->nrow; i++) {
     for (j = 0; j < cnts->ncol; j++) {
       exp_missing_cnt = (1 - expmap->prod[i][j]) * cnts->img[i][j];
-      if (!cont->em)
-        exp_missing_cnt = rpois(exp_missing_cnt);
+      if (!cont->em) exp_missing_cnt = rpois(exp_missing_cnt);
       cnts->data[i][j] = cnts->data[i][j] + exp_missing_cnt;
     } /* loop over columns */
   }   /* loop over rows */
@@ -1030,17 +972,14 @@ void add_cnts_2_adjust_4_exposure(expmapType *expmap, cntType *cnts,
 /***************  SEPERATE SRC AND BACKGROUND CNTS  ************/
 /***************************************************************/
 
-void remove_bkg_from_data(cntType *deblur, cntType *src, cntType *bkg,
-                          scalemodelType *bkg_scale, controlType *cont) {
-
+void remove_bkg_from_data(cntType* deblur, cntType* src, cntType* bkg,
+                          scalemodelType* bkg_scale, controlType* cont) {
   double prob_src; /* the cond prob of source counts */
   int i, j;        /* index variables */
 
   for (i = 0; i < src->nrow; i++) {
     for (j = 0; j < src->ncol; j++) {
-
-      prob_src =
-          src->img[i][j] / (src->img[i][j] + bkg_scale->scale * bkg->img[i][j]);
+      prob_src = src->img[i][j] / (src->img[i][j] + bkg_scale->scale * bkg->img[i][j]);
 
       if (prob_src < 1) { /* there is background */
         if (cont->em)     /* EM */
@@ -1064,9 +1003,8 @@ void remove_bkg_from_data(cntType *deblur, cntType *src, cntType *bkg,
 /****    UPDATE IMAGE USING MARKOV RANDOM FIELD PRIOR     ******/
 /***************************************************************/
 
-void update_image_mrf(expmapType *expmap, cntType *src, mrfType *mrf,
-                      controlType *cont) {
-
+void update_image_mrf(expmapType* expmap, cntType* src, mrfType* mrf,
+                      controlType* cont) {
   double nr_lam;   /* newton raphson LOCAL poisson parameter */
   double nr_lglam; /* newton raphson LOCAL log of poisson parameter */
   double nr_step;  /* newton raphson LOCAL proposal for lglam */
@@ -1098,8 +1036,7 @@ void update_image_mrf(expmapType *expmap, cntType *src, mrfType *mrf,
       k = 0;
       while (1 == 1) { /* nr iteration */
         k++;
-        nr_step = src->data[i][j] +
-                  expmap->prod[i][j] * nr_lam * (nr_lglam - 1) +
+        nr_step = src->data[i][j] + expmap->prod[i][j] * nr_lam * (nr_lglam - 1) +
                   mrf->prec[i][j] * mrf->mean[i][j];
         nr_step /= (expmap->prod[i][j] * nr_lam + mrf->prec[i][j]);
         if ((nr_lam - exp(nr_step)) < convg_nr && /* convergence check */
@@ -1113,8 +1050,7 @@ void update_image_mrf(expmapType *expmap, cntType *src, mrfType *mrf,
     } /*j loop over src.img */
   }   /* i loop */
 
-  if (cont->em == 0)
-    error("No code for MCMC fitting with MRF prior!!");
+  if (cont->em == 0) error("No code for MCMC fitting with MRF prior!!");
 
 } /*update_image_mrf */
 
@@ -1123,9 +1059,8 @@ void update_image_mrf(expmapType *expmap, cntType *src, mrfType *mrf,
 /*********   ALSO RETURNS THE LOG PRIOR OF NEW IMAGE   *********/
 /***************************************************************/
 
-double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
-                       msType *ms, controlType *cont) {
-
+double update_image_ms(FILE* param_file, expmapType* expmap, cntType* src, msType* ms,
+                       controlType* cont) {
   int level;           /* current level of aggrigation */
   int dim;             /* dimension of the current level of aggrigation */
   double sum;          /* sum of Poisson intensities in 2x2 set of pixels */
@@ -1159,16 +1094,14 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
       for (j = 0; j < dim; j++) {
         sum = 0;
         for (k = 0; k < 2; k++)
-          for (l = 0; l < 2; l++)
-            sum += ms->ag[level][2 * i + k][2 * j + l];
+          for (l = 0; l < 2; l++) sum += ms->ag[level][2 * i + k][2 * j + l];
         ms->ag[level + 1][i][j] = sum;
       } /* loop over columns of ms.ag[level] */
     }   /* loop over rows of ms.ag[level] */
   }     /* loop over aggregation level */
 
   /************* update alpha ******************/
-  if (ms->fit_al)
-    update_alpha_ms(param_file, ms, cont);
+  if (ms->fit_al) update_alpha_ms(param_file, ms, cont);
 
   /************ Compute  Proportions **********/
   dim = src->nrow;
@@ -1177,23 +1110,21 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
     for (i = 0; i < dim; i++) {
       for (j = 0; j < dim; j++) {
         sum = 0.0;
-        while (
-            sum ==
-            0.0) { /* guard against extreme case of all gamma samples == 0.0 */
+        while (sum ==
+               0.0) { /* guard against extreme case of all gamma samples == 0.0 */
           for (k = 0; k < 2; k++)
             for (l = 0; l < 2; l++) {
               if (cont->em) /* if EM compute mode */
                 ms->ag[level][2 * i + k][2 * j + l] =
                     ms->ag[level][2 * i + k][2 * j + l] + ms->al[level];
               else /* if MCMC sample */
-                ms->ag[level][2 * i + k][2 * j + l] = rgamma(
-                    ms->ag[level][2 * i + k][2 * j + l] + ms->al[level], 1.0);
+                ms->ag[level][2 * i + k][2 * j + l] =
+                    rgamma(ms->ag[level][2 * i + k][2 * j + l] + ms->al[level], 1.0);
               sum += ms->ag[level][2 * i + k][2 * j + l];
             }                   /* l,k loop over 2x2 tbl */
         }                       /* while sum == 0.0 */
         for (k = 0; k < 2; k++) /* renormalize */
-          for (l = 0; l < 2; l++)
-            ms->ag[level][2 * i + k][2 * j + l] /= sum;
+          for (l = 0; l < 2; l++) ms->ag[level][2 * i + k][2 * j + l] /= sum;
 
       } /* loop over columns of ms.ag[level] */
     }   /* loop over rows of ms.ag[level] */
@@ -1205,8 +1136,8 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
     ms->ag[ms->power][0][0] =
         (ms->ag[ms->power][0][0] + ms->ttlcnt_pr - 1) / (1 + ms->ttlcnt_exp);
   else /* if MCMC sample */
-    ms->ag[ms->power][0][0] = rgamma(ms->ag[ms->power][0][0] + ms->ttlcnt_pr,
-                                     1 / (1 + ms->ttlcnt_exp));
+    ms->ag[ms->power][0][0] =
+        rgamma(ms->ag[ms->power][0][0] + ms->ttlcnt_pr, 1 / (1 + ms->ttlcnt_exp));
 
   if (verbose > 2 && (cont->iter % cont->save_thin == 0)) {
     // Rprintf("Expected Total MS Cnt: %g\n", ms->ag[ms->power][0][0]);
@@ -1227,11 +1158,10 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
           for (l = 0; l < 2; l++) {
             logprior +=
                 (ms->al[level - 1]) *
-                log(ms->ag[level - 1][2 * i + k]
-                          [2 * j + l]); /* Per Jason Kramer 13 Mar 2009 */
+                log(ms->ag[level - 1][2 * i + k][2 * j + l]); /* Per Jason Kramer
+                                                                 13 Mar 2009 */
             ms->ag[level - 1][2 * i + k][2 * j + l] =
-                log(ms->ag[level - 1][2 * i + k][2 * j + l]) +
-                ms->ag[level][i][j];
+                log(ms->ag[level - 1][2 * i + k][2 * j + l]) + ms->ag[level][i][j];
           } /* loop over l */
     dim *= 2;
   } /* loop over aggregation level */
@@ -1240,8 +1170,7 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
   dim = src->nrow;
   for (i = 0; i < dim; i++)
     for (j = 0; j < dim; j++)
-      src->img[(i + spin_row) % dim][(j + spin_col) % dim] =
-          exp(ms->ag[0][i][j]);
+      src->img[(i + spin_row) % dim][(j + spin_col) % dim] = exp(ms->ag[0][i][j]);
 
   return (logprior);
 
@@ -1252,8 +1181,7 @@ double update_image_ms(FILE *param_file, expmapType *expmap, cntType *src,
 /************        IN THE MULTI SCALE MODEL         **********/
 /***************************************************************/
 
-void update_alpha_ms(FILE *param_file, msType *ms, controlType *cont) {
-
+void update_alpha_ms(FILE* param_file, msType* ms, controlType* cont) {
   /********* We use the method of bisection for optimization ************/
 
   int level;        /* the current level of aggrigation */
@@ -1270,26 +1198,23 @@ void update_alpha_ms(FILE *param_file, msType *ms, controlType *cont) {
   dim = pow(2, ms->power);
   for (level = 0; level < ms->power; level++) {
     dim /= 2; /* loop over level of aggrigation */
-    if (verbose > 9)
-      Rprintf("update alpha: %5d %5d %5d \n", ms->power, dim, level);
+    if (verbose > 9) Rprintf("update alpha: %5d %5d %5d \n", ms->power, dim, level);
 
     /************ initialize lower and upper ***********/
     lower = 1.0;
-    while (dlpost_lalpha(lower, ms, level, dim) < 0)
-      lower = lower / 2.0;
+    while (dlpost_lalpha(lower, ms, level, dim) < 0) lower = lower / 2.0;
 
     dl_lower = dlpost_lalpha(lower, ms, level, dim);
     upper = lower * 2.0;
-    while (dlpost_lalpha(upper, ms, level, dim) > 0)
-      upper = 2.0 * upper;
+    while (dlpost_lalpha(upper, ms, level, dim) > 0) upper = 2.0 * upper;
     dl_upper = dlpost_lalpha(upper, ms, level, dim);
 
     while ((upper - lower) > convg_bisect) {
       middle = (lower + upper) / 2.0;
       dl_middle = dlpost_lalpha(middle, ms, level, dim);
       if (verbose > 10)
-        Rprintf("%5d %14g %14g %14g %14g %14g %14g\n", i++, lower, middle,
-                upper, dl_lower, dl_middle, dl_upper);
+        Rprintf("%5d %14g %14g %14g %14g %14g %14g\n", i++, lower, middle, upper,
+                dl_lower, dl_middle, dl_upper);
       if (dl_middle > 0) { /* if middle is below optimal, set lower = middle */
         lower = middle;
         dl_lower = dl_middle;
@@ -1309,10 +1234,11 @@ void update_alpha_ms(FILE *param_file, msType *ms, controlType *cont) {
       fprintf(param_file, "%f ", ms->al[level]);
     }
   } /* loop over level of aggrigation */
-  // if(verbose > 2) Rprintf("\n");
-  /* ms->al[0] = 1; printf("Set high resolution param to one for Becca!\n");
-  /*  ms->al[1] = 0.0; printf("Set high resolution param to one for Becca!\n");
-*/
+    // if(verbose > 2) Rprintf("\n");
+    /* ms->al[0] = 1; printf("Set high resolution param to one for Becca!\n");
+    /*  ms->al[1] = 0.0; printf("Set high resolution param to one for
+    Becca!\n");
+  */
 
 } /* update_alpha_ms */
 
@@ -1322,13 +1248,11 @@ void update_alpha_ms(FILE *param_file, msType *ms, controlType *cont) {
 /************        IN THE MULTI SCALE MODEL         **********/
 /***************************************************************/
 
-double
-update_alpha_ms_MH(double prop_mean,      /* the mean of the proposal dist'n */
-                   msType *ms, int level, /* the current level of aggrigation */
-                   int dim                /* the dimension of the next level
-                                             of aggrigation */
+double update_alpha_ms_MH(double prop_mean,      /* the mean of the proposal dist'n */
+                          msType* ms, int level, /* the current level of aggrigation */
+                          int dim                /* the dimension of the next level
+                                                    of aggrigation */
 ) {
-
   double proposal;   /* the proposed update for alpha */
   double current;    /* the current value of alpha */
   double prop_sd;    /* the std dev of the proposal dist'n */
@@ -1353,8 +1277,7 @@ update_alpha_ms_MH(double prop_mean,      /* the mean of the proposal dist'n */
                 lpost_lalpha(current, ms, level, dim) +
                 dlnorm(current, lg_prop_mn, prop_sd, 1) -
                 dlnorm(proposal, lg_prop_mn, prop_sd, 1);
-    if (runif(0, 1) < exp(log_ratio))
-      current = proposal;
+    if (runif(0, 1) < exp(log_ratio)) current = proposal;
     /* printf("%5d %14g %14g %14g %14g \n", i, prop_mean, prop_sd,proposal,
      * current); */
   } /* i loop over MH iters */
@@ -1368,10 +1291,9 @@ update_alpha_ms_MH(double prop_mean,      /* the mean of the proposal dist'n */
 /***************************************************************/
 
 double lpost_alpha(double alpha,          /* evaluate at alpha */
-                   msType *ms, int level, /* the current level of aggrigation */
+                   msType* ms, int level, /* the current level of aggrigation */
                    int dim /* the dimension of the next level of aggrigation */
 ) {
-
   double logpost = 0.0;
   int i, j, k, l;
 
@@ -1388,8 +1310,8 @@ double lpost_alpha(double alpha,          /* evaluate at alpha */
   /****************  ADD THE LOG PRIOR *************/
   // p(alpha) = (delta * alpha)^kap1 * exp(-delta/kap3 * alpha^kap3)
   // The current parameterization uses kap2 = delta/kap3
-  logpost -= (-ms->al_kap1 * log(ms->al_kap2 * ms->al_kap3) -
-              ms->al_kap1 * log(alpha) + ms->al_kap2 * pow(alpha, ms->al_kap3));
+  logpost -= (-ms->al_kap1 * log(ms->al_kap2 * ms->al_kap3) - ms->al_kap1 * log(alpha) +
+              ms->al_kap2 * pow(alpha, ms->al_kap3));
 
   return (logpost);
 
@@ -1401,12 +1323,10 @@ double lpost_alpha(double alpha,          /* evaluate at alpha */
 /*********       FOR THE MULTI SCALE MODEL               *******/
 /***************************************************************/
 
-double dlpost_alpha(double alpha, /* evaluate at alpha */
-                    msType *ms,
-                    int level, /* the current level of aggrigation */
+double dlpost_alpha(double alpha,          /* evaluate at alpha */
+                    msType* ms, int level, /* the current level of aggrigation */
                     int dim /* the dimension of the next level of aggrigation */
 ) {
-
   double dlogpost = 0.0;
   int i, j, k, l;
 
@@ -1434,17 +1354,14 @@ double dlpost_alpha(double alpha, /* evaluate at alpha */
 /*********       FOR THE MULTI SCALE MODEL               *******/
 /***************************************************************/
 
-double
-ddlpost_alpha(double alpha,          /* evaluate at alpha */
-              msType *ms, int level, /* the current level of aggrigation */
-              int dim /* the dimension of the next level of aggrigation */
+double ddlpost_alpha(double alpha,          /* evaluate at alpha */
+                     msType* ms, int level, /* the current level of aggrigation */
+                     int dim /* the dimension of the next level of aggrigation */
 ) {
-
   double ddlogpost = 0.0;
   int i, j, k, l;
 
-  ddlogpost =
-      dim * dim * (16.0 * trigamma(4.0 * alpha) - 4.0 * trigamma(alpha));
+  ddlogpost = dim * dim * (16.0 * trigamma(4.0 * alpha) - 4.0 * trigamma(alpha));
   for (i = 0; i < dim; i++) {
     for (j = 0; j < dim; j++) {
       for (k = 0; k < 2; k++)
@@ -1455,9 +1372,9 @@ ddlpost_alpha(double alpha,          /* evaluate at alpha */
   }   /* loop over rows of ms.ag[level] */
 
   /****************  ADD THE LOG PRIOR *************/
-  ddlogpost += (-ms->al_kap1 / pow(alpha, 2.0) -
-                ms->al_kap2 * ms->al_kap3 * (ms->al_kap3 - 1.0) *
-                    pow(alpha, ms->al_kap3 - 2.0));
+  ddlogpost +=
+      (-ms->al_kap1 / pow(alpha, 2.0) -
+       ms->al_kap2 * ms->al_kap3 * (ms->al_kap3 - 1.0) * pow(alpha, ms->al_kap3 - 2.0));
 
   return (ddlogpost);
 
@@ -1469,12 +1386,10 @@ ddlpost_alpha(double alpha,          /* evaluate at alpha */
 /*******            FOR THE MULTI SCALE MODEL              *****/
 /***************************************************************/
 
-double lpost_lalpha(double alpha, /* evaluate at alpha */
-                    msType *ms,
-                    int level, /* the current level of aggrigation */
+double lpost_lalpha(double alpha,          /* evaluate at alpha */
+                    msType* ms, int level, /* the current level of aggrigation */
                     int dim /* the dimension of the next level of aggrigation */
 ) {
-
   return (lpost_alpha(alpha, ms, level, dim) + log(alpha));
 
 } /* lpost_lalpha */
@@ -1486,12 +1401,10 @@ double lpost_lalpha(double alpha, /* evaluate at alpha */
 /*********       FOR THE MULTI SCALE MODEL               *******/
 /***************************************************************/
 
-double
-dlpost_lalpha(double alpha,          /* evaluate at alpha */
-              msType *ms, int level, /* the current level of aggrigation */
-              int dim /* the dimension of the next level of aggrigation */
+double dlpost_lalpha(double alpha,          /* evaluate at alpha */
+                     msType* ms, int level, /* the current level of aggrigation */
+                     int dim /* the dimension of the next level of aggrigation */
 ) {
-
   return (dlpost_alpha(alpha, ms, level, dim) * alpha + 1);
 
 } /* dlpost_lalpha */
@@ -1503,12 +1416,10 @@ dlpost_lalpha(double alpha,          /* evaluate at alpha */
 /*********       FOR THE MULTI SCALE MODEL               *******/
 /***************************************************************/
 
-double
-ddlpost_lalpha(double alpha,          /* evaluate at alpha */
-               msType *ms, int level, /* the current level of aggrigation */
-               int dim /* the dimension of the next level of aggrigation */
+double ddlpost_lalpha(double alpha,          /* evaluate at alpha */
+                      msType* ms, int level, /* the current level of aggrigation */
+                      int dim /* the dimension of the next level of aggrigation */
 ) {
-
   return (dlpost_alpha(alpha, ms, level, dim) * alpha +
           ddlpost_alpha(alpha, ms, level, dim) * alpha * alpha);
 
@@ -1518,8 +1429,7 @@ ddlpost_lalpha(double alpha,          /* evaluate at alpha */
 /****         UPDATE IMAGE USING MAXIMUM LIKELIHOOD       ******/
 /***************************************************************/
 
-void update_image_ml(expmapType *expmap, cntType *src, controlType *cont) {
-
+void update_image_ml(expmapType* expmap, cntType* src, controlType* cont) {
   int i, j; /* indexing variables */
 
   for (i = 0; i < src->nrow; i++)
@@ -1527,8 +1437,7 @@ void update_image_ml(expmapType *expmap, cntType *src, controlType *cont) {
       src->img[i][j] = exp(log(src->data[i][j]) - log(expmap->prod[i][j]));
     }
 
-  if (cont->em == 0)
-    error("No code for MCMC fitting with flat prior (i.e, ML)!!");
+  if (cont->em == 0) error("No code for MCMC fitting with flat prior (i.e, ML)!!");
 
 } /* update_image_ml */
 
@@ -1537,8 +1446,8 @@ void update_image_ml(expmapType *expmap, cntType *src, controlType *cont) {
 /***************************************************************/
 
 /* Added ExpMap Per Jason Kramer 13 Mar 2009 */
-void update_scale_model(scalemodelType *scalemodel, expmapType *expmap,
-                        cntType *cnt, controlType *cont) {
+void update_scale_model(scalemodelType* scalemodel, expmapType* expmap, cntType* cnt,
+                        controlType* cont) {
   double total_cnt = 0.0;
   double total_exp = 0.0;
   int i, j;
@@ -1546,16 +1455,15 @@ void update_scale_model(scalemodelType *scalemodel, expmapType *expmap,
   for (i = 0; i < cnt->nrow; i++) {
     for (j = 0; j < cnt->ncol; j++) {
       total_cnt += cnt->data[i][j];
-      total_exp += expmap->map[i][j] *
-                   cnt->img[i][j]; /* Per Jason Kramer's correction 13 Mar */
-    }                              /* j loop over columns */
-  }                                /* i loop over rows */
+      total_exp +=
+          expmap->map[i][j] * cnt->img[i][j]; /* Per Jason Kramer's correction 13 Mar */
+    }                                         /* j loop over columns */
+  }                                           /* i loop over rows */
 
   if (cont->em) { /* if EM compute mode */
-    scalemodel->scale = (total_cnt + scalemodel->scale_pr - 1) /
-                        (total_exp + scalemodel->scale_exp);
-    if (scalemodel->scale < 0)
-      scalemodel->scale = 0.0;
+    scalemodel->scale =
+        (total_cnt + scalemodel->scale_pr - 1) / (total_exp + scalemodel->scale_exp);
+    if (scalemodel->scale < 0) scalemodel->scale = 0.0;
   }    /* if EM */
   else /* if MCMC sample */
     scalemodel->scale = rgamma(total_cnt + scalemodel->scale_pr,
@@ -1566,15 +1474,14 @@ void update_scale_model(scalemodelType *scalemodel, expmapType *expmap,
 /***************         UPDATE IMAGE IN DEBLUR     ************/
 /***************************************************************/
 
-void update_deblur_image(expmapType *expmap, cntType *deblur, cntType *src,
-                         cntType *bkg, scalemodelType *bkg_scale) {
-
+void update_deblur_image(expmapType* expmap, cntType* deblur, cntType* src,
+                         cntType* bkg, scalemodelType* bkg_scale) {
   int i, j; /* index variables */
 
   for (i = 0; i < deblur->nrow; i++) {
     for (j = 0; j < deblur->ncol; j++) {
-      deblur->img[i][j] = (src->img[i][j] + bkg_scale->scale * bkg->img[i][j]) *
-                          expmap->map[i][j];
+      deblur->img[i][j] =
+          (src->img[i][j] + bkg_scale->scale * bkg->img[i][j]) * expmap->map[i][j];
     } /* loop over columns */
   }   /* loop over rows */
 
@@ -1584,37 +1491,32 @@ void update_deblur_image(expmapType *expmap, cntType *deblur, cntType *src,
 /***************  PRINT PARAMETER FILE HEADER       ************/
 /***************************************************************/
 
-void print_param_file_header(FILE *param_file, controlType *cont,
-                             expmapType *expmap, msType *ms) {
+void print_param_file_header(FILE* param_file, controlType* cont, expmapType* expmap,
+                             msType* ms) {
   if (cont->em)
     fprintf(param_file, "#\n# Code will run in mode-finding mode.\n");
   else
     fprintf(param_file, "#\n# Code will run in posterior sampling mode.\n");
   if (cont->fit_bkg_scl)
-    fprintf(param_file,
-            "#\n# A scale parameter will be fit to the bkg model.\n");
+    fprintf(param_file, "#\n# A scale parameter will be fit to the bkg model.\n");
   if (cont->em)
     fprintf(param_file, "#\n# The maximum number of EM iterations is %d.\n",
             cont->max_iter);
   else { /* if gibbs */
-    fprintf(param_file, "#\n# The total number of Gibbs draws is %d,",
-            cont->max_iter);
+    fprintf(param_file, "#\n# The total number of Gibbs draws is %d,", cont->max_iter);
     fprintf(param_file, " every %dth draws will be saved.\n", cont->save_thin);
   } /* if gibbs */
   if (cont->model == 1) {
-    fprintf(param_file,
-            "#\n# The model will be fit using the Multi Scale Prior.\n");
+    fprintf(param_file, "#\n# The model will be fit using the Multi Scale Prior.\n");
   }
 
   fprintf(param_file, "#\n# The data matrix is %d by %d.\n", expmap->nrow,
           expmap->ncol);
-  fprintf(
-      param_file,
-      "#\n# The data file should contain a  2^%d by 2^%d matrix of counts.\n",
-      ms->power, ms->power);
-
   fprintf(param_file,
-          "#\n# Starting Values for the smoothing parameter (alpha):\n");
+          "#\n# The data file should contain a  2^%d by 2^%d matrix of counts.\n",
+          ms->power, ms->power);
+
+  fprintf(param_file, "#\n# Starting Values for the smoothing parameter (alpha):\n");
   int i;
   for (i = 0; i < ms->power; i++) {
     fprintf(param_file, "# Aggregation Level: %2d,   alpha: %g", i, ms->al[i]);
@@ -1629,28 +1531,21 @@ void print_param_file_header(FILE *param_file, controlType *cont,
   fprintf(param_file, "#\n# The prior distribution on the total count from the "
                       "multiscale component is\n");
   fprintf(param_file, "# Gamma(%f, %f).\n", ms->ttlcnt_pr, ms->ttlcnt_exp);
-  fprintf(param_file,
-          "#\n# The hyper-prior smoothing parameter (kappa 2) is %g.\n#\n",
+  fprintf(param_file, "#\n# The hyper-prior smoothing parameter (kappa 2) is %g.\n#\n",
           ms->al_kap2);
 
   /* print column names */
-  if (verbose > 1)
-    fprintf(param_file, "iteration ");
+  if (verbose > 1) fprintf(param_file, "iteration ");
   if (verbose > 0) {
     fprintf(param_file, "logPost ");
     fprintf(param_file, "stepSize ");
   }
-  if (verbose > 2)
-    fprintf(param_file, "cycleSpinRow cycleSpinCol ");
+  if (verbose > 2) fprintf(param_file, "cycleSpinRow cycleSpinCol ");
   if (verbose > 2) {
-    for (i = 0; i < ms->power; i++) {
-      fprintf(param_file, "smoothingParam%d ", i);
-    }
+    for (i = 0; i < ms->power; i++) { fprintf(param_file, "smoothingParam%d ", i); }
   }
-  if (verbose > 2)
-    fprintf(param_file, "expectedMSCounts ");
-  if (cont->fit_bkg_scl && verbose > 2)
-    fprintf(param_file, "bkgScale ");
+  if (verbose > 2) fprintf(param_file, "expectedMSCounts ");
+  if (cont->fit_bkg_scl && verbose > 2) fprintf(param_file, "bkgScale ");
 
   // fprintf(param_file, "\n");
 }
@@ -1659,16 +1554,14 @@ void print_param_file_header(FILE *param_file, controlType *cont,
 /******  MAIN INTERFACE FOR READING DATA FROM R OBJECTS   ******/
 /***************************************************************/
 
-void image_analysis_R(double *outmap, double *post_mean, double *cnt_vector,
-                      double *src_vector, double *psf_vector,
-                      double *map_vector, double *bkg_vector,
-                      char **out_filename, char **param_filename, int *max_iter,
-                      int *burn, int *save_iters, int *save_thin, int *nrow,
-                      int *ncol, int *nrow_psf, int *ncol_psf, int *em,
-                      int *fit_bkg_scl, double *alpha_init, int *alpha_init_len,
-                      double *ms_ttlcnt_pr, double *ms_ttlcnt_exp,
-                      double *ms_al_kap2, double *ms_al_kap1,
-                      double *ms_al_kap3) {
+void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
+                      double* src_vector, double* psf_vector, double* map_vector,
+                      double* bkg_vector, char** out_filename, char** param_filename,
+                      int* max_iter, int* burn, int* save_iters, int* save_thin,
+                      int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
+                      int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
+                      double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
+                      double* ms_al_kap1, double* ms_al_kap3) {
   controlType cont;         /* the control variables */
   psfType psf;              /* The psf */
   expmapType expmap;        /* The exposure map */
@@ -1683,12 +1576,12 @@ void image_analysis_R(double *outmap, double *post_mean, double *cnt_vector,
 
   int i, j; /* indexing variables */
 
-  initialize_control(&cont, &expmap, &psf, &ms, max_iter, burn, save_iters,
-                     save_thin, nrow, ncol, nrow_psf, ncol_psf, em, fit_bkg_scl,
-                     alpha_init, alpha_init_len, ms_ttlcnt_pr, ms_ttlcnt_exp,
-                     ms_al_kap2, ms_al_kap1, ms_al_kap3);
-  allocate_memory(&psf, &expmap, &obs, &deblur, &src, &bkg, &ms, &mrf,
-                  &bkg_scale, &cont);
+  initialize_control(&cont, &expmap, &psf, &ms, max_iter, burn, save_iters, save_thin,
+                     nrow, ncol, nrow_psf, ncol_psf, em, fit_bkg_scl, alpha_init,
+                     alpha_init_len, ms_ttlcnt_pr, ms_ttlcnt_exp, ms_al_kap2,
+                     ms_al_kap1, ms_al_kap3);
+  allocate_memory(&psf, &expmap, &obs, &deblur, &src, &bkg, &ms, &mrf, &bkg_scale,
+                  &cont);
   set_psf_from_R(psf_vector, &psf);
   set_obs_from_R(cnt_vector, &obs);
   set_image_from_R(src_vector, &src);
@@ -1700,16 +1593,14 @@ void image_analysis_R(double *outmap, double *post_mean, double *cnt_vector,
   /* probably more elegant to have it in its own little module ***/
   /* But for now it is done here: ********************************/
   for (i = 0; i < expmap.nrow; i++) {
-    for (j = 0; j < expmap.ncol; j++) {
-      bkg.img[i][j] *= expmap.max_val;
-    }
+    for (j = 0; j < expmap.ncol; j++) { bkg.img[i][j] *= expmap.max_val; }
   }
   /* End Renorm of bkg->img */
   /***************************************************************/
 
-  bayes_image_analysis(outmap, post_mean, *out_filename, *param_filename, &cont,
-                       &psf, &expmap, &obs, &deblur, &src, &bkg, &mrf, &ms,
-                       &llike, &bkg_scale);
+  bayes_image_analysis(outmap, post_mean, *out_filename, *param_filename, &cont, &psf,
+                       &expmap, &obs, &deblur, &src, &bkg, &mrf, &ms, &llike,
+                       &bkg_scale);
 
 } /* main R interface */
 
@@ -1717,16 +1608,15 @@ void image_analysis_R(double *outmap, double *post_mean, double *cnt_vector,
 /****************  MAIN ANALYSIS LOOP  *************************/
 /***************************************************************/
 
-void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
-                          char *param_file_nm, controlType *cont, psfType *psf,
-                          expmapType *expmap, cntType *obs, cntType *deblur,
-                          cntType *src, cntType *bkg, mrfType *mrf, msType *ms,
-                          llikeType *llike, scalemodelType *bkg_scale) {
-  FILE *out_file; /* the output file */
-  if (!(out_file = fopen(out_file_nm, "w")))
-    c_error("Could not open the OUTPUT file");
+void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
+                          char* param_file_nm, controlType* cont, psfType* psf,
+                          expmapType* expmap, cntType* obs, cntType* deblur,
+                          cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
+                          llikeType* llike, scalemodelType* bkg_scale) {
+  FILE* out_file; /* the output file */
+  if (!(out_file = fopen(out_file_nm, "w"))) c_error("Could not open the OUTPUT file");
 
-  FILE *param_file; /* the parameter output file */
+  FILE* param_file; /* the parameter output file */
   if (!(param_file = fopen(param_file_nm, "w")))
     c_error("Could not open the PARAMETER file");
   print_param_file_header(param_file, cont, expmap, ms);
@@ -1744,8 +1634,7 @@ void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
   /**********  IF MS COMPUTE LOG PRIOR OF STARTING VALUE *********/
   /***************************************************************/
 
-  if (cont->ms)
-    llike->cur = comp_ms_prior(src, ms);
+  if (cont->ms) llike->cur = comp_ms_prior(src, ms);
 
   /***************************************************************/
   /*************************  MAIN LOOP **************************/
@@ -1772,15 +1661,13 @@ void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
 
     redistribute_Counts(psf, obs, deblur, cont, llike);
     remove_bkg_from_data(deblur, src, bkg, bkg_scale, cont);
-    if (cont->ms)
-      add_cnts_2_adjust_4_exposure(expmap, src, cont);
+    if (cont->ms) add_cnts_2_adjust_4_exposure(expmap, src, cont);
 
     /***************************************************************/
     /*********           CHECK MONOTONE CONVERGENCE        *********/
     /***************************************************************/
 
-    if (check_monotone_convg(param_file, llike, ms, cont))
-      break;
+    if (check_monotone_convg(param_file, llike, ms, cont)) break;
 
     /***************************************************************/
     /*********        UPDATE SOURCE MODEL (src.img)        *********/
@@ -1815,14 +1702,12 @@ void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
     /**** PRINT CURRENT src.img TO SCREEN AND/OR OUTPUT STREAM  ****/
     /***************************************************************/
 
-    if (verbose > 4)
-      print_mat("Image", src->img, src->nrow, src->ncol);
+    if (verbose > 4) print_mat("Image", src->img, src->nrow, src->ncol);
 
     /****** write current iteration of image to R output *****/
     /*** subject to thining! ***/
     if (cont->save_iters && (cont->iter % cont->save_thin == 0)) {
-      if (cont->pipe_to_R)
-        write_img_to_Routput(outmap, src);
+      if (cont->pipe_to_R) write_img_to_Routput(outmap, src);
       fprint_mat(out_file, src->img, src->nrow, src->ncol);
     }
 
@@ -1832,8 +1717,7 @@ void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
       for (i = 0; i < src->nrow; i++) {
         for (j = 0; j < src->ncol; j++) {
           post_mean[i * src->ncol + j] =
-              ((m - 1) * post_mean[i * src->ncol + j] + src->img[i][j]) /
-              (double)m;
+              ((m - 1) * post_mean[i * src->ncol + j] + src->img[i][j]) / (double)m;
         }
       }
     }
@@ -1847,8 +1731,7 @@ void bayes_image_analysis(double *outmap, double *post_mean, char *out_file_nm,
   /**** if iterations are not saved write final iteration of image to R output
    * ****/
   if (!cont->save_iters) {
-    if (cont->pipe_to_R)
-      write_img_to_Routput(outmap, src);
+    if (cont->pipe_to_R) write_img_to_Routput(outmap, src);
     fprint_mat(out_file, src->img, src->nrow, src->ncol);
   }
 
