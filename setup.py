@@ -6,6 +6,7 @@
 
 import os
 import sys
+from pathlib import Path
 
 from setuptools import setup
 from pybind11.setup_helpers import Pybind11Extension, build_ext
@@ -75,11 +76,31 @@ except Exception:
     version = '{version}'
 """.lstrip()
 
+
+include_dirs = [
+    "pylira/src/",
+    "/Library/Frameworks/R.framework/Resources/include",
+    "/opt/homebrew/Cellar/r/4.1.2/include",
+    "/usr/lib/R/include",
+    "/usr/share/R/include/",
+    "/usr/include/R",
+    "/usr/include/R/include",
+
+]
+
+library_dirs = [
+    "/Library/Frameworks/R.framework/Resources/lib",
+    "/opt/homebrew/Cellar/r/4.1.2/lib",
+    "/usr/lib/R/lib",
+]
+
 ext_modules = [
     Pybind11Extension(
         name="_lira",
         sources=["pylira/src/lirabind.cpp"],
-        include_dirs=["pylira/src/",]
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
+        libraries=["Rmath", "R"]
     ),
 ]
 
