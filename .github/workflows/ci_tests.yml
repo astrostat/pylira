@@ -37,10 +37,10 @@ jobs:
             python: 3.8
             toxenv: py38-test-alldeps-cov
 
-          - name: macOS - Python 3.8 with all optional dependencies
-            os: macos-latest
-            python: 3.8
-            toxenv: py38-test-alldeps
+#          - name: macOS - Python 3.8 with all optional dependencies
+#            os: macos-latest
+#            python: 3.8
+#            toxenv: py38-test-alldeps
 
           # - name: Python 3.7 with oldest supported version of all dependencies
           #   os: ubuntu-16.04
@@ -75,12 +75,7 @@ jobs:
       run: |
         sudo apt-get install r-base-dev r-base r-mathlib
         R RHOME
-    - name: Install R dependency MacOS
-      if: contains(matrix.os, 'macos')
-      run: |
-        brew update
-        brew install r
-        R RHOME
+
     - name: Test with tox
       run: |
         tox -e ${{ matrix.toxenv }}
