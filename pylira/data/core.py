@@ -48,7 +48,7 @@ def point_source_gauss_psf(
     exposure = np.ones(shape)
     return {
         "counts": counts,
-        "psf": psf,
+        "psf": psf.array,
         "exposure": exposure,
         "background": background,
     }
