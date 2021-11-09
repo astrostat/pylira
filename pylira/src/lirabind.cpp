@@ -6,14 +6,13 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 using np_arr_d = py::array_t<double>;
-using d_ptr = double *;
+using d_ptr = double*;
 
-np_arr_d image_analysis(np_arr_d &t_obs, np_arr_d &t_start, np_arr_d &t_psf,
-                        np_arr_d &t_expmap, np_arr_d &t_baseline,
-                        const std::string &t_out_file,
-                        const std::string &t_param_file, np_arr_d &t_alpha_init,
-                        int t_max_iter, int t_burn_in, int t_save_thin,
-                        bool t_fit_bkgscl, double t_ms_ttlcnt_pr,
+np_arr_d image_analysis(np_arr_d& t_obs, np_arr_d& t_start, np_arr_d& t_psf,
+                        np_arr_d& t_expmap, np_arr_d& t_baseline,
+                        const std::string& t_out_file, const std::string& t_param_file,
+                        np_arr_d& t_alpha_init, int t_max_iter, int t_burn_in,
+                        int t_save_thin, bool t_fit_bkgscl, double t_ms_ttlcnt_pr,
                         double t_ms_ttlcnt_exp, double t_ms_al_kap1,
                         double t_ms_al_kap2, double t_ms_al_kap3) {
   auto obs_buf = t_obs.request();
@@ -23,8 +22,8 @@ np_arr_d image_analysis(np_arr_d &t_obs, np_arr_d &t_start, np_arr_d &t_psf,
   auto expmap_buf = t_expmap.request();
   auto alpha_buf = t_alpha_init.request();
 
-  char *out_file_name = const_cast<char *>(t_out_file.c_str());
-  char *param_file_name = const_cast<char *>(t_param_file.c_str());
+  char* out_file_name = const_cast<char*>(t_out_file.c_str());
+  char* param_file_name = const_cast<char*>(t_param_file.c_str());
 
   int nrows_obs = obs_buf.shape[0];
   int ncols_obs = obs_buf.shape[1];
@@ -49,12 +48,12 @@ np_arr_d image_analysis(np_arr_d &t_obs, np_arr_d &t_start, np_arr_d &t_psf,
   d_ptr dummy;
   int true_int = 1;
 
-  image_analysis_R(
-      dummy, post_mean_arr, obs_arr, start_arr, psf_arr, expmap_arr,
-      baseline_arr, &out_file_name, &param_file_name, &t_max_iter, &t_burn_in,
-      &true_int, &true_int, &nrows_obs, &ncols_obs, &nrows_psf, &ncols_psf,
-      &true_int, &true_int, alpha_int_arr, &nvals_alpha, &t_ms_ttlcnt_pr,
-      &t_ms_ttlcnt_exp, &t_ms_al_kap2, &t_ms_al_kap1, &t_ms_al_kap3);
+  image_analysis_R(dummy, post_mean_arr, obs_arr, start_arr, psf_arr, expmap_arr,
+                   baseline_arr, &out_file_name, &param_file_name, &t_max_iter,
+                   &t_burn_in, &true_int, &true_int, &nrows_obs, &ncols_obs, &nrows_psf,
+                   &ncols_psf, &true_int, &true_int, alpha_int_arr, &nvals_alpha,
+                   &t_ms_ttlcnt_pr, &t_ms_ttlcnt_exp, &t_ms_al_kap2, &t_ms_al_kap1,
+                   &t_ms_al_kap3);
 
   post_mean.resize({nrows_obs, ncols_obs});
 
@@ -75,12 +74,11 @@ PYBIND11_MODULE(_lira, m) {
            subtract
     )pbdoc";
 
-  m.def("image_analysis", &image_analysis, "observed_im"_a, "start_im"_a,
-        "psf_im"_a, "expmap_im"_a, "baseline_im"_a, "out_img_file"_a,
-        "out_param_file"_a, "alpha_init"_a, "max_iter"_a = 3000,
-        "burn_in"_a = 1000, "save_thin"_a = true, "fit_bkgscl"_a = true,
-        "ms_ttlcnt_pr"_a = 1, "ms_ttlcnt_exp"_a = 0.05, "ms_al_kap1"_a = 0.0,
-        "ms_al_kap2"_a = 1000.0, "ms_al_kap3"_a = 3.0, R"liradoc(
+  m.def("image_analysis", &image_analysis, "observed_im"_a, "start_im"_a, "psf_im"_a,
+        "expmap_im"_a, "baseline_im"_a, "out_img_file"_a, "out_param_file"_a,
+        "alpha_init"_a, "max_iter"_a = 3000, "burn_in"_a = 1000, "save_thin"_a = true,
+        "fit_bkgscl"_a = true, "ms_ttlcnt_pr"_a = 1, "ms_ttlcnt_exp"_a = 0.05,
+        "ms_al_kap1"_a = 0.0, "ms_al_kap2"_a = 1000.0, "ms_al_kap3"_a = 3.0, R"liradoc(
         Uses LIRA to generate images of the added component by comparing the observed image against the baseline.
         Parameters
         ----------
