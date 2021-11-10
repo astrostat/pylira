@@ -7,6 +7,7 @@ Pylira is a Python package for Bayesian low-counts image reconstruction and anal
   :maxdepth: 2
 
   pylira/index.rst
+  pylira/data.rst
   pylira/developer.rst
   pylira/references.rst
   pylira/changelog.rst

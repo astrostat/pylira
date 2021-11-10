@@ -37,19 +37,20 @@ def point_source_gauss_psf(
     np.random.seed(836)
 
     background = background_level * np.ones(shape)
+    exposure = np.ones(shape)
 
-    signal = np.zeros(shape)
-    signal[shape[0] // 2, shape[1] // 2] = source_level
+    flux = np.zeros(shape)
+    flux[shape[0] // 2, shape[1] // 2] = source_level
 
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
-    npred = background + convolve_fft(signal, psf)
+    npred = background + convolve_fft(flux * exposure, psf)
 
     counts = np.random.poisson(npred)
-    exposure = np.ones(shape)
     return {
         "counts": counts,
         "psf": psf.array,
         "exposure": exposure,
         "background": background,
+        "flux": flux
     }
 
