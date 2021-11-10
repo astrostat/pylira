@@ -53,4 +53,3 @@ def point_source_gauss_psf(
         "background": background,
         "flux": flux
     }
-
