@@ -49,7 +49,7 @@ class LIRADeconvolver:
         data = point_source_gauss_psf()
         data["flux_init"] = data["flux"]
         deconvolve = LIRADeconvolver(
-            alpha_init=np.ones(np.log2(data["counts"].shape[0]))
+            alpha_init=np.ones(np.log2(data["counts"].shape[0]).astype(int))
         )
         result = deconvolve.run(data=data)
 
