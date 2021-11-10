@@ -41,4 +41,4 @@ def test_lira_deconvolver_run():
     )
     result = deconvolve.run(data=data)
 
-    assert(result[16][16]>900)
+    assert(result[16][16] > 900)
