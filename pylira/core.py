@@ -87,11 +87,11 @@ class LIRADeconvolver:
         obs_shape = obs_arr.shape[0]
         if (obs_shape & (obs_shape-1) != 0):
             raise ValueError(
-                f"Size of the input observation must be a power of 2. Size given {obs_shape}")
+                f"Size of the input observation must be a power of 2. Size given: {obs_shape}")
 
         if (self.alpha_init.shape[0] != np.log2(obs_shape)):
             raise ValueError(
-                f"Number of elements in alpha_init must be {np.log2(obs_shape)}")
+                f"Number of elements in alpha_init must be {np.log2(obs_shape)}. Size given: {self.alpha_init.shape[0]} ")
 
     def run(self, data):
         """Run the algorithm
