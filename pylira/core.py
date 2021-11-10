@@ -36,6 +36,23 @@ class LIRADeconvolver:
         Output filename
     filename_out_pat: str or `Path`
         Parameyter output filename
+
+    Examples
+    --------
+    This how to use the class:
+
+    .. code::
+
+        from pylira import LIRADeconvolver
+        from pylira.data import point_source_gauss_psf
+
+        data = point_source_gauss_psf()
+        data["flux_init"] = data["flux"]
+        deconvolve = LIRADeconvolver(
+            alpha_init=np.ones(data["psf"].shape[0])
+        )
+        result = deconvolve.run(data=data)
+
     """
     def __init__(
             self,
