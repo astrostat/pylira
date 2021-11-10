@@ -21,4 +21,4 @@ def plot_example_dataset(data, figsize=(12, 6), **kwargs):
         ax.set_title(name.title())
         fig.colorbar(im, ax=ax)
 
-    axes[-1].set_visible(False)
+    axes.flat[-1].set_visible(False)
