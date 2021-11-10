@@ -7,7 +7,7 @@ __all__ = ["point_source_gauss_psf"]
 
 def point_source_gauss_psf(
         shape=(32, 32),
-        shape_psf=(16, 16),
+        shape_psf=(17, 17),
         sigma_psf=3,
         source_level=1000,
         background_level=2,
