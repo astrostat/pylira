@@ -32,6 +32,10 @@ class LIRADeconvolver:
         Multiscale prior TODO: improve description
     ms_al_kap3: float
         Multiscale prior TODO: improve description
+    filename_out: str or `Path`
+        Output filename
+    filename_out_pat: str or `Path`
+        Parameyter output filename
     """
     def __init__(
             self,
@@ -46,7 +50,7 @@ class LIRADeconvolver:
             ms_al_kap2=1000.0,
             ms_al_kap3=3.0,
             filename_out="output.txt",
-            filename_out_par="output_pa.txt",
+            filename_out_par="output-par.txt",
     ):
         self.alpha_init = np.array(alpha_init, dtype=DTYPE_DEFAULT)
         self.n_iter_max = n_iter_max
