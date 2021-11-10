@@ -19,7 +19,7 @@ def test_data_point_source_gauss_psf():
     assert_allclose(data["counts"][0][0], 2)
     assert_allclose(data["exposure"][0][0], 1)
     assert_allclose(data["background"][0][0], 2.)
-    assert_allclose(data["psf"][0][0], 3.413792e-05, rtol=1e-5, atol=2e-05)
+    assert_allclose(data["psf"][0][0], 1.4429833050509627e-05, rtol=1e-5)
 
 
 def test_lira_deconvolver():
