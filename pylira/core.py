@@ -13,7 +13,7 @@ class LIRADeconvolver:
     Parameters
     ----------
     alpha_init : `~numpy.ndarray`
-        Initial alpha parameters
+        Initial alpha parameters. The length must be n for an input image of size 2^n x 2^n
     n_iter_max : int
         Max. number of iterations.
     n_burn_in : int
@@ -54,6 +54,7 @@ class LIRADeconvolver:
         result = deconvolve.run(data=data)
 
     """
+
     def __init__(
             self,
             alpha_init,
@@ -82,6 +83,16 @@ class LIRADeconvolver:
         self.filename_out = Path(filename_out)
         self.filename_out_par = Path(filename_out_par)
 
+    def _check_input_sizes(self, obs_arr):
+        obs_shape = obs_arr.shape[0]
+        if (obs_shape & (obs_shape-1) != 0):
+            raise ValueError(
+                f"Size of the input observation must be a power of 2. Size given {obs_shape}")
+
+        if (self.alpha_init.shape[0] != np.log2(obs_shape)):
+            raise ValueError(
+                f"Number of elements in alpha_init must be {np.log2(obs_shape)}")
+
     def run(self, data):
         """Run the algorithm
 
@@ -96,6 +107,7 @@ class LIRADeconvolver:
             Mean posterior.
         """
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
+        self._check_input_sizes(data["counts"])
 
         result = image_analysis(
             observed_im=data["counts"],
