@@ -49,7 +49,7 @@ class LIRADeconvolver:
         data = point_source_gauss_psf()
         data["flux_init"] = data["flux"]
         deconvolve = LIRADeconvolver(
-            alpha_init=np.ones(data["psf"].shape[0])
+            alpha_init=np.ones(np.log2(data["counts"].shape[0]))
         )
         result = deconvolve.run(data=data)
 
@@ -103,6 +103,7 @@ class LIRADeconvolver:
             psf_im=data["psf"],
             expmap_im=data["exposure"],
             baseline_im=data["background"],
+            max_iter=self.n_iter_max,
             burn_in=self.n_burn_in,
             save_thin=self.save_thin,
             out_img_file=str(self.filename_out),
