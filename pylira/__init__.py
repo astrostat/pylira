@@ -8,4 +8,4 @@ from ._astropy_init import *   # noqa
 from _lira import image_analysis
 from .core import *  # noqa
 
-__all__ = ["image_analysis"]
+__all__ = ["LIRADeconvolver"]
