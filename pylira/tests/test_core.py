@@ -37,10 +37,8 @@ def test_lira_deconvolver_run():
     data["flux_init"] = data["flux"]
 
     deconvolve = LIRADeconvolver(
-        alpha_init=np.ones(data["psf"].shape[0]),
-        n_iter_max=20,
-        n_burn_in=10
+        alpha_init=np.ones(data["psf"].shape[0])
     )
     result = deconvolve.run(data=data)
 
-    assert_allclose(result[0][0], 1)
+    assert(result[16][16]>900)
