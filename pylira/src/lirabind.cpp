@@ -29,7 +29,7 @@ np_arr_d image_analysis(np_arr_d& t_obs, np_arr_d& t_start, np_arr_d& t_psf,
   int ncols_obs = obs_buf.shape[1];
   int nrows_psf = psf_buf.shape[0];
   int ncols_psf = psf_buf.shape[1];
-  int nvals_alpha = psf_buf.shape[0];
+  int nvals_alpha = alpha_buf.shape[0];
 
   // allocate the post_mean memory
   auto post_mean = np_arr_d(obs_buf.size);

@@ -19,7 +19,7 @@ def test_data_point_source_gauss_psf():
     assert_allclose(data["counts"][0][0], 2)
     assert_allclose(data["exposure"][0][0], 1)
     assert_allclose(data["background"][0][0], 2.)
-    assert_allclose(data["psf"][0][0], 3.413792e-05, rtol=1e-5)
+    assert_allclose(data["psf"][0][0], 1.4429833050509627e-05, rtol=1e-5)
 
 
 def test_lira_deconvolver():
@@ -32,13 +32,13 @@ def test_lira_deconvolver():
 
 
 # TODO: this still fails with a segfault...
-# def test_lira_deconvolver_run():
-#     data = point_source_gauss_psf()
-#     data["flux_init"] = data["flux"]
-#
-#     deconvolve = LIRADeconvolver(
-#         alpha_init=np.ones(data["psf"].shape[0])
-#     )
-#     result = deconvolve.run(data=data)
-#
-#     assert_allclose(result[0][0], 1)
+def test_lira_deconvolver_run():
+    data = point_source_gauss_psf()
+    data["flux_init"] = data["flux"]
+
+    deconvolve = LIRADeconvolver(
+        alpha_init=np.ones(np.log2(data["counts"].shape[0]).astype(int))
+    )
+    result = deconvolve.run(data=data)
+
+    assert(result[16][16] > 700)

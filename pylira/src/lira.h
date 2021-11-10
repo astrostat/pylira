@@ -1,10 +1,15 @@
 #include <R.h>
+#include <R_ext/Random.h>
+#define R_NO_REMAP 1
+#include <Rinternals.h>
+#define MATHLIB_STANDALONE 1
 #include <Rmath.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <iostream>
 
 #define verbose 3         /* interger 0 to 10, higher more output to screen */
 #define convg_em 1e-6     /* convergence criterion for EM */
@@ -15,6 +20,7 @@
 #define NR_END 1
 #define FREE_ARG char*
 #define PAR_NOT_SET -42
+//#define DEBUG 0
 
 /***************************************************************/
 /************************* DATA STRUCTURES *********************/
@@ -196,6 +202,19 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
                           expmapType* expmap, cntType* obs, cntType* deblur,
                           cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
                           llikeType* llike, scalemodelType* bkg_scale);
+                          
+int printf_d(const char*format,...){
+#ifdef DEBUG
+  va_list vl;
+  va_start(vl, format);
+  auto ret = printf(format, vl);
+  va_end(vl);
+  return ret;
+#else
+  return 0;
+#endif
+
+}
 
 /***************************************************************/
 /*********************** ERROR FUNCTION    *********************/
@@ -212,10 +231,10 @@ void c_error(char error_text[]) { /* Print an Error Message */
 void print_mat(char label_text[], double** mat, int nrow, int ncol) {
   int i, j; /* indexing variables */
 
-  Rprintf("%s:\n", label_text);
+  printf_d("%s:\n", label_text);
   for (i = 0; i < nrow; i++) {
-    for (j = 0; j < ncol; j++) Rprintf(" %10g", mat[i][j]);
-    Rprintf("\n");
+    for (j = 0; j < ncol; j++) printf_d(" %10g", mat[i][j]);
+    printf_d("\n");
   } /* row loop */
 
 } /* print_mat */
@@ -274,7 +293,7 @@ double** matrix(long nrl, long nrh, long ncl, long nch)
   m -= nrl;
 
   /* allocate rows and set pointers to them */
-  m[nrl] = (double*)S_alloc(nrow * ncol + NR_END, sizeof(double));
+  m[nrl] = (double*)calloc(nrow * ncol + NR_END, sizeof(double));
   if (!m[nrl]) c_error("allocation failure 2 in matrix()");
   m[nrl] += NR_END;
   m[nrl] -= ncl;
@@ -317,7 +336,7 @@ void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msT
   /* (NS 3Aug09) Hard coding model to multi-scale prior, as discussed at
    * Irvine CBAS mtg July09 */
   cont->model = 1;
-  cont->em = *em;
+  cont->em = 0;
   cont->fit_bkg_scl = *fit_bkg_scl;
 
   /* (NS 3Aug09) Removing MRF option for R package */
@@ -329,9 +348,8 @@ void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msT
     /* Allocate memory and initialize starting values for multiscale
      * smoothing parameters, if they have been entered */
     if (alpha_init != NULL && alpha_init_len != NULL) {
-      ms->al_init = (double*)S_alloc((long)*alpha_init_len, sizeof(double));
+      ms->al_init = (double*)calloc((size_t)(*alpha_init_len), sizeof(double));
       if (!ms->al_init) c_error("Memory Allocation Error for ms.al");
-
       for (i = 0; i < *alpha_init_len; i++) { ms->al_init[i] = alpha_init[i]; }
     }
     /* set other multiscale prior parameters */
@@ -356,43 +374,42 @@ void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msT
 
   /***********  CONTROL INITIALIZATION  ALLOCATION   ***************/
 
-  if (cont->em)
-    Rprintf("\nCode will run in mode-finding mode.\n");
+  if (cont->em==0)
+    printf_d("\nCode will run in mode-finding mode.\n");
   else
-    Rprintf("\nCode will run in posterior sampling mode.\n");
+    printf_d("\nCode will run in posterior sampling mode.\n");
   cont->ml = 0;
   cont->ms = 0;
   cont->mrf = 0;
   cont->wrap = 1;
   cont->pipe_to_R = 0;
-  if (cont->fit_bkg_scl) Rprintf("\nA scale parameter will be fit to the bkg model.\n");
+  if (cont->fit_bkg_scl) printf_d("\nA scale parameter will be fit to the bkg model.\n");
 
   if (cont->em)
-    Rprintf("\nThe maximum number of EM iterations is %d.\n", cont->max_iter);
+    printf_d("\nThe maximum number of EM iterations is %d.\n", cont->max_iter);
   else { /* if gibbs */
-    Rprintf("\nThe total number of Gibbs draws is %d,", cont->max_iter);
-    Rprintf(" every %dth draws will be saved.\n", cont->save_thin);
+    printf_d("\nThe total number of Gibbs draws is %d,", cont->max_iter);
+    printf_d(" every %dth draws will be saved.\n", cont->save_thin);
   } /* if gibbs */
 
   /********************* READ IN MODEL CHOICE ***********************/
-
   if (cont->model == 0) {
     cont->ml = 1;
-    Rprintf("\nThe model will be fit via Maximum Likelihood.\n");
+    printf_d("\nThe model will be fit via Maximum Likelihood.\n");
   } /* cont->model == 0 */
   else if (cont->model == 1) {
     cont->ms = 1;
-    Rprintf("\nThe model will be fit using the Multi Scale Prior.\n");
+    printf_d("\nThe model will be fit using the Multi Scale Prior.\n");
   } /* cont->model == 0 */
   else if (cont->model == 2) {
     cont->mrf = 1;
-    Rprintf("\nThe model will be fit using the Markov Random Field Prior.\n");
+    printf_d("\nThe model will be fit using the Markov Random Field Prior.\n");
   } /* cont->model == 0 */
   else
     c_error("Model Choice in Input file is not valid");
 
   if (cont->wrap == 0 && cont->mrf)
-    Rprintf("\n Without wrapping, the MRF shrinks boundaries toward zero.");
+    printf_d("\n Without wrapping, the MRF shrinks boundaries toward zero.");
 } /* initialize_control */
 
 /***************************************************************/
@@ -412,10 +429,9 @@ void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* de
   psf->D = psf->nrow - psf->U - 1;
   psf->mat = (double**)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
   psf->inv = (double**)matrix(0, psf->nrow - 1, 0, psf->ncol - 1);
-
   /*********** EXPOSURE MAP INITIALIZATION AND MEMORY ALLOCATION  ******/
 
-  Rprintf("\nThe data matrix is %d by %d.\n", expmap->nrow, expmap->ncol);
+  printf_d("\nThe data matrix is %d by %d.\n", expmap->nrow, expmap->ncol);
   expmap->map = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
   expmap->pr_det = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
   expmap->prod = (double**)matrix(0, expmap->nrow - 1, 0, expmap->ncol - 1);
@@ -459,11 +475,11 @@ void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* de
   /*********** MRF INITIALIZATION AND MEMORY ALLOCATION   **********/
 
   if (cont->mrf) {
-    Rprintf("\n The Markov Random Field Precision is: %g.\n", mrf->scl_prec);
+    printf_d("\n The Markov Random Field Precision is: %g.\n", mrf->scl_prec);
 
     mrf->is_hi_res = 1;
     if (mrf->is_hi_res)
-      Rprintf("\nHigh Resolution Data will be used to set MRF "
+      printf_d("\nHigh Resolution Data will be used to set MRF "
               "correlations.\n\n");
     mrf->max_wt = 10000;
 
@@ -471,9 +487,9 @@ void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* de
     mrf->mean = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
     mrf->prec = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
     mrf->hi_res = (double**)matrix(0, src->nrow - 1, 0, src->ncol - 1);
-    mrf->wts = (double****)S_alloc((long)src->nrow, sizeof(double***));
+    mrf->wts = (double****)calloc((long)src->nrow, sizeof(double***));
     for (i = 0; i < src->nrow; i++) {
-      mrf->wts[i] = (double***)S_alloc((long)src->ncol, sizeof(double**));
+      mrf->wts[i] = (double***)calloc((long)src->ncol, sizeof(double**));
       for (j = 0; j < src->ncol; j++) mrf->wts[i][j] = (double**)matrix(0, 2, 0, 2);
     } /* i loop over rows */
 
@@ -497,15 +513,15 @@ void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* de
                 "of 2");
     } /*loop over ms.power */
 
-    Rprintf("\nThe data file should contain a  2^%d by 2^%d matrix of "
+    printf_d("\nThe data file should contain a  2^%d by 2^%d matrix of "
             "counts.\n",
             ms->power, ms->power);
 
     /************* ms memory allocation ****************/
-    ms->al = (double*)S_alloc((long)ms->power, sizeof(double));
+    ms->al = (double*)calloc((long)ms->power, sizeof(double));
     if (!ms->al) c_error("Memory Allocation Error for ms.al");
 
-    ms->ag = (double***)S_alloc((long)ms->power, sizeof(double**));
+    ms->ag = (double***)calloc((long)(ms->power+1), sizeof(double**));
     if (!ms->ag) c_error("Memory Allocation Error for ms.ag");
 
     ag_dim = src->nrow;
@@ -519,27 +535,27 @@ void allocate_memory(psfType* psf, expmapType* expmap, cntType* obs, cntType* de
 
     /*************  read in ms parameters  ****************/
 
-    Rprintf("\nStarting Values for the smoothing parameter (alpha):\n");
+    printf_d("\nStarting Values for the smoothing parameter (alpha):\n");
     for (i = 0; i < ms->power; i++) { /***** read start values of ms_al *****/
       ms->al[i] = ms->al_init[i];
-      Rprintf("Aggregation Level: %2d,   alpha: %g", i, ms->al[i]);
+      printf_d("Aggregation Level: %2d,   alpha: %g", i, ms->al[i]);
       if (i == 0)
-        Rprintf(" (Full Data)\n");
+        printf_d(" (Full Data)\n");
       else if (i == ms->power - 1)
-        Rprintf("  (In the 2x2 table)\n");
+        printf_d("  (In the 2x2 table)\n");
       else
-        Rprintf("\n");
+        printf_d("\n");
     } /* loop over ms.al */
 
-    Rprintf("\nThe prior distribution on the total count from the multiscale "
+    printf_d("\nThe prior distribution on the total count from the multiscale "
             "component is\n");
-    Rprintf("Gamma(%f, %f).\n", ms->ttlcnt_pr, ms->ttlcnt_exp);
+    printf_d("Gamma(%f, %f).\n", ms->ttlcnt_pr, ms->ttlcnt_exp);
 
     ms->fit_al = 1; /**** fit or fix alpha ****/
     ms->al_kap1 =
         ms->al_kap1 == PAR_NOT_SET ? 0.0 : ms->al_kap1; /**** the prior for alpha ****/
     ms->al_kap3 = ms->al_kap3 == PAR_NOT_SET ? 3.0 : ms->al_kap3;
-    Rprintf("\nThe hyper-prior smoothing parameter (kappa 2) is %g.\n\n", ms->al_kap2);
+    printf_d("\nThe hyper-prior smoothing parameter (kappa 2) is %g.\n\n", ms->al_kap2);
 
   } /* if cont->ms == 1 */
 
@@ -578,8 +594,8 @@ void set_obs_from_R(double* cnt_vector, cntType* obs) {
     for (j = 0; j < obs->ncol; j++) {
       /* There is no bounds checking. R must check bounds! */
       if (cnt_vector[i * obs->ncol + j] < 0) {
-        REprintf("Error in reading element %d of %s.\n", 1 + i + j * obs->nrow,
-                 obs->name);
+        //REprintf("Error in reading element %d of %s.\n", 1 + i + j * obs->nrow,
+        //         obs->name);
         c_error("Negative Value Detected");
       }
       obs->data[i][j] = cnt_vector[i * obs->ncol + j];
@@ -587,7 +603,7 @@ void set_obs_from_R(double* cnt_vector, cntType* obs) {
   }
 
   if (verbose > 3) {
-    Rprintf("%s ", obs->name);
+    printf_d("%s ", obs->name);
     print_mat("Data", obs->data, obs->nrow, obs->ncol);
   } /* verbose */
 }
@@ -600,8 +616,8 @@ void set_image_from_R(double* img_vector, cntType* img) {
     for (j = 0; j < img->ncol; j++) {
       /* There is no bounds checking. R must check bounds! */
       if (img_vector[i * img->ncol + j] < 0) {
-        REprintf("Error in reading element %d of %s.\n", 1 + i + j * img->nrow,
-                 img->name);
+        //REprintf("Error in reading element %d of %s.\n", 1 + i + j * img->nrow,
+        //        img->name);
         c_error("Negative Value Detected");
       }
       img->img[i][j] = img_vector[i * img->ncol + j];
@@ -609,7 +625,7 @@ void set_image_from_R(double* img_vector, cntType* img) {
   }
 
   if (verbose > 3) {
-    Rprintf("%s ", img->name);
+    printf_d("%s ", img->name);
     print_mat("Image", img->img, img->nrow, img->ncol);
   } /* verbose */
 }
@@ -662,7 +678,7 @@ void compute_expmap(psfType* psf, expmapType* expmap, controlType* cont) {
           }   /* l loop over psf cols */
         }     /* k loop over psf rows */
         if (expmap->pr_det[i][j] == 0.0) {
-          REprintf("Pixel: (%d, %d)\n", i, j);
+          //REprintf("Pixel: (%d, %d)\n", i, j);
           c_error("Photons originating in above pixel cannot be "
                   "detected");
         } /* error */
@@ -819,7 +835,7 @@ void redistribute_Counts(psfType* psf, cntType* obs, cntType* deblur, controlTyp
 
       // fprintf(cont->debug, "%f\n",sum);
       if (sum == 0 && obs->data[i][j] > 0) {
-        REprintf("Pixel: (%d, %d)\n", i, j);
+        //REprintf("Pixel: (%d, %d)\n", i, j);
         c_error(" The psf does not allow data in above pixel");
       }
 
@@ -834,7 +850,7 @@ void redistribute_Counts(psfType* psf, cntType* obs, cntType* deblur, controlTyp
 
       /**********  PRINT THE INV PROB PSF ************/
       if (verbose > 9) {
-        Rprintf("Current Observed Pixel (%d,%d)\n", i, j);
+        printf_d("Current Observed Pixel (%d,%d)\n", i, j);
         print_mat("Inv PSF ", psf->inv, psf->nrow, psf->ncol);
       }
 
@@ -888,7 +904,7 @@ void redistribute_counts_multinomial_calcs(
 
   /*******  PRINT THE CURRENT REDISTRIBUTED COUNTS *******/
   if (verbose > 9) {
-    Rprintf("Current Observed Pixel (%d,%d) (Count is %5d.)\n", i, j,
+    printf_d("Current Observed Pixel (%d,%d) (Count is %5d.)\n", i, j,
             (int)obs->data[i][j]);
     print_mat("Redistributed Counts from Current Pixel ", psf->inv, psf->nrow,
               psf->ncol);
@@ -923,10 +939,10 @@ int check_monotone_convg(FILE* param_file, llikeType* llike, msType* ms,
   int convg = 0; /* 1 if converged */
 
   if (verbose > 0 && (cont->iter % cont->save_thin == 0)) {
-    // Rprintf("Current Log-Posterior: %10g", llike->cur);
+    // printf_d("Current Log-Posterior: %10g", llike->cur);
     fprintf(param_file, "%10g ", llike->cur);
     if (cont->iter > 1) {
-      // Rprintf("   Step Size: %14.10g", llike->cur - llike->pre);
+      // printf_d("   Step Size: %14.10g", llike->cur - llike->pre);
       fprintf(param_file, "%14.10g ", llike->cur - llike->pre);
     } else {
       fprintf(param_file, "%14.10g ", 0.0);
@@ -943,7 +959,7 @@ int check_monotone_convg(FILE* param_file, llikeType* llike, msType* ms,
     } /* if beyond interation 1 */
   }   /* if em */
   if (verbose > 0)
-    // Rprintf("\n");
+    // printf_d("\n");
     llike->pre = llike->cur;
 
   return (convg);
@@ -1075,7 +1091,7 @@ double update_image_ms(FILE* param_file, expmapType* expmap, cntType* src, msTyp
     spin_col = (int)(src->nrow * runif(0, 1));
   }
   if (verbose > 2 && (cont->iter % cont->save_thin == 0)) {
-    // Rprintf("Cycle spinning location (row, col): (%d, %d)\n", spin_row,
+    // printf_d("Cycle spinning location (row, col): (%d, %d)\n", spin_row,
     // spin_col);
     fprintf(param_file, "%d %d ", spin_row, spin_col);
   }
@@ -1140,7 +1156,7 @@ double update_image_ms(FILE* param_file, expmapType* expmap, cntType* src, msTyp
         rgamma(ms->ag[ms->power][0][0] + ms->ttlcnt_pr, 1 / (1 + ms->ttlcnt_exp));
 
   if (verbose > 2 && (cont->iter % cont->save_thin == 0)) {
-    // Rprintf("Expected Total MS Cnt: %g\n", ms->ag[ms->power][0][0]);
+    // printf_d("Expected Total MS Cnt: %g\n", ms->ag[ms->power][0][0]);
     fprintf(param_file, "%g ", ms->ag[ms->power][0][0]);
   }
 
@@ -1194,11 +1210,11 @@ void update_alpha_ms(FILE* param_file, msType* ms, controlType* cont) {
   double dl_upper;  /* dlogpost (dlpost_lalpha) evaluated at upper */
   int i = 0;
 
-  // if(verbose > 2) Rprintf("Smoothing Hyper-parameters:");
+  // if(verbose > 2) printf_d("Smoothing Hyper-parameters:");
   dim = pow(2, ms->power);
   for (level = 0; level < ms->power; level++) {
     dim /= 2; /* loop over level of aggrigation */
-    if (verbose > 9) Rprintf("update alpha: %5d %5d %5d \n", ms->power, dim, level);
+    if (verbose > 9) printf_d("update alpha: %5d %5d %5d \n", ms->power, dim, level);
 
     /************ initialize lower and upper ***********/
     lower = 1.0;
@@ -1213,7 +1229,7 @@ void update_alpha_ms(FILE* param_file, msType* ms, controlType* cont) {
       middle = (lower + upper) / 2.0;
       dl_middle = dlpost_lalpha(middle, ms, level, dim);
       if (verbose > 10)
-        Rprintf("%5d %14g %14g %14g %14g %14g %14g\n", i++, lower, middle, upper,
+        printf_d("%5d %14g %14g %14g %14g %14g %14g\n", i++, lower, middle, upper,
                 dl_lower, dl_middle, dl_upper);
       if (dl_middle > 0) { /* if middle is below optimal, set lower = middle */
         lower = middle;
@@ -1230,13 +1246,13 @@ void update_alpha_ms(FILE* param_file, msType* ms, controlType* cont) {
       ms->al[level] = update_alpha_ms_MH((upper + lower) / 2.0, ms, level, dim);
 
     if (verbose > 2 && (cont->iter % cont->save_thin == 0)) {
-      // Rprintf(" %f ", ms->al[level]);
+      // printf_d(" %f ", ms->al[level]);
       fprintf(param_file, "%f ", ms->al[level]);
     }
   } /* loop over level of aggrigation */
-    // if(verbose > 2) Rprintf("\n");
-    /* ms->al[0] = 1; printf("Set high resolution param to one for Becca!\n");
-    /*  ms->al[1] = 0.0; printf("Set high resolution param to one for
+    // if(verbose > 2) printf_d("\n");
+    /* ms->al[0] = 1; printf_d("Set high resolution param to one for Becca!\n");
+    /*  ms->al[1] = 0.0; printf_d("Set high resolution param to one for
     Becca!\n");
   */
 
@@ -1278,7 +1294,7 @@ double update_alpha_ms_MH(double prop_mean,      /* the mean of the proposal dis
                 dlnorm(current, lg_prop_mn, prop_sd, 1) -
                 dlnorm(proposal, lg_prop_mn, prop_sd, 1);
     if (runif(0, 1) < exp(log_ratio)) current = proposal;
-    /* printf("%5d %14g %14g %14g %14g \n", i, prop_mean, prop_sd,proposal,
+    /* printf_d("%5d %14g %14g %14g %14g \n", i, prop_mean, prop_sd,proposal,
      * current); */
   } /* i loop over MH iters */
   return (current);
@@ -1575,7 +1591,6 @@ void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
   scalemodelType bkg_scale; /* The Background Scale Model */
 
   int i, j; /* indexing variables */
-
   initialize_control(&cont, &expmap, &psf, &ms, max_iter, burn, save_iters, save_thin,
                      nrow, ncol, nrow_psf, ncol_psf, em, fit_bkg_scl, alpha_init,
                      alpha_init_len, ms_ttlcnt_pr, ms_ttlcnt_exp, ms_al_kap2,
@@ -1621,9 +1636,11 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
     c_error("Could not open the PARAMETER file");
   print_param_file_header(param_file, cont, expmap, ms);
 
-  /********** Initialize R Random Seed ************/
-
-  GetRNGstate();
+  /********** Initialize the Random Seed ************/
+  srand(time(NULL)); 
+  set_seed(rand(),rand());  
+     
+  //GetRNGstate(); Throws a segfault outside the R environment
 
   /* Compute probability of counts spilling off detector */
   compute_expmap(psf, expmap, cont);
@@ -1642,7 +1659,7 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
 
   for (cont->iter = 1; cont->iter <= cont->max_iter; cont->iter++) {
     if (verbose > 1 && (cont->iter % cont->save_thin == 0)) {
-      // Rprintf("ITERATION NUMBER %d.\n", cont->iter);
+      // printf_d("ITERATION NUMBER %d.\n", cont->iter);
       fprintf(param_file, "\n%d ", cont->iter);
     }
 
@@ -1710,7 +1727,6 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
       if (cont->pipe_to_R) write_img_to_Routput(outmap, src);
       fprint_mat(out_file, src->img, src->nrow, src->ncol);
     }
-
     if (cont->iter > cont->burn && !cont->em) {
       int i, j;
       int m = cont->iter - cont->burn;
@@ -1739,5 +1755,5 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
   fclose(param_file);
   // fclose(cont->debug);
   // if (cont->mrf) fclose(mrf->out);
-  PutRNGstate(); /************ Save R Random Seed *************/
+  //PutRNGstate(); /************ Save R Random Seed *************/
 } /* main */
