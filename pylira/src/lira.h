@@ -207,7 +207,7 @@ int printf_d(const char*format,...){
 #ifdef DEBUG
   va_list vl;
   va_start(vl, format);
-  auto ret = printf_d(format, vl);
+  auto ret = printf(format, vl);
   va_end(vl);
   return ret;
 #else
