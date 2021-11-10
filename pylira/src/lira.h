@@ -336,7 +336,7 @@ void initialize_control(controlType* cont, expmapType* expmap, psfType* psf, msT
   /* (NS 3Aug09) Hard coding model to multi-scale prior, as discussed at
    * Irvine CBAS mtg July09 */
   cont->model = 1;
-  cont->em = *em;
+  cont->em = 0;
   cont->fit_bkg_scl = *fit_bkg_scl;
 
   /* (NS 3Aug09) Removing MRF option for R package */
@@ -1727,7 +1727,6 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
       if (cont->pipe_to_R) write_img_to_Routput(outmap, src);
       fprint_mat(out_file, src->img, src->nrow, src->ncol);
     }
-
     if (cont->iter > cont->burn && !cont->em) {
       int i, j;
       int m = cont->iter - cont->burn;
