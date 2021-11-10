@@ -2,6 +2,10 @@ version: 2
 
 build:
   image: latest
+  apt_packages:
+    - r-base-dev
+    - r-base
+    - r-mathlib
 
 python:
   version: 3.7
