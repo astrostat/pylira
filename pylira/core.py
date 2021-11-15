@@ -1,7 +1,10 @@
 from pathlib import Path
 import numpy as np
-from pylira.utils.io import read_parameter_trace_file
+from astropy.table import Table
 from . import image_analysis
+from .utils.io import read_parameter_trace_file, read_image_trace_file
+from .utils.plot import plot_parameter_traces, plot_parameter_distributions
+
 
 DTYPE_DEFAULT = np.float64
 
@@ -35,8 +38,8 @@ class LIRADeconvolver:
         Multiscale prior TODO: improve description
     filename_out: str or `Path`
         Output filename
-    filename_out_pat: str or `Path`
-        Parameyter output filename
+    filename_out_par: str or `Path`
+        Parameter output filename
 
     Examples
     --------
@@ -86,14 +89,14 @@ class LIRADeconvolver:
 
     def _check_input_sizes(self, obs_arr):
         obs_shape = obs_arr.shape[0]
-        if (obs_shape & (obs_shape-1) != 0):
+        if obs_shape & (obs_shape - 1) != 0:
             raise ValueError(
                 f"Size of the input observation must be a power of 2. Size given: {obs_shape}")
 
-        if (self.alpha_init.shape[0] != np.log2(obs_shape)):
+        if len(self.alpha_init) != np.log2(obs_shape):
             raise ValueError(
                 f"Number of elements in alpha_init must be {np.log2(obs_shape)}.\
-                     Size given: {self.alpha_init.shape[0]} ")
+                     Size given: {len(self.alpha_init)} ")
 
     def to_dict(self):
         """Convert deconvolver configuration to dict, with simple data types.
@@ -147,10 +150,72 @@ class LIRADeconvolver:
             ms_al_kap3=self.ms_al_kap3,
         )
 
-        parameter_trace = read_parameter_trace_file(self.filename_out_par)
-        config = self.to_dict()
-        parameter_trace.meta.update(config)
-        return {
-            "posterior-mean": posterior_mean,
-            "parameter-trace": parameter_trace,
-        }
+        return LIRADeconvolverResult(
+            posterior_mean=posterior_mean,
+            config=self.to_dict()
+        )
+
+
+class LIRADeconvolverResult:
+    """LIRA deconvolution result object.
+
+    Parameters
+    ----------
+    config : `dict`
+        Configuration from the `LIRADeconvolver`
+    posterior_mean : `~numpy.ndarray`
+        Posterior mean
+    wcs : `~astropy.wcs.WCS`
+        World coordinate transform object
+    """
+    def __init__(self, config, posterior_mean=None,  wcs=None):
+        self._config = config
+        self._posterior_mean = posterior_mean
+        self._wcs = wcs
+        self._image_trace = None
+        self._parameter_trace = None
+
+    @property
+    def config(self):
+        """Optional wcs"""
+        return self._config
+
+    @property
+    def wcs(self):
+        """Optional wcs"""
+        return self._wcs
+
+    @property
+    def n_burn_in(self):
+        """Number of burn in iterations"""
+        return self.config.get("n_burn_in", 0)
+
+    @property
+    def posterior_mean(self):
+        """Posterior mean (`~numpy.ndarray`)"""
+        if self._posterior_mean is None:
+            self._posterior_mean = np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
+
+        return self._posterior_mean
+
+    @property
+    def image_trace(self):
+        """Image trace (`~numpy.ndarray`)"""
+        # TODO: this currently handles only in memory data, this might not scale for
+        # many iterations and/or large images
+        if self._image_trace is None:
+            filename = self.config.get("filename_out")
+            self._image_trace = read_image_trace_file(filename)
+
+        return self._image_trace
+
+    @property
+    def parameter_trace(self):
+        """Parameter trace (`~astropy.table.Table`)"""
+        if self._parameter_trace is None:
+            filename = self.config.get("filename_out_par")
+            self._parameter_trace = read_parameter_trace_file(filename)
+            # TODO: add config to meta data of table, not sure whether it's the right place.
+            self._parameter_trace.meta.update(self.config)
+
+        return self._parameter_trace
