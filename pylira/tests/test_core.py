@@ -36,8 +36,12 @@ def test_lira_deconvolver_run():
     data = point_source_gauss_psf()
     data["flux_init"] = data["flux"]
 
+    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
+    
     deconvolve = LIRADeconvolver(
-        alpha_init=np.ones(np.log2(data["counts"].shape[0]).astype(int))
+        alpha_init=alpha_init,
+        n_iter_max=100,
+        n_burn_in=10
     )
     result = deconvolve.run(data=data)
 
