@@ -37,7 +37,7 @@ def test_lira_deconvolver_run():
     data["flux_init"] = data["flux"]
 
     alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
-    
+
     deconvolve = LIRADeconvolver(
         alpha_init=alpha_init,
         n_iter_max=100,

@@ -1,4 +1,3 @@
-from pathlib import Path
 from numpy.testing import assert_allclose
 from pylira.utils.io import read_parameter_trace_file
 from astropy.utils.data import get_pkg_data_filename
@@ -11,4 +10,3 @@ def test_read_parameter_trace_file():
 
     assert table.colnames[:3] == ["iteration", "logPost", "stepSize"]
     assert_allclose(table["logPost"][1], 66.5734)
-
