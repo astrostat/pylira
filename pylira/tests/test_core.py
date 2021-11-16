@@ -13,24 +13,6 @@ def test_image_analysis():
     assert pylira.image_analysis is not None
 
 
-def test_data_point_source_gauss_psf():
-    data = point_source_gauss_psf()
-
-    assert_allclose(data["counts"][0][0], 2)
-    assert_allclose(data["exposure"][0][0], 1)
-    assert_allclose(data["background"][0][0], 2.)
-    assert_allclose(data["psf"][0][0], 1.44298e-05, rtol=1e-5)
-
-
-def test_data_disk_source_gauss_psf():
-    data = disk_source_gauss_psf()
-
-    assert_allclose(data["counts"][0][0], 1)
-    assert_allclose(data["exposure"][0][0], 0.5)
-    assert_allclose(data["background"][0][0], 2.)
-    assert_allclose(data["psf"][0][0], 1.44298e-05, rtol=1e-5)
-
-
 def test_lira_deconvolver():
     deconvolve = LIRADeconvolver(
         alpha_init=np.array([1, 2, 3])
