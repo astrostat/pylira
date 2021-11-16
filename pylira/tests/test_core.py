@@ -51,4 +51,4 @@ def test_lira_deconvolver_run_disk_source():
     )
     result = deconvolve.run(data=data)
 
-    assert(result[16][16] > 0.7)
+    assert(result[16][16] > 0.2)
