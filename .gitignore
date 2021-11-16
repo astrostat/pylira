@@ -16,6 +16,7 @@ htmlcov
 .coverage
 MANIFEST
 .ipynb_checkpoints
+.tmp
 
 # Sphinx
 docs/api
