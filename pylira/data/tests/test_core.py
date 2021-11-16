@@ -34,4 +34,3 @@ def test_data_gauss_and_point_sources_gauss_psf():
     assert_allclose(data["background"][0][0], 2.)
     assert_allclose(data["psf"][0][0], 4.477632e-09, rtol=1e-5)
     assert_allclose(data["flux"][16][16], 36.664897, rtol=1e-5)
-
