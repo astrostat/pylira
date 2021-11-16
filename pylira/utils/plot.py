@@ -1,6 +1,6 @@
 
 
-def plot_example_dataset(data, figsize=(12, 6), **kwargs):
+def plot_example_dataset(data, figsize=(12, 7), **kwargs):
     """Plot example dataset
 
     Parameters

@@ -1,7 +1,11 @@
 import numpy as np
 from numpy.testing import assert_allclose
 import pylira
-from pylira.data import point_source_gauss_psf, disk_source_gauss_psf
+from pylira.data import (
+    point_source_gauss_psf,
+    disk_source_gauss_psf,
+    gauss_and_point_sources_gauss_psf
+)
 from pylira import LIRADeconvolver
 
 
@@ -40,6 +44,22 @@ def test_lira_deconvolver_run_point_source():
 
 def test_lira_deconvolver_run_disk_source():
     data = disk_source_gauss_psf()
+    data["flux_init"] = data["flux"]
+
+    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
+
+    deconvolve = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=100,
+        n_burn_in=10
+    )
+    result = deconvolve.run(data=data)
+
+    assert(result[16][16] > 0.2)
+
+
+def test_lira_deconvolver_run_gauss_source():
+    data = gauss_and_point_sources_gauss_psf()
     data["flux_init"] = data["flux"]
 
     alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
