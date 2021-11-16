@@ -97,7 +97,7 @@ def disk_source_gauss_psf(
     ).array
 
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
-    npred = background + convolve_fft(flux * exposure, psf)
+    npred = convolve_fft((flux + background) * exposure, psf)
 
     counts = np.random.poisson(npred)
     return {
