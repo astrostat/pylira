@@ -54,11 +54,12 @@ def test_lira_deconvolver():
 
 
 def test_lira_deconvolver_run_point_source(lira_result):
-    assert(lira_result.posterior_mean[16][16] > 700)
+    assert_allclose(lira_result[16][16], 955.675754, rtol=1e-2)
+    assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
+
+    assert (lira_result.posterior_mean[16][16] > 700)
     assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in lira_result.config
-
-    assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
@@ -73,11 +74,13 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
         n_burn_in=10,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
-        fit_background_scale=True
+        fit_background_scale=True,
+        random_state=np.random.RandomState(156)
     )
     result = deconvolve.run(data=data)
 
     assert(result.posterior_mean[16][16] > 0.2)
+    assert_allclose(result[16][16], 17.45414, rtol=1e-2)
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
@@ -97,7 +100,8 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         n_burn_in=10,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
-        fit_background_scale=True
+        fit_background_scale=True,
+        random_state=np.random.RandomState(156)
     )
     result = deconvolve.run(data=data)
 
@@ -124,3 +128,7 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)
 
     assert lira_result.image_trace.shape == new_result.image_trace.shape
+    assert_allclose(result[16][16], 22.753878)
+
+    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    assert trace_par["smoothingParam0"][-1] > 0

@@ -48,8 +48,15 @@ class LIRADeconvolver:
         Multiscale prior TODO: improve description
     filename_out: str or `Path`
         Output filename
+<<<<<<< HEAD
     filename_out_par: str or `Path`
         Parameter output filename
+=======
+    filename_out_pat: str or `Path`
+        Parameyter output filename
+    random_state : `~numpy.ransom.RandomState`
+        Random state
+>>>>>>> 419ef9b (Adapt lira_deconvolver_run_gauss_source test)
 
     Examples
     --------
@@ -83,6 +90,7 @@ class LIRADeconvolver:
             ms_al_kap3=3.0,
             filename_out="output.txt",
             filename_out_par="output-par.txt",
+            random_state=None
     ):
         self.alpha_init = np.array(alpha_init, dtype=DTYPE_DEFAULT)
         self.n_iter_max = n_iter_max
@@ -97,6 +105,7 @@ class LIRADeconvolver:
         self.filename_out = Path(filename_out)
         self.filename_out_par = Path(filename_out_par)
 
+<<<<<<< HEAD
     def __str__(self):
         """String representation"""
         cls_name = self.__class__.__name__
@@ -108,6 +117,12 @@ class LIRADeconvolver:
             info += f"\t{key:21s}: {value}\n"
 
         return info.expandtabs(tabsize=4)
+=======
+        if random_state is None:
+            random_state = np.random.RandomState(None)
+
+        self.random_state = random_state
+>>>>>>> 419ef9b (Adapt lira_deconvolver_run_gauss_source test)
 
     def _check_input_sizes(self, obs_arr):
         obs_shape = obs_arr.shape[0]
@@ -151,7 +166,13 @@ class LIRADeconvolver:
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
 
+<<<<<<< HEAD
         posterior_mean = image_analysis(
+=======
+        random_seed = self.random_state.randint(0, np.iinfo(np.uint32).max)
+
+        result = image_analysis(
+>>>>>>> 419ef9b (Adapt lira_deconvolver_run_gauss_source test)
             observed_im=data["counts"],
             start_im=data["flux_init"],
             psf_im=data["psf"],
@@ -169,6 +190,7 @@ class LIRADeconvolver:
             ms_al_kap1=self.ms_al_kap1,
             ms_al_kap2=self.ms_al_kap2,
             ms_al_kap3=self.ms_al_kap3,
+            random_seed=random_seed
         )
         parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
         image_trace = {"filename": str(self.filename_out), "format": "ascii"}
