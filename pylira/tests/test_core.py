@@ -128,7 +128,7 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)
 
     assert lira_result.image_trace.shape == new_result.image_trace.shape
-    assert_allclose(result[16][16], 22.753878)
+    assert_allclose(result[16][16], 22.753878, rtol=1e-2)
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
     assert trace_par["smoothingParam0"][-1] > 0
