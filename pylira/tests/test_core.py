@@ -29,6 +29,14 @@ def lira_result(tmpdir_factory):
     return deconvolve.run(data=data)
 
 
+def test_np_random_state():
+    # test to check numpy random state is platform independent
+    random_state = np.random.RandomState(1234)
+
+    assert random_state.randint(0, 10) == 3
+    assert random_state.randint(0, 10) == 6
+
+
 def test_import_name():
     assert pylira.__name__ == "pylira"
 
