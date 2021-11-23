@@ -159,7 +159,7 @@ class LIRADeconvolver:
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
 
-        random_seed = self.random_state.randint(0, np.iinfo(np.uint32).max)
+        random_seed = self.random_state.randint(1, np.iinfo(np.uint32).max)
 
         posterior_mean = image_analysis(
                 observed_im=data["counts"],
