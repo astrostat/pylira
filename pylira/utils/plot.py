@@ -1,4 +1,5 @@
 from itertools import zip_longest
+import numpy as np
 
 __all__ = ["plot_example_dataset", "plot_parameter_traces", "plot_parameter_distributions"]
 
