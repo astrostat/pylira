@@ -39,6 +39,7 @@ def test_lira_deconvolver_run_point_source(tmpdir):
         n_burn_in=10,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
+        fit_background_scale=True
     )
     result = deconvolve.run(data=data)
 
@@ -60,6 +61,7 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
         n_burn_in=10,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
+        fit_background_scale=True
     )
     result = deconvolve.run(data=data)
 
@@ -81,6 +83,7 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         n_burn_in=10,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
+        fit_background_scale=True
     )
     result = deconvolve.run(data=data)
 

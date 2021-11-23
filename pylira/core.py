@@ -119,6 +119,7 @@ class LIRADeconvolver:
             max_iter=self.n_iter_max,
             burn_in=self.n_burn_in,
             save_thin=self.save_thin,
+            fit_bkgscl=int(self.fit_background_scale),
             out_img_file=str(self.filename_out),
             out_param_file=str(self.filename_out_par),
             alpha_init=self.alpha_init,

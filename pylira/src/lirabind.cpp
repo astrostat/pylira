@@ -12,7 +12,7 @@ np_arr_d image_analysis(np_arr_d& t_obs, np_arr_d& t_start, np_arr_d& t_psf,
                         np_arr_d& t_expmap, np_arr_d& t_baseline,
                         const std::string& t_out_file, const std::string& t_param_file,
                         np_arr_d& t_alpha_init, int t_max_iter, int t_burn_in,
-                        int t_save_thin, bool t_fit_bkgscl, double t_ms_ttlcnt_pr,
+                        int t_save_thin, int t_fit_bkgscl, double t_ms_ttlcnt_pr,
                         double t_ms_ttlcnt_exp, double t_ms_al_kap1,
                         double t_ms_al_kap2, double t_ms_al_kap3) {
   auto obs_buf = t_obs.request();
@@ -51,7 +51,7 @@ np_arr_d image_analysis(np_arr_d& t_obs, np_arr_d& t_start, np_arr_d& t_psf,
   image_analysis_R(dummy, post_mean_arr, obs_arr, start_arr, psf_arr, expmap_arr,
                    baseline_arr, &out_file_name, &param_file_name, &t_max_iter,
                    &t_burn_in, &true_int, &true_int, &nrows_obs, &ncols_obs, &nrows_psf,
-                   &ncols_psf, &true_int, &true_int, alpha_int_arr, &nvals_alpha,
+                   &ncols_psf, &true_int, &t_fit_bkgscl, alpha_int_arr, &nvals_alpha,
                    &t_ms_ttlcnt_pr, &t_ms_ttlcnt_exp, &t_ms_al_kap2, &t_ms_al_kap1,
                    &t_ms_al_kap3);
 
