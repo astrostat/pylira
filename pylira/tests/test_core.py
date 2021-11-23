@@ -70,7 +70,7 @@ def test_lira_deconvolver_run_point_source(lira_result):
     assert "alpha_init" in lira_result.config
 
     assert_allclose(result[16][16], 955.7, rtol=3e-2)
-    assert_allclose(result[0][0], 0.032, atol=1e-2)
+    assert_allclose(result[0][0], 0.032, atol=0.1)
 
     # check total flux conservation
     assert_allclose(result.sum(), data["flux"].sum(), rtol=3e-2)
@@ -101,7 +101,7 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
 
     assert(result.posterior_mean[16][16] > 0.2)
     assert_allclose(result[16][16], 0.229, rtol=3e-2)
-    assert_allclose(result[0][0], 0.0011, atol=1e-2)
+    assert_allclose(result[0][0], 0.0011, atol=0.1)
 
     # check total flux conservation
     # TODO: improve accuracy
@@ -159,7 +159,7 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert lira_result.image_trace.shape == new_result.image_trace.shape
     assert_allclose(result[16][16], 22.753878, rtol=1e-2)
     assert_allclose(result[16][16], 0.338, rtol=3e-2)
-    assert_allclose(result[0][0], 0.0011, atol=1e-2)
+    assert_allclose(result[0][0], 0.0011, atol=0.1)
 
     # check total flux conservation
     # TODO: improve accuracy
