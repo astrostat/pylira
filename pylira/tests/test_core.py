@@ -69,6 +69,11 @@ def test_lira_deconvolver_run_point_source(lira_result):
     assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in lira_result.config
 
+    assert_allclose(result[16][16], 955.7, rtol=3e-2)
+
+    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    assert_allclose(trace_par["smoothingParam0"][-1], 0.019, rtol=3e-2)
+
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
     data = disk_source_gauss_psf()
@@ -93,7 +98,8 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
 
-    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
+    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    assert_allclose(trace_par["smoothingParam0"][-1], 0.023, rtol=3e-2)
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
@@ -139,4 +145,4 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert_allclose(result[16][16], 22.753878, rtol=1e-2)
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
-    assert trace_par["smoothingParam0"][-1] > 0
+    assert_allclose(trace_par["smoothingParam0"][-1], 0.038, rtol=3e-2)
