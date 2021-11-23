@@ -1,3 +1,6 @@
+from itertools import zip_longest
+
+__all__ = ["plot_example_dataset", "plot_parameter_traces"]
 
 
 def plot_example_dataset(data, figsize=(12, 7), **kwargs):
@@ -22,3 +25,45 @@ def plot_example_dataset(data, figsize=(12, 7), **kwargs):
         fig.colorbar(im, ax=ax)
 
     axes.flat[-1].set_visible(False)
+
+
+def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
+    """Plot parameters traces
+
+    Parameters
+    ----------
+    parameter_trace : `~astropy.table.Table`
+        Parameter trace table
+    figsize : tupe of float
+        Figure size
+    ncols : int
+        Number of columns to plot.
+    **kwargs : dict
+        Keyword arguments passed to `~matplotlib.pyplot.plot`
+
+    Returns
+    -------
+    axes : `~numpy.ndarray` of `~matplotlib.pyplot.Axes`
+        Plotting axes
+    """
+    import matplotlib.pyplot as plt
+
+    table = parameter_trace.copy()
+    table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol"])
+
+    nrows = (len(table.colnames) // ncols) + 1
+
+    fig, axes = plt.subplots(
+        ncols=ncols, nrows=nrows, figsize=figsize,
+    )
+
+    for name, ax in zip_longest(table.colnames, axes.flat):
+        if name is None:
+            ax.set_visible(False)
+            continue
+
+        ax.plot(parameter_trace[name], **kwargs)
+        ax.set_title(name.title())
+        ax.set_xlabel("Number of Iterations")
+
+    return axes
