@@ -127,9 +127,12 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         alpha_init=alpha_init,
         n_iter_max=1000,
         n_burn_in=100,
+        ms_al_kap1=0,
+        ms_al_kap2=1000,
+        ms_al_kap3=10,
+        fit_background_scale=False,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
-        fit_background_scale=True,
         random_state=np.random.RandomState(156)
     )
     result = deconvolve.run(data=data)
@@ -161,12 +164,20 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert_allclose(result[16][16], 0.338, rtol=3e-2)
     assert_allclose(result[0][0], 0.0011, atol=0.1)
 
+    # check at point source positions
+    assert_allclose(result[16][26], 151.0, rtol=3e-2)
+    assert_allclose(result[16][6], 2.88, rtol=3e-2)
+    assert_allclose(result[26][16], 1337.0, rtol=3e-2)
+    assert_allclose(result[6][16], 319.0, rtol=3e-2)
+    assert_allclose(result[0][0], 0, atol=0.1)
+
     # check total flux conservation
     # TODO: improve accuracy
-    assert_allclose(result.sum(), data["flux"].sum(), rtol=0.4)
+    assert_allclose(result.sum(), 3430, rtol=0.1)
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
-    assert_allclose(trace_par["smoothingParam0"][-1], 0.038, rtol=3e-2)
-    assert_allclose(trace_par["smoothingParam1"][-1], 0.030, rtol=3e-2)
-    assert_allclose(trace_par["smoothingParam2"][-1], 0.0038, rtol=3e-2)
-    assert_allclose(trace_par["smoothingParam3"][-1], 0.162, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam0"][-1], 0.0128, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam1"][-1], 0.103, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam2"][-1], 0.066, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam3"][-1], 0.114, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam4"][-1], 0.421, rtol=3e-2)
