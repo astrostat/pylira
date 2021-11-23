@@ -73,13 +73,16 @@ def test_lira_deconvolver_run_point_source(lira_result):
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
     assert_allclose(trace_par["smoothingParam0"][-1], 0.019, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam1"][-1], 0.019, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam2"][-1], 0.042, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam3"][-1], 0.058, rtol=3e-2)
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
     data = disk_source_gauss_psf()
     data["flux_init"] = data["flux"]
 
-    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
+    alpha_init = 0.02 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
 
     deconvolve = LIRADeconvolver(
         alpha_init=alpha_init,
@@ -100,13 +103,16 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
     assert_allclose(trace_par["smoothingParam0"][-1], 0.023, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam1"][-1], 0.026, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam2"][-1], 0.15, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam3"][-1], 0.048, rtol=3e-2)
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
     data = gauss_and_point_sources_gauss_psf()
     data["flux_init"] = data["flux"]
 
-    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
+    alpha_init = 0.02 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
 
     deconvolve = LIRADeconvolver(
         alpha_init=alpha_init,
@@ -146,3 +152,6 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
 
     trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
     assert_allclose(trace_par["smoothingParam0"][-1], 0.038, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam1"][-1], 0.030, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam2"][-1], 0.0038, rtol=3e-2)
+    assert_allclose(trace_par["smoothingParam3"][-1], 0.162, rtol=3e-2)
