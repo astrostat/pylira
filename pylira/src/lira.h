@@ -1066,7 +1066,7 @@ void update_image_mrf(expmapType* expmap, cntType* src, mrfType* mrf,
     } /*j loop over src.img */
   }   /* i loop */
 
-  if (cont->em == 0) error("No code for MCMC fitting with MRF prior!!");
+  if (cont->em == 0) c_error("No code for MCMC fitting with MRF prior!!");
 
 } /*update_image_mrf */
 
@@ -1453,7 +1453,7 @@ void update_image_ml(expmapType* expmap, cntType* src, controlType* cont) {
       src->img[i][j] = exp(log(src->data[i][j]) - log(expmap->prod[i][j]));
     }
 
-  if (cont->em == 0) error("No code for MCMC fitting with flat prior (i.e, ML)!!");
+  if (cont->em == 0) c_error("No code for MCMC fitting with flat prior (i.e, ML)!!");
 
 } /* update_image_ml */
 
