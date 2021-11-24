@@ -1,7 +1,7 @@
 from pathlib import Path
 import numpy as np
 from . import image_analysis
-from .utils.io import read_parameter_trace_file, read_image_trace_file
+from .utils.io import read_parameter_trace_file, read_image_trace_file, IO_FORMATS
 
 
 DTYPE_DEFAULT = np.float64
@@ -218,3 +218,23 @@ class LIRADeconvolverResult:
             self._parameter_trace.meta.update(self.config)
 
         return self._parameter_trace
+
+    def write(self, filename, overwrite=False, format="fits"):
+        """Write result fo file
+
+        Parameters
+        ----------
+        filename : str or `Path`
+            Output filename
+        overwrite : bool
+            Overwrite file.
+        format : {"fits"}
+            Format to use.
+        """
+        filename = Path(filename)
+
+        if format not in IO_FORMATS:
+            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS)}")
+
+        writer = IO_FORMATS[format]
+        writer(result=self, filename=filename, overwrite=overwrite)
