@@ -94,6 +94,21 @@ class LIRADeconvolver:
                 f"Number of elements in alpha_init must be {np.log2(obs_shape)}.\
                      Size given: {self.alpha_init.shape[0]} ")
 
+    def to_dict(self):
+        """Convert deconvolver configuration to dict, with simple data types.
+
+        Returns
+        -------
+        data : dict
+            Parameter dict.
+        """
+        data = {}
+        data.update(self.__dict__)
+        data["alpha_init"] = self.alpha_init.tolist()
+        data["filename_out"] = str(self.filename_out)
+        data["filename_out_par"] = str(self.filename_out_par)
+        return data
+
     def run(self, data):
         """Run the algorithm
 
