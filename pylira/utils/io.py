@@ -56,23 +56,39 @@ def write_to_fits_hdulist(result, filename, overwrite):
     overwrite : bool
         Overwrite file.
     """
-    hdulist = fits.HDUList()
-
     if result.wcs:
         header = result.wcs.to_header()
     else:
         header = None
 
-    primary_hdu = fits.PrimaryHDU(header=header, data=result.posterior_mean)
-    parameter_trace_hdu = fits.BinTableHDU(result.parameter_trace)
-    image_trace_hdu = fits.ImageHDU(header=header, data=result.image_trace)
+    primary_hdu = fits.PrimaryHDU(
+        header=header, data=result.posterior_mean,
+    )
 
-    hdulist["POSTERIOR_MEAN"] = primary_hdu
-    hdulist["PARAMETER_TRACE"] = parameter_trace_hdu
-    hdulist["IMAGE_TRACE"] = image_trace_hdu
+    table = result.parameter_trace.copy()
+    table.meta = None
+    parameter_trace_hdu = fits.BinTableHDU(
+        table, name="PARAMETER_TRACE"
+    )
 
-    with filename.open("w") as f:
-        hdulist.writeto(f, overwrite=overwrite)
+    image_trace_hdu = fits.ImageHDU(
+        header=header, data=result.image_trace, name="IMAGE_TRACE"
+    )
+
+    config = Table()
+
+    for key, value in result.config.items():
+        if key == "alpha_init":
+            value = [value]
+        config[key] = value
+
+    config_hdu = fits.BinTableHDU(config, name="CONFIG")
+
+    hdulist = fits.HDUList([
+        primary_hdu, parameter_trace_hdu, image_trace_hdu, config_hdu
+    ])
+
+    hdulist.writeto(filename, overwrite=overwrite)
 
 
 IO_FORMATS = {

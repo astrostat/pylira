@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 import pylira
@@ -7,6 +8,25 @@ from pylira.data import (
     gauss_and_point_sources_gauss_psf
 )
 from pylira import LIRADeconvolver
+
+
+@pytest.fixture(scope="session")
+def lira_result(tmpdir_factory):
+    data = point_source_gauss_psf()
+    data["flux_init"] = data["flux"]
+
+    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
+
+    tmpdir = tmpdir_factory.mktemp("data")
+    deconvolve = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=100,
+        n_burn_in=10,
+        filename_out=tmpdir / "image-trace.txt",
+        filename_out_par=tmpdir / "parameter-trace.txt",
+        fit_background_scale=True
+    )
+    return deconvolve.run(data=data)
 
 
 def test_import_name():
@@ -31,28 +51,12 @@ def test_lira_deconvolver():
     assert config["filename_out"] == "output.txt"
 
 
-def test_lira_deconvolver_run_point_source(tmpdir):
-    data = point_source_gauss_psf()
-    data["flux_init"] = data["flux"]
+def test_lira_deconvolver_run_point_source(lira_result):
+    assert(lira_result.posterior_mean[16][16] > 700)
+    assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
+    assert "alpha_init" in lira_result.config
 
-    alpha_init = np.ones(np.log2(data["counts"].shape[0]).astype(int))
-
-    deconvolve = LIRADeconvolver(
-        alpha_init=alpha_init,
-        n_iter_max=100,
-        n_burn_in=10,
-        filename_out=tmpdir / "image-trace.txt",
-        filename_out_par=tmpdir / "parameter-trace.txt",
-        fit_background_scale=True
-    )
-    result = deconvolve.run(data=data)
-
-    assert(result.posterior_mean[16][16] > 700)
-
-    assert result.parameter_trace["smoothingParam0"][-1] > 0
-    assert "alpha_init" in result.config
-
-    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
+    assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
@@ -101,3 +105,8 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
     assert "alpha_init" in result.config
 
     assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
+
+
+def test_lira_deconvolver_result_write(tmpdir, lira_result):
+    filename = tmpdir / "test.fits.gz"
+    lira_result.write(filename)

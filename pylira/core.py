@@ -238,4 +238,3 @@ class LIRADeconvolverResult:
 
         writer = IO_FORMATS[format]
         writer(result=self, filename=filename, overwrite=overwrite)
-
