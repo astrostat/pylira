@@ -1,7 +1,8 @@
 from pathlib import Path
 import numpy as np
+from astropy.table import Table
 from . import image_analysis
-from .utils.io import read_parameter_trace_file, read_image_trace_file, IO_FORMATS
+from .utils.io import read_parameter_trace_file, read_image_trace_file, IO_FORMATS_WRITE, IO_FORMATS_READ
 
 
 DTYPE_DEFAULT = np.float64
@@ -107,8 +108,8 @@ class LIRADeconvolver:
         data = {}
         data.update(self.__dict__)
         data["alpha_init"] = self.alpha_init.tolist()
-        data["filename_out"] = str(self.filename_out)
-        data["filename_out_par"] = str(self.filename_out_par)
+        data.pop("filename_out")
+        data.pop("filename_out_par")
         return data
 
     def run(self, data):
@@ -146,9 +147,13 @@ class LIRADeconvolver:
             ms_al_kap2=self.ms_al_kap2,
             ms_al_kap3=self.ms_al_kap3,
         )
+        parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
+        image_trace = {"filename": str(self.filename_out), "format": "ascii"}
 
         return LIRADeconvolverResult(
             posterior_mean=posterior_mean,
+            parameter_trace=parameter_trace,
+            image_trace=image_trace,
             config=self.to_dict()
         )
 
@@ -162,20 +167,36 @@ class LIRADeconvolverResult:
         Configuration from the `LIRADeconvolver`
     posterior_mean : `~numpy.ndarray`
         Posterior mean
+    parameter_trace : `~astropy.table.Table` or dict
+        Parameter trace
+    image_trace : `~astropy.table.Table` or dict
+        Image trace
     wcs : `~astropy.wcs.WCS`
         World coordinate transform object
     """
-    def __init__(self, config, posterior_mean=None,  wcs=None):
+    def __init__(self, config, posterior_mean=None,  parameter_trace=None, image_trace=None, wcs=None):
         self._config = config
         self._posterior_mean = posterior_mean
         self._wcs = wcs
-        self._image_trace = None
-        self._parameter_trace = None
+        self._image_trace = image_trace
+        self._parameter_trace = parameter_trace
 
     @property
     def config(self):
-        """Optional wcs"""
+        """Configuration data (`dict`)"""
         return self._config
+
+    @property
+    def config_table(self):
+        """Configuration data as table (`~astropy.table.Table`)"""
+        config = Table()
+
+        for key, value in self.config.items():
+            if key == "alpha_init":
+                value = [value]
+            config[key] = value
+
+        return config
 
     @property
     def wcs(self):
@@ -202,18 +223,16 @@ class LIRADeconvolverResult:
         """Image trace (`~numpy.ndarray`)"""
         # TODO: this currently handles only in memory data, this might not scale for
         # many iterations and/or large images
-        if self._image_trace is None:
-            filename = self.config.get("filename_out")
-            self._image_trace = read_image_trace_file(filename)
+        if isinstance(self._image_trace, dict):
+            self._image_trace = read_image_trace_file(**self._image_trace)
 
         return self._image_trace
 
     @property
     def parameter_trace(self):
         """Parameter trace (`~astropy.table.Table`)"""
-        if self._parameter_trace is None:
-            filename = self.config.get("filename_out_par")
-            self._parameter_trace = read_parameter_trace_file(filename)
+        if isinstance(self._parameter_trace, dict):
+            self._parameter_trace = read_parameter_trace_file(**self._parameter_trace)
             # TODO: add config to meta data of table, not sure whether it's the right place.
             self._parameter_trace.meta.update(self.config)
 
@@ -233,8 +252,33 @@ class LIRADeconvolverResult:
         """
         filename = Path(filename)
 
-        if format not in IO_FORMATS:
-            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS)}")
+        if format not in IO_FORMATS_WRITE:
+            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS_WRITE)}")
 
-        writer = IO_FORMATS[format]
+        writer = IO_FORMATS_WRITE[format]
         writer(result=self, filename=filename, overwrite=overwrite)
+
+    @classmethod
+    def read(cls, filename, format="fits"):
+        """Write result fo file
+
+        Parameters
+        ----------
+        filename : str or `Path`
+            Output filename
+        format : {"fits"}
+            Format to use.
+
+        Returns
+        -------
+        result : `~LIRADeconvolverResult`
+            Result object
+        """
+        filename = Path(filename)
+
+        if format not in IO_FORMATS_READ:
+            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS_READ)}")
+
+        reader = IO_FORMATS_READ[format]
+        kwargs = reader(filename=filename)
+        return cls(**kwargs)
