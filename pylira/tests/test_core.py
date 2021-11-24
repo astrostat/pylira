@@ -47,13 +47,10 @@ def test_lira_deconvolver_run_point_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
-    posterior_mean = result["posterior-mean"]
+    assert(result.posterior_mean[16][16] > 700)
 
-    assert(posterior_mean[16][16] > 700)
-
-    trace_par = result["parameter-trace"]
-    assert trace_par["smoothingParam0"][-1] > 0
-    assert "alpha_init" in trace_par.meta
+    assert result.parameter_trace["smoothingParam0"][-1] > 0
+    assert "alpha_init" in result.config
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):

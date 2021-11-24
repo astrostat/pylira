@@ -6,7 +6,7 @@ from .utils.io import read_parameter_trace_file, read_image_trace_file
 
 DTYPE_DEFAULT = np.float64
 
-__all__ = ["LIRADeconvolver"]
+__all__ = ["LIRADeconvolver", "LIRADeconvolverResult"]
 
 
 class LIRADeconvolver:
