@@ -173,9 +173,11 @@ class LIRADeconvolverResult:
     posterior_mean : `~numpy.ndarray`
         Posterior mean
     parameter_trace : `~astropy.table.Table` or dict
-        Parameter trace
+        Parameter trace. If a dict is provided it triggers the lazy loading.
+        The dict must contain the argument to `read_parameter_trace_file`.
     image_trace : `~astropy.table.Table` or dict
-        Image trace
+        Image trace. If a dict is provided it triggers the lazy loading.
+        The dict must contain the argument to `read_image_trace_file`.
     wcs : `~astropy.wcs.WCS`
         World coordinate transform object
     """
