@@ -1,6 +1,4 @@
-#include <R_ext/Random.h>
 #define R_NO_REMAP 1
-#include <Rinternals.h>
 #define MATHLIB_STANDALONE 1
 #include <Rmath.h>
 #include <math.h>
