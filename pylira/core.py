@@ -121,9 +121,8 @@ class LIRADeconvolver:
 
         Returns
         -------
-        result : dict
-            Result dictionary containing "posterior-mean" (`~numpy.ndarray`)
-            and "parameter-trace" (`~astropy.table.Table`).
+        result : `LIRADeconvolverResult`
+            Result object.
         """
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
@@ -191,10 +190,12 @@ class LIRADeconvolverResult:
     @property
     def posterior_mean(self):
         """Posterior mean (`~numpy.ndarray`)"""
-        if self._posterior_mean is None:
-            self._posterior_mean = np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
-
         return self._posterior_mean
+
+    @property
+    def posterior_mean_from_trace(self):
+        """Posterior mean computed from trace(`~numpy.ndarray`)"""
+        return np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
 
     @property
     def image_trace(self):

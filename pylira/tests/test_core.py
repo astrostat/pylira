@@ -52,6 +52,8 @@ def test_lira_deconvolver_run_point_source(tmpdir):
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
 
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
+
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
     data = disk_source_gauss_psf()
@@ -74,6 +76,8 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
 
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
+
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
     data = gauss_and_point_sources_gauss_psf()
@@ -95,3 +99,5 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
+
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
