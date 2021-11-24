@@ -1,4 +1,3 @@
-#include <R.h>
 #include <R_ext/Random.h>
 #define R_NO_REMAP 1
 #include <Rinternals.h>
@@ -8,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdexcept>
 #include <time.h>
 #include <iostream>
 
@@ -221,7 +221,7 @@ int printf_d(const char*format,...){
 /***************************************************************/
 
 void c_error(char error_text[]) { /* Print an Error Message */
-  error("%s", error_text);
+  throw std::runtime_error(error_text);
 }
 
 /***************************************************************/
