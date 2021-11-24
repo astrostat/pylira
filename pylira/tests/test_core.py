@@ -26,6 +26,11 @@ def test_lira_deconvolver():
     assert deconvolve.alpha_init.dtype == np.float64
     assert_allclose(deconvolve.alpha_init, [1., 2., 3.])
 
+    config = deconvolve.to_dict()
+
+    assert_allclose(config["alpha_init"], [1, 2, 3])
+    assert config["filename_out"] == "output.txt"
+    
 
 def test_lira_deconvolver_run_point_source(tmpdir):
     data = point_source_gauss_psf()
