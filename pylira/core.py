@@ -1,9 +1,7 @@
 from pathlib import Path
 import numpy as np
-from astropy.table import Table
 from . import image_analysis
 from .utils.io import read_parameter_trace_file, read_image_trace_file
-from .utils.plot import plot_parameter_traces, plot_parameter_distributions
 
 
 DTYPE_DEFAULT = np.float64
