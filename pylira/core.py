@@ -2,7 +2,12 @@ from pathlib import Path
 import numpy as np
 from astropy.table import Table
 from . import image_analysis
-from .utils.io import read_parameter_trace_file, read_image_trace_file, IO_FORMATS_WRITE, IO_FORMATS_READ
+from .utils.io import (
+    read_parameter_trace_file,
+    read_image_trace_file,
+    IO_FORMATS_WRITE,
+    IO_FORMATS_READ,
+)
 
 
 DTYPE_DEFAULT = np.float64
@@ -174,7 +179,14 @@ class LIRADeconvolverResult:
     wcs : `~astropy.wcs.WCS`
         World coordinate transform object
     """
-    def __init__(self, config, posterior_mean=None,  parameter_trace=None, image_trace=None, wcs=None):
+    def __init__(
+            self,
+            config,
+            posterior_mean=None,
+            parameter_trace=None,
+            image_trace=None,
+            wcs=None
+    ):
         self._config = config
         self._posterior_mean = posterior_mean
         self._wcs = wcs

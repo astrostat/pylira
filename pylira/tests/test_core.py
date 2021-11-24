@@ -7,7 +7,7 @@ from pylira.data import (
     disk_source_gauss_psf,
     gauss_and_point_sources_gauss_psf
 )
-from pylira import LIRADeconvolver
+from pylira import LIRADeconvolver, LIRADeconvolverResult
 
 
 @pytest.fixture(scope="session")
@@ -48,7 +48,7 @@ def test_lira_deconvolver():
     config = deconvolve.to_dict()
 
     assert_allclose(config["alpha_init"], [1, 2, 3])
-    assert config["filename_out"] == "output.txt"
+    assert not config["fit_background_scale"]
 
 
 def test_lira_deconvolver_run_point_source(lira_result):
@@ -110,3 +110,13 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
 def test_lira_deconvolver_result_write(tmpdir, lira_result):
     filename = tmpdir / "test.fits.gz"
     lira_result.write(filename)
+
+
+def test_lira_deconvolver_result_read(tmpdir, lira_result):
+    filename = tmpdir / "test.fits.gz"
+    lira_result.write(filename)
+
+    new_result = LIRADeconvolverResult.read(filename)
+
+    assert_allclose(lira_result.config["alpha_init"], new_result.config["alpha_init"])
+    assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)

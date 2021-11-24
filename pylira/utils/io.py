@@ -4,7 +4,7 @@ from astropy.io import fits
 from astropy.wcs import WCS
 
 
-def read_parameter_trace_file(filename, format):
+def read_parameter_trace_file(filename, format="ascii"):
     """Read LIRA parameter output file
 
     Parameters
@@ -25,7 +25,7 @@ def read_parameter_trace_file(filename, format):
     return table
 
 
-def read_image_trace_file(filename, format):
+def read_image_trace_file(filename, format="ascii"):
     """Read LIRA image trace file
 
     Parameters
