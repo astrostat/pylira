@@ -1,7 +1,11 @@
 from itertools import zip_longest
 import numpy as np
 
-__all__ = ["plot_example_dataset", "plot_parameter_traces", "plot_parameter_distributions"]
+__all__ = [
+    "plot_example_dataset",
+    "plot_parameter_traces",
+    "plot_parameter_distributions",
+]
 
 
 def plot_example_dataset(data, figsize=(12, 7), **kwargs):
@@ -56,7 +60,9 @@ def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
     nrows = (len(table.colnames) // ncols) + 1
 
     fig, axes = plt.subplots(
-        ncols=ncols, nrows=nrows, figsize=figsize,
+        ncols=ncols,
+        nrows=nrows,
+        figsize=figsize,
     )
 
     n_burn_in = table.meta.get("n_burn_in", 0)
@@ -69,17 +75,33 @@ def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
             ax.set_visible(False)
             continue
 
-        ax.plot(idx[burn_in], parameter_trace[name][burn_in], alpha=0.3, label="Burn in",  **kwargs)
+        ax.plot(
+            idx[burn_in],
+            parameter_trace[name][burn_in],
+            alpha=0.3,
+            label="Burn in",
+            **kwargs
+        )
         ax.plot(idx[valid], parameter_trace[name][valid], label="Valid", **kwargs)
         ax.set_title(name.title())
         ax.set_xlabel("Number of Iterations")
 
         mean = np.mean(parameter_trace[name][valid])
-        ax.hlines(mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean")
+        ax.hlines(
+            mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
+        )
 
         std = np.std(parameter_trace[name][valid])
         y1, y2 = mean - std, mean + std
-        ax.fill_between(idx[valid], y1, y2, color="tab:orange", alpha=0.2, zorder=9, label="1 $\sigma$ Std. Deviation")
+        ax.fill_between(
+            idx[valid],
+            y1,
+            y2,
+            color="tab:orange",
+            alpha=0.2,
+            zorder=9,
+            label=r"1 $\sigma$ Std. Deviation",
+        )
 
         if name == "logPost":
             ax.legend()
@@ -109,14 +131,18 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
     import matplotlib.pyplot as plt
 
     table = parameter_trace.copy()
-    table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"])
+    table.remove_columns(
+        ["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"]
+    )
 
     n_burn_in = table.meta.get("n_burn_in", 0)
 
     nrows = (len(table.colnames) // ncols) + 1
 
     fig, axes = plt.subplots(
-        ncols=ncols, nrows=nrows, figsize=figsize,
+        ncols=ncols,
+        nrows=nrows,
+        figsize=figsize,
     )
 
     kwargs.setdefault("color", "tab:blue")
@@ -137,7 +163,9 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
 
         column_burn_in = parameter_trace[name][:n_burn_in]
         is_finite = np.isfinite(column_burn_in)
-        n_vals_burn_in, _, _ = ax.hist(column_burn_in[is_finite], alpha=0.3, label="Burn in", **kwargs)
+        n_vals_burn_in, _, _ = ax.hist(
+            column_burn_in[is_finite], alpha=0.3, label="Burn in", **kwargs
+        )
 
         ax.set_title(name.title())
         ax.set_xlabel("Number of Iterations")
@@ -148,7 +176,15 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
 
         std = np.std(column)
         x1, x2 = mean - std, mean + std
-        ax.fill_betweenx(np.linspace(0, y_max, 10), x1, x2, color="tab:orange", alpha=0.2, zorder=9, label="1 $\sigma$ Std. Deviation")
+        ax.fill_betweenx(
+            np.linspace(0, y_max, 10),
+            x1,
+            x2,
+            color="tab:orange",
+            alpha=0.2,
+            zorder=9,
+            label=r"1 $\sigma$ Std. Deviation",
+        )
 
         if not has_legend:
             ax.legend()
