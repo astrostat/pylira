@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+from pylira.utils.io import read_parameter_trace_file
 from . import image_analysis
 
 DTYPE_DEFAULT = np.float64
@@ -125,7 +126,7 @@ class LIRADeconvolver:
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
 
-        result = image_analysis(
+        posterior_mean = image_analysis(
             observed_im=data["counts"],
             start_im=data["flux_init"],
             psf_im=data["psf"],
@@ -144,4 +145,11 @@ class LIRADeconvolver:
             ms_al_kap2=self.ms_al_kap2,
             ms_al_kap3=self.ms_al_kap3,
         )
-        return result
+
+        parameter_trace = read_parameter_trace_file(self.filename_out_par)
+        config = self.to_dict()
+        parameter_trace.meta.update(config)
+        return {
+            "posterior-mean": posterior_mean,
+            "parameter-trace": parameter_trace,
+        }
