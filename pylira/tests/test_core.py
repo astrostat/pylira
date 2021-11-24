@@ -47,13 +47,12 @@ def test_lira_deconvolver_run_point_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
-    posterior_mean = result["posterior-mean"]
+    assert(result.posterior_mean[16][16] > 700)
 
-    assert(posterior_mean[16][16] > 700)
+    assert result.parameter_trace["smoothingParam0"][-1] > 0
+    assert "alpha_init" in result.config
 
-    trace_par = result["parameter-trace"]
-    assert trace_par["smoothingParam0"][-1] > 0
-    assert "alpha_init" in trace_par.meta
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
@@ -71,13 +70,13 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
         fit_background_scale=True
     )
     result = deconvolve.run(data=data)
-    posterior_mean = result["posterior-mean"]
 
-    assert(posterior_mean[16][16] > 0.2)
+    assert(result.posterior_mean[16][16] > 0.2)
 
-    trace_par = result["parameter-trace"]
-    assert trace_par["smoothingParam0"][-1] > 0
-    assert "alpha_init" in trace_par.meta
+    assert result.parameter_trace["smoothingParam0"][-1] > 0
+    assert "alpha_init" in result.config
+
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
@@ -95,10 +94,10 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         fit_background_scale=True
     )
     result = deconvolve.run(data=data)
-    posterior_mean = result["posterior-mean"]
 
-    assert(posterior_mean[16][16] > 0.2)
+    assert(result.posterior_mean[16][16] > 0.2)
 
-    trace_par = result["parameter-trace"]
-    assert trace_par["smoothingParam0"][-1] > 0
-    assert "alpha_init" in trace_par.meta
+    assert result.parameter_trace["smoothingParam0"][-1] > 0
+    assert "alpha_init" in result.config
+
+    assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
