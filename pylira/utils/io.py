@@ -1,15 +1,18 @@
 import numpy as np
 from astropy.table import Table
 from astropy.io import fits
+from astropy.wcs import WCS
 
 
-def read_parameter_trace_file(filename):
+def read_parameter_trace_file(filename, format):
     """Read LIRA parameter output file
 
     Parameters
     ----------
     filename : str or Path
         File name.
+    format : {"ascii", "fits"}
+        Table format
 
     Returns
     -------
@@ -18,17 +21,19 @@ def read_parameter_trace_file(filename):
     """
     # TODO: maybe rename columns to more descriptive names
     # and provide meta information
-    table = Table.read(filename, format="ascii")
+    table = Table.read(filename, format=format)
     return table
 
 
-def read_image_trace_file(filename):
+def read_image_trace_file(filename, format):
     """Read LIRA image trace file
 
     Parameters
     ----------
     filename : str or Path
         File name.
+    format : {"ascii", "fits"}
+        Table format
 
     Returns
     -------
@@ -36,16 +41,21 @@ def read_image_trace_file(filename):
         Three dimensional numpy array of the shape (niter, ny, nx)
         representing the trace of the output image.
     """
-    data = np.loadtxt(filename)
+    if format == "ascii":
+        data = np.loadtxt(filename)
 
-    shape_y, shape_x = data.shape
-    n_iter = shape_y // shape_x
+        shape_y, shape_x = data.shape
+        n_iter = shape_y // shape_x
 
-    return data.reshape((n_iter, shape_x, shape_x))
+        return data.reshape((n_iter, shape_x, shape_x))
+    elif format == "fits":
+        return fits.getdata(filename, hdu="IMAGE_TRACE")
+    else:
+        raise ValueError(f"Not a supported format {format}")
 
 
-def write_to_fits_hdulist(result, filename, overwrite):
-    """Convert LIRA result to list of FITS hdus.
+def write_to_fits(result, filename, overwrite):
+    """Write LIRA result to FITS.
 
     Parameters
     ----------
@@ -75,14 +85,7 @@ def write_to_fits_hdulist(result, filename, overwrite):
         header=header, data=result.image_trace, name="IMAGE_TRACE"
     )
 
-    config = Table()
-
-    for key, value in result.config.items():
-        if key == "alpha_init":
-            value = [value]
-        config[key] = value
-
-    config_hdu = fits.BinTableHDU(config, name="CONFIG")
+    config_hdu = fits.BinTableHDU(result.config_table, name="CONFIG")
 
     hdulist = fits.HDUList([
         primary_hdu, parameter_trace_hdu, image_trace_hdu, config_hdu
@@ -91,6 +94,44 @@ def write_to_fits_hdulist(result, filename, overwrite):
     hdulist.writeto(filename, overwrite=overwrite)
 
 
-IO_FORMATS = {
-    "fits": write_to_fits_hdulist
+def read_from_fits(filename):
+    """Read LIRA result from FITS.
+
+    Parameters
+    ----------
+    filename : `Path`
+        Output filename
+
+    Returns
+    -------
+    result : dict
+       Dictionary with init parameters for `LIRADeconvolverResult`
+    """
+    hdulist = fits.open(filename)
+
+    wcs = WCS(hdulist["PRIMARY"].header)
+
+    config_table = Table.read(hdulist["CONFIG"])
+    config = dict(config_table[0])
+
+    paramter_trace = Table.read(hdulist["PARAMETER_TRACE"])
+    posterior_mean = hdulist["PRIMARY"].data
+
+    # define location for lazy loading
+    image_trace = {"filename": filename, "format": "fits"}
+    return {
+        "posterior_mean": posterior_mean,
+        "config": config,
+        "parameter_trace": paramter_trace,
+        "image_trace": image_trace,
+        "wcs": wcs
+    }
+
+
+IO_FORMATS_WRITE = {
+    "fits": write_to_fits
+}
+
+IO_FORMATS_READ = {
+    "fits": read_from_fits
 }
