@@ -120,8 +120,9 @@ class LIRADeconvolver:
 
         Returns
         -------
-        result : `~numpy.ndarray`
-            Mean posterior.
+        result : dict
+            Result dictionary containing "posterior-mean" (`~numpy.ndarray`)
+            and "parameter-trace" (`~astropy.table.Table`).
         """
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
