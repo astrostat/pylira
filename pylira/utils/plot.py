@@ -1,7 +1,11 @@
 from itertools import zip_longest
 import numpy as np
 
-__all__ = ["plot_example_dataset", "plot_parameter_traces", "plot_parameter_distributions"]
+__all__ = [
+    "plot_example_dataset",
+    "plot_parameter_traces",
+    "plot_parameter_distributions",
+]
 
 
 def plot_example_dataset(data, figsize=(12, 7), **kwargs):
@@ -52,20 +56,55 @@ def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
     table = parameter_trace.copy()
     table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol"])
 
+    kwargs.setdefault("color", "tab:blue")
     nrows = (len(table.colnames) // ncols) + 1
 
     fig, axes = plt.subplots(
-        ncols=ncols, nrows=nrows, figsize=figsize,
+        ncols=ncols,
+        nrows=nrows,
+        figsize=figsize,
     )
+
+    n_burn_in = table.meta.get("n_burn_in", 0)
+    burn_in = slice(0, n_burn_in)
+    valid = slice(n_burn_in, -1)
+    idx = np.arange(len(table))
 
     for name, ax in zip_longest(table.colnames, axes.flat):
         if name is None:
             ax.set_visible(False)
             continue
 
-        ax.plot(parameter_trace[name], **kwargs)
+        ax.plot(
+            idx[burn_in],
+            parameter_trace[name][burn_in],
+            alpha=0.3,
+            label="Burn in",
+            **kwargs
+        )
+        ax.plot(idx[valid], parameter_trace[name][valid], label="Valid", **kwargs)
         ax.set_title(name.title())
         ax.set_xlabel("Number of Iterations")
+
+        mean = np.mean(parameter_trace[name][valid])
+        ax.hlines(
+            mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
+        )
+
+        std = np.std(parameter_trace[name][valid])
+        y1, y2 = mean - std, mean + std
+        ax.fill_between(
+            idx[valid],
+            y1,
+            y2,
+            color="tab:orange",
+            alpha=0.2,
+            zorder=9,
+            label=r"1 $\sigma$ Std. Deviation",
+        )
+
+        if name == "logPost":
+            ax.legend()
 
     return axes
 
@@ -92,26 +131,63 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
     import matplotlib.pyplot as plt
 
     table = parameter_trace.copy()
-    table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"])
+    table.remove_columns(
+        ["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"]
+    )
+
+    n_burn_in = table.meta.get("n_burn_in", 0)
 
     nrows = (len(table.colnames) // ncols) + 1
 
     fig, axes = plt.subplots(
-        ncols=ncols, nrows=nrows, figsize=figsize,
+        ncols=ncols,
+        nrows=nrows,
+        figsize=figsize,
     )
+
+    kwargs.setdefault("color", "tab:blue")
 
     kwargs.setdefault("density", True)
     kwargs.setdefault("bins", int(np.sqrt(len(table))))
+
+    has_legend = False
 
     for name, ax in zip_longest(table.colnames, axes.flat):
         if name is None:
             ax.set_visible(False)
             continue
 
-        column = parameter_trace[name]
+        column = parameter_trace[name][n_burn_in:]
         is_finite = np.isfinite(column)
-        ax.hist(column[is_finite], **kwargs)
+        n_vals, bins, _ = ax.hist(column[is_finite], label="Valid", **kwargs)
+
+        column_burn_in = parameter_trace[name][:n_burn_in]
+        is_finite = np.isfinite(column_burn_in)
+        n_vals_burn_in, _, _ = ax.hist(
+            column_burn_in[is_finite], alpha=0.3, label="Burn in", **kwargs
+        )
+
         ax.set_title(name.title())
         ax.set_xlabel("Number of Iterations")
+
+        y_max = np.max([n_vals, n_vals_burn_in])
+        mean = np.mean(column)
+        ax.vlines(mean, 0, y_max, color="tab:orange", zorder=10, label="Mean")
+
+        std = np.std(column)
+        x1, x2 = mean - std, mean + std
+        ax.fill_betweenx(
+            np.linspace(0, y_max, 10),
+            x1,
+            x2,
+            color="tab:orange",
+            alpha=0.2,
+            zorder=9,
+            label=r"1 $\sigma$ Std. Deviation",
+        )
+
+        if not has_legend:
+            ax.legend()
+            has_legend = True
 
     return axes

@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+from pylira.utils.io import read_parameter_trace_file
 from . import image_analysis
 
 DTYPE_DEFAULT = np.float64
@@ -94,6 +95,21 @@ class LIRADeconvolver:
                 f"Number of elements in alpha_init must be {np.log2(obs_shape)}.\
                      Size given: {self.alpha_init.shape[0]} ")
 
+    def to_dict(self):
+        """Convert deconvolver configuration to dict, with simple data types.
+
+        Returns
+        -------
+        data : dict
+            Parameter dict.
+        """
+        data = {}
+        data.update(self.__dict__)
+        data["alpha_init"] = self.alpha_init.tolist()
+        data["filename_out"] = str(self.filename_out)
+        data["filename_out_par"] = str(self.filename_out_par)
+        return data
+
     def run(self, data):
         """Run the algorithm
 
@@ -104,13 +120,14 @@ class LIRADeconvolver:
 
         Returns
         -------
-        result : `~numpy.ndarray`
-            Mean posterior.
+        result : dict
+            Result dictionary containing "posterior-mean" (`~numpy.ndarray`)
+            and "parameter-trace" (`~astropy.table.Table`).
         """
         data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
         self._check_input_sizes(data["counts"])
 
-        result = image_analysis(
+        posterior_mean = image_analysis(
             observed_im=data["counts"],
             start_im=data["flux_init"],
             psf_im=data["psf"],
@@ -129,4 +146,11 @@ class LIRADeconvolver:
             ms_al_kap2=self.ms_al_kap2,
             ms_al_kap3=self.ms_al_kap3,
         )
-        return result
+
+        parameter_trace = read_parameter_trace_file(self.filename_out_par)
+        config = self.to_dict()
+        parameter_trace.meta.update(config)
+        return {
+            "posterior-mean": posterior_mean,
+            "parameter-trace": parameter_trace,
+        }

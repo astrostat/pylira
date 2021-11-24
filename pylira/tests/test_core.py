@@ -6,7 +6,6 @@ from pylira.data import (
     disk_source_gauss_psf,
     gauss_and_point_sources_gauss_psf
 )
-from pylira.utils.io import read_parameter_trace_file
 from pylira import LIRADeconvolver
 
 
@@ -26,6 +25,11 @@ def test_lira_deconvolver():
     assert deconvolve.alpha_init.dtype == np.float64
     assert_allclose(deconvolve.alpha_init, [1., 2., 3.])
 
+    config = deconvolve.to_dict()
+
+    assert_allclose(config["alpha_init"], [1, 2, 3])
+    assert config["filename_out"] == "output.txt"
+
 
 def test_lira_deconvolver_run_point_source(tmpdir):
     data = point_source_gauss_psf()
@@ -43,10 +47,13 @@ def test_lira_deconvolver_run_point_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
-    assert(result[16][16] > 700)
+    posterior_mean = result["posterior-mean"]
 
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    assert(posterior_mean[16][16] > 700)
+
+    trace_par = result["parameter-trace"]
     assert trace_par["smoothingParam0"][-1] > 0
+    assert "alpha_init" in trace_par.meta
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
@@ -64,11 +71,13 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
         fit_background_scale=True
     )
     result = deconvolve.run(data=data)
+    posterior_mean = result["posterior-mean"]
 
-    assert(result[16][16] > 0.2)
+    assert(posterior_mean[16][16] > 0.2)
 
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    trace_par = result["parameter-trace"]
     assert trace_par["smoothingParam0"][-1] > 0
+    assert "alpha_init" in trace_par.meta
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
@@ -86,8 +95,10 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         fit_background_scale=True
     )
     result = deconvolve.run(data=data)
+    posterior_mean = result["posterior-mean"]
 
-    assert(result[16][16] > 0.2)
+    assert(posterior_mean[16][16] > 0.2)
 
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    trace_par = result["parameter-trace"]
     assert trace_par["smoothingParam0"][-1] > 0
+    assert "alpha_init" in trace_par.meta
