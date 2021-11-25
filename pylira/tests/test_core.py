@@ -120,3 +120,5 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
 
     assert_allclose(lira_result.config["alpha_init"], new_result.config["alpha_init"])
     assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)
+
+    assert lira_result.image_trace.shape == new_result.image_trace.shape
