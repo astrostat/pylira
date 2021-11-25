@@ -253,7 +253,7 @@ class LIRADeconvolverResult:
 
         return self._parameter_trace
 
-    def plot_posterior_mean(self, **kwargs):
+    def plot_posterior_mean(self, from_image_trace=False, **kwargs):
         """Plot posteriror mean
 
         Parameters
@@ -263,8 +263,16 @@ class LIRADeconvolverResult:
         """
         import matplotlib.pyplot as plt
 
+        fig = plt.gcf()
+
+        if from_image_trace:
+            data = self.posterior_mean_from_trace
+        else:
+            data = self.posterior_mean
+
         ax = plt.subplot(projection=self.wcs)
-        ax.imshow(self.posterior_mean, origin="lower", **kwargs)
+        im = ax.imshow(data, origin="lower", **kwargs)
+        fig.colorbar(im, ax=ax, label="Posterior Mean")
 
     def plot_parameter_traces(self, **kwargs):
         """Plot parameter traces
