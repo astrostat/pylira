@@ -32,13 +32,20 @@ def plot_example_dataset(data, figsize=(12, 7), **kwargs):
     axes.flat[-1].set_visible(False)
 
 
-def plot_parameter_traces(parameter_trace, config=None, figsize=(16, 16), ncols=3, **kwargs):
+def get_grid_figsize(width, ncols, nrows):
+    height = width * (nrows / ncols)
+    return width, height
+
+
+def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
     Parameters
     ----------
     parameter_trace : `~astropy.table.Table`
         Parameter trace table
+    config : dict
+        Config dictionary
     figsize : tupe of float
         Figure size
     ncols : int
@@ -59,14 +66,15 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=(16, 16), ncols=
     kwargs.setdefault("color", "tab:blue")
     nrows = (len(table.colnames) // ncols) + 1
 
+    if figsize is None:
+        figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
+
     fig, axes = plt.subplots(
         ncols=ncols,
         nrows=nrows,
         figsize=figsize,
+        gridspec_kw={"hspace": 0.25}
     )
-
-    if config is None:
-        config = table.meta
 
     n_burn_in = config.get("n_burn_in", 0)
     burn_in = slice(0, n_burn_in)
@@ -112,13 +120,15 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=(16, 16), ncols=
     return axes
 
 
-def plot_parameter_distributions(parameter_trace, config=None, figsize=(16, 16), ncols=3, **kwargs):
+def plot_parameter_distributions(parameter_trace, config, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
     Parameters
     ----------
     parameter_trace : `~astropy.table.Table`
         Parameter trace table
+    config : dict
+        Config dictionary
     figsize : tupe of float
         Figure size
     ncols : int
@@ -138,12 +148,12 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=(16, 16),
         ["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"]
     )
 
-    if config is None:
-        config = table.meta
-
     n_burn_in = config.get("n_burn_in", 0)
 
     nrows = (len(table.colnames) // ncols) + 1
+
+    if figsize is None:
+        figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
 
     fig, axes = plt.subplots(
         ncols=ncols,
