@@ -8,7 +8,7 @@ from .utils.io import (
     IO_FORMATS_WRITE,
     IO_FORMATS_READ,
 )
-from .utils.plot import plot_parameter_traces, plot_parameter_distributions
+from .utils.plot import plot_parameter_traces, plot_parameter_distributions, plot_pixel_trace
 
 
 DTYPE_DEFAULT = np.float64
@@ -253,11 +253,50 @@ class LIRADeconvolverResult:
 
         return self._parameter_trace
 
+    def plot_pixel_trace(self, center_pix=None, figsize=(16, 6)):
+        """Plot pixel traces in a given region
+
+        Parameters
+        ----------
+        center_pix : tuple of int
+             Pixel indices, order is (x, y).
+        figsize : tuple of float
+            Figure size
+
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import Circle
+
+        fig = plt.figure(figsize=figsize)
+
+        if center_pix is None:
+            # choose center as default
+            center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
+
+        data = self.posterior_mean_from_trace
+
+        ax_image = plt.subplot(1, 2, 1, projection=self.wcs)
+        im = ax_image.imshow(data, origin="lower")
+        fig.colorbar(im, ax=ax_image, label="Posterior Mean")
+
+        artist = Circle(center_pix, radius=1, color="w", fc="None")
+        ax_image.add_artist(artist)
+
+        ax_trace = plt.subplot(1, 2, 2, projection=self.wcs)
+        plot_pixel_trace(
+            ax=ax_trace,
+            image_trace=self.image_trace,
+            config=self.config,
+            center_pix=center_pix,
+        )
+
     def plot_posterior_mean(self, from_image_trace=False, **kwargs):
         """Plot posteriror mean
 
         Parameters
         ----------
+        from_image_trace : bool
+            Recompute posterior from image trace.
         **kwargs : dict
             Keyword arguments forwarded to `~matplotlib.pyplot.imshow`
         """

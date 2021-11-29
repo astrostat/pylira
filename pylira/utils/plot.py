@@ -5,6 +5,7 @@ __all__ = [
     "plot_example_dataset",
     "plot_parameter_traces",
     "plot_parameter_distributions",
+    "plot_pixel_trace",
 ]
 
 
@@ -35,6 +36,54 @@ def plot_example_dataset(data, figsize=(12, 7), **kwargs):
 def get_grid_figsize(width, ncols, nrows):
     height = width * (nrows / ncols)
     return width, height
+
+
+def plot_trace(ax, idx, trace, n_burn_in, **kwargs):
+    """Plot a single parameter trace
+
+    Parameters
+    ----------
+    ax : `~matplotlib.pyplot.Axes`
+        Plot axes
+    idx : `~numpy.ndarray`
+        Iteration
+    trace : `~numpy.ndarray`
+        Trace to plot
+    n_burn_in : int
+        Number of burn in iterations
+    **kwargs : dict
+        Keyword arguments passed to `~matplotlib.pyplot.plot`
+
+    """
+    burn_in = slice(0, n_burn_in)
+    valid = slice(n_burn_in, -1)
+
+    ax.plot(
+        idx[burn_in],
+        trace[burn_in],
+        alpha=0.3,
+        label="Burn in",
+        **kwargs
+    )
+    ax.plot(idx[valid], trace[valid], label="Valid", **kwargs)
+    ax.set_xlabel("Number of Iterations")
+
+    mean = np.mean(trace[valid])
+    ax.hlines(
+        mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
+    )
+
+    std = np.std(trace[valid])
+    y1, y2 = mean - std, mean + std
+    ax.fill_between(
+        idx[valid],
+        y1,
+        y2,
+        color="tab:orange",
+        alpha=0.2,
+        zorder=9,
+        label=r"1 $\sigma$ Std. Deviation",
+    )
 
 
 def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
@@ -80,8 +129,6 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
     )
 
     n_burn_in = config.get("n_burn_in", 0)
-    burn_in = slice(0, n_burn_in)
-    valid = slice(n_burn_in, -1)
     idx = np.arange(len(table))
 
     for name, ax in zip_longest(table.colnames, axes.flat):
@@ -89,34 +136,9 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
             ax.set_visible(False)
             continue
 
-        ax.plot(
-            idx[burn_in],
-            parameter_trace[name][burn_in],
-            alpha=0.3,
-            label="Burn in",
-            **kwargs
-        )
-        ax.plot(idx[valid], parameter_trace[name][valid], label="Valid", **kwargs)
+        trace = parameter_trace[name]
+        plot_trace(ax=ax, trace=trace, idx=idx, n_burn_in=n_burn_in, **kwargs)
         ax.set_title(name.title())
-        ax.set_xlabel("Number of Iterations")
-
-        mean = np.mean(parameter_trace[name][valid])
-        ax.hlines(
-            mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
-        )
-
-        std = np.std(parameter_trace[name][valid])
-        y1, y2 = mean - std, mean + std
-        ax.fill_between(
-            idx[valid],
-            y1,
-            y2,
-            color="tab:orange",
-            alpha=0.2,
-            zorder=9,
-            label=r"1 $\sigma$ Std. Deviation",
-        )
-
         if name == "logPost":
             ax.legend()
 
@@ -215,3 +237,48 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
             has_legend = True
 
     return axes
+
+
+def plot_pixel_trace(image_trace, center_pix, ax=None, config=None, **kwargs):
+    """Plot pixel traces in a circular region, given a position and radius.
+
+    Parameters
+    ----------
+    image_trace : `~numpy.ndarray`
+        Image traces array
+    center_pix : tuple of int
+        Pixel indices center, order is (x, y).
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
+    config : dict
+        Configuration dictionary
+    **kwargs : dict
+        Keyword arguments passed to `~matplotlib.pyplot.plot`
+
+    Returns
+    -------
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
+
+    """
+    import matplotlib.pyplot as plt
+
+    if config is None:
+        config = {}
+
+    if ax is None:
+        ax = plt.gca()
+
+    n_iter, n_y, n_x = image_trace.shape
+    n_burn_in = config.get("n_burn_in", 0)
+
+    idx = np.arange(n_iter)
+
+    trace = image_trace[(Ellipsis,) + center_pix[::-1]].T
+
+    kwargs.setdefault("color", "tab:blue")
+    plot_trace(ax=ax, trace=trace, idx=idx, n_burn_in=n_burn_in, **kwargs)
+    ax.set_title(f"Pixel trace for {center_pix}")
+    ax.set_xlabel("Number of Iterations")
+    ax.legend()
+    return ax
