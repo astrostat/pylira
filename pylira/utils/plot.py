@@ -37,6 +37,54 @@ def get_grid_figsize(width, ncols, nrows):
     return width, height
 
 
+def plot_trace(ax, idx, trace, n_burn_in, **kwargs):
+    """Plot a single parameter trace
+
+    Parameters
+    ----------
+    ax : `~matplotlib.pyplot.Axes`
+        Plot axes
+    idx : `~numpy.ndarray`
+        Iteration
+    trace : `~numpy.ndarray`
+        Trace to plot
+    n_burn_in : int
+        Number of burn in iterations
+    **kwargs : dict
+        Keyword arguments passed to `~matplotlib.pyplot.plot`
+
+    """
+    burn_in = slice(0, n_burn_in)
+    valid = slice(n_burn_in, -1)
+
+    ax.plot(
+        idx[burn_in],
+        trace[burn_in],
+        alpha=0.3,
+        label="Burn in",
+        **kwargs
+    )
+    ax.plot(idx[valid], trace[valid], label="Valid", **kwargs)
+    ax.set_xlabel("Number of Iterations")
+
+    mean = np.mean(trace[valid])
+    ax.hlines(
+        mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
+    )
+
+    std = np.std(trace[valid])
+    y1, y2 = mean - std, mean + std
+    ax.fill_between(
+        idx[valid],
+        y1,
+        y2,
+        color="tab:orange",
+        alpha=0.2,
+        zorder=9,
+        label=r"1 $\sigma$ Std. Deviation",
+    )
+
+
 def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
