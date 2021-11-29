@@ -8,6 +8,7 @@ from .utils.io import (
     IO_FORMATS_WRITE,
     IO_FORMATS_READ,
 )
+from .utils.plot import plot_parameter_traces, plot_parameter_distributions
 
 
 DTYPE_DEFAULT = np.float64
@@ -251,6 +252,47 @@ class LIRADeconvolverResult:
             self._parameter_trace.meta.update(self.config)
 
         return self._parameter_trace
+
+    def plot_posterior_mean(self, from_image_trace=False, **kwargs):
+        """Plot posteriror mean
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments forwarded to `~matplotlib.pyplot.imshow`
+        """
+        import matplotlib.pyplot as plt
+
+        fig = plt.gcf()
+
+        if from_image_trace:
+            data = self.posterior_mean_from_trace
+        else:
+            data = self.posterior_mean
+
+        ax = plt.subplot(projection=self.wcs)
+        im = ax.imshow(data, origin="lower", **kwargs)
+        fig.colorbar(im, ax=ax, label="Posterior Mean")
+
+    def plot_parameter_traces(self, **kwargs):
+        """Plot parameter traces
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments forwarded to `plot_parameter_traces`
+        """
+        plot_parameter_traces(self.parameter_trace, config=self.config, **kwargs)
+
+    def plot_parameter_distributions(self, **kwargs):
+        """Plot parameter distributions
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments forwarded to `plot_parameter_distributions`
+        """
+        plot_parameter_distributions(self.parameter_trace, config=self.config, **kwargs)
 
     def write(self, filename, overwrite=False, format="fits"):
         """Write result fo file

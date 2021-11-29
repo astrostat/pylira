@@ -49,7 +49,8 @@ def read_image_trace_file(filename, format="ascii"):
 
         return data.reshape((n_iter, shape_x, shape_x))
     elif format == "fits":
-        return fits.getdata(filename, hdu="IMAGE_TRACE")
+        hdulist = fits.open(filename)
+        return hdulist["IMAGE_TRACE"].data
     else:
         raise ValueError(f"Not a supported format {format}")
 
@@ -82,7 +83,7 @@ def write_to_fits(result, filename, overwrite):
     )
 
     image_trace_hdu = fits.ImageHDU(
-        header=header, data=result.image_trace, name="IMAGE_TRACE"
+       data=result.image_trace, name="IMAGE_TRACE"
     )
 
     config_hdu = fits.BinTableHDU(result.config_table, name="CONFIG")

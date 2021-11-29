@@ -32,13 +32,20 @@ def plot_example_dataset(data, figsize=(12, 7), **kwargs):
     axes.flat[-1].set_visible(False)
 
 
-def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
+def get_grid_figsize(width, ncols, nrows):
+    height = width * (nrows / ncols)
+    return width, height
+
+
+def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
     Parameters
     ----------
     parameter_trace : `~astropy.table.Table`
         Parameter trace table
+    config : dict
+        Config dictionary.
     figsize : tupe of float
         Figure size
     ncols : int
@@ -56,16 +63,23 @@ def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
     table = parameter_trace.copy()
     table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol"])
 
+    if config is None:
+        config = table.meta
+
     kwargs.setdefault("color", "tab:blue")
     nrows = (len(table.colnames) // ncols) + 1
+
+    if figsize is None:
+        figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
 
     fig, axes = plt.subplots(
         ncols=ncols,
         nrows=nrows,
         figsize=figsize,
+        gridspec_kw={"hspace": 0.25}
     )
 
-    n_burn_in = table.meta.get("n_burn_in", 0)
+    n_burn_in = config.get("n_burn_in", 0)
     burn_in = slice(0, n_burn_in)
     valid = slice(n_burn_in, -1)
     idx = np.arange(len(table))
@@ -109,13 +123,15 @@ def plot_parameter_traces(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
     return axes
 
 
-def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **kwargs):
+def plot_parameter_distributions(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
     Parameters
     ----------
     parameter_trace : `~astropy.table.Table`
         Parameter trace table
+    config : dict
+        Config dictionary
     figsize : tupe of float
         Figure size
     ncols : int
@@ -135,14 +151,21 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
         ["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"]
     )
 
-    n_burn_in = table.meta.get("n_burn_in", 0)
+    if config is None:
+        config = table.meta
+
+    n_burn_in = config.get("n_burn_in", 0)
 
     nrows = (len(table.colnames) // ncols) + 1
+
+    if figsize is None:
+        figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
 
     fig, axes = plt.subplots(
         ncols=ncols,
         nrows=nrows,
         figsize=figsize,
+        gridspec_kw={"hspace": 0.25}
     )
 
     kwargs.setdefault("color", "tab:blue")
@@ -162,20 +185,21 @@ def plot_parameter_distributions(parameter_trace, figsize=(16, 16), ncols=3, **k
         n_vals, bins, _ = ax.hist(column[is_finite], label="Valid", **kwargs)
 
         column_burn_in = parameter_trace[name][:n_burn_in]
-        is_finite = np.isfinite(column_burn_in)
+        is_finite_burn_in = np.isfinite(column_burn_in)
         n_vals_burn_in, _, _ = ax.hist(
-            column_burn_in[is_finite], alpha=0.3, label="Burn in", **kwargs
+            column_burn_in[is_finite_burn_in], alpha=0.3, label="Burn in", **kwargs
         )
 
         ax.set_title(name.title())
         ax.set_xlabel("Number of Iterations")
 
         y_max = np.max([n_vals, n_vals_burn_in])
-        mean = np.mean(column)
+        mean = np.mean(column[is_finite])
         ax.vlines(mean, 0, y_max, color="tab:orange", zorder=10, label="Mean")
 
-        std = np.std(column)
+        std = np.std(column[is_finite])
         x1, x2 = mean - std, mean + std
+
         ax.fill_betweenx(
             np.linspace(0, y_max, 10),
             x1,
