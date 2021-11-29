@@ -215,3 +215,22 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
             has_legend = True
 
     return axes
+
+
+def plot_pixel_traces_region(image_trace, center, radius=5, **kwargs):
+    """Plot pixel traces in a circular region, given a position and radius.
+
+    Parameters
+    ----------
+    image_trace : `~numpy.ndarray`
+        Image traces array
+    center : tuple of int
+        Pixel indices center
+    radius : float
+        Radius of the of the region in pixels.
+    **kwargs : dict
+        Keyword arguments passed to `~matplotlib.pyplot.plot`
+    """
+    pass
+
+
