@@ -159,6 +159,7 @@ def plot_parameter_distributions(parameter_trace, config, figsize=None, ncols=3,
         ncols=ncols,
         nrows=nrows,
         figsize=figsize,
+        gridspec_kw={"hspace": 0.25}
     )
 
     kwargs.setdefault("color", "tab:blue")
