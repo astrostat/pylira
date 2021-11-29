@@ -217,20 +217,37 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
     return axes
 
 
-def plot_pixel_traces_region(image_trace, center, radius=5, **kwargs):
+def plot_pixel_traces_region(image_trace, center_pix, radius_pix=5, posterior_mean=None, config=None, **kwargs):
     """Plot pixel traces in a circular region, given a position and radius.
 
     Parameters
     ----------
     image_trace : `~numpy.ndarray`
         Image traces array
-    center : tuple of int
+    config : dict
+        Configuration dictionary
+    center_pix : tuple of int
         Pixel indices center
-    radius : float
+    radius_pix : float
         Radius of the of the region in pixels.
+    posterior_mean : `~numpy.ndarray`
+        Posterior mean.
     **kwargs : dict
         Keyword arguments passed to `~matplotlib.pyplot.plot`
     """
-    pass
+    import matplotlib.pyplot as plt
+
+    if posterior_mean is None:
+        posterior_mean = np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
+
+    y_idx, x_idx = np.meshgrid()
+    y_center, x_center = center_pix
+
+    offset = np.sqrt((y_center - y_idx) ** 2 + (x_center - x_idx) ** 2)
+    idx = np.where(offset < radius)
+
+    alpha = 1
+    kwargs.setdefault("alpha", alpha)
+    plt.plot(image_trace[idx, :], **kwargs)
 
 
