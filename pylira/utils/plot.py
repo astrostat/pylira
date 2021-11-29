@@ -5,6 +5,7 @@ __all__ = [
     "plot_example_dataset",
     "plot_parameter_traces",
     "plot_parameter_distributions",
+    "plot_pixel_trace",
 ]
 
 
@@ -247,10 +248,18 @@ def plot_pixel_trace(image_trace, center_pix, ax=None, config=None, **kwargs):
         Image traces array
     center_pix : tuple of int
         Pixel indices center, order is (x, y).
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
     config : dict
         Configuration dictionary
     **kwargs : dict
         Keyword arguments passed to `~matplotlib.pyplot.plot`
+
+    Returns
+    -------
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
+
     """
     import matplotlib.pyplot as plt
 
