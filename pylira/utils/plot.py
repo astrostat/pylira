@@ -128,8 +128,6 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
     )
 
     n_burn_in = config.get("n_burn_in", 0)
-    burn_in = slice(0, n_burn_in)
-    valid = slice(n_burn_in, -1)
     idx = np.arange(len(table))
 
     for name, ax in zip_longest(table.colnames, axes.flat):
@@ -137,34 +135,9 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
             ax.set_visible(False)
             continue
 
-        ax.plot(
-            idx[burn_in],
-            parameter_trace[name][burn_in],
-            alpha=0.3,
-            label="Burn in",
-            **kwargs
-        )
-        ax.plot(idx[valid], parameter_trace[name][valid], label="Valid", **kwargs)
+        trace = parameter_trace[name]
+        plot_trace(ax=ax, trace=trace, idx=idx, n_burn_in=n_burn_in, **kwargs)
         ax.set_title(name.title())
-        ax.set_xlabel("Number of Iterations")
-
-        mean = np.mean(parameter_trace[name][valid])
-        ax.hlines(
-            mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
-        )
-
-        std = np.std(parameter_trace[name][valid])
-        y1, y2 = mean - std, mean + std
-        ax.fill_between(
-            idx[valid],
-            y1,
-            y2,
-            color="tab:orange",
-            alpha=0.2,
-            zorder=9,
-            label=r"1 $\sigma$ Std. Deviation",
-        )
-
         if name == "logPost":
             ax.legend()
 
