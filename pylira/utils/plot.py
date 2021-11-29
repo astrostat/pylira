@@ -45,7 +45,7 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
     parameter_trace : `~astropy.table.Table`
         Parameter trace table
     config : dict
-        Config dictionary
+        Config dictionary.
     figsize : tupe of float
         Figure size
     ncols : int
@@ -62,6 +62,9 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
 
     table = parameter_trace.copy()
     table.remove_columns(["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol"])
+
+    if config is None:
+        config = table.meta
 
     kwargs.setdefault("color", "tab:blue")
     nrows = (len(table.colnames) // ncols) + 1
@@ -120,7 +123,7 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
     return axes
 
 
-def plot_parameter_distributions(parameter_trace, config, figsize=None, ncols=3, **kwargs):
+def plot_parameter_distributions(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
     """Plot parameters traces
 
     Parameters
@@ -147,6 +150,9 @@ def plot_parameter_distributions(parameter_trace, config, figsize=None, ncols=3,
     table.remove_columns(
         ["iteration", "stepSize", "cycleSpinRow", "cycleSpinCol", "logPost"]
     )
+
+    if config is None:
+        config = table.meta
 
     n_burn_in = config.get("n_burn_in", 0)
 
