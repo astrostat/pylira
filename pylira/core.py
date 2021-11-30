@@ -97,6 +97,18 @@ class LIRADeconvolver:
         self.filename_out = Path(filename_out)
         self.filename_out_par = Path(filename_out_par)
 
+    def __str__(self):
+        """String representation"""
+        cls_name = self.__class__.__name__
+        info = cls_name + "\n"
+        info += len(cls_name) * "-" + "\n\n"
+        data = self.to_dict()
+
+        for key, value in data.items():
+            info += f"\t{key:21s}: {value}\n"
+
+        return info.expandtabs(tabsize=4)
+
     def _check_input_sizes(self, obs_arr):
         obs_shape = obs_arr.shape[0]
         if obs_shape & (obs_shape - 1) != 0:

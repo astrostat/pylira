@@ -8,6 +8,7 @@ __all__ = [
     "plot_parameter_traces",
     "plot_parameter_distributions",
     "plot_pixel_trace",
+    "plot_pixel_trace_neighbours",
 ]
 
 
