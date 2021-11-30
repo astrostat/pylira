@@ -1,5 +1,7 @@
 from itertools import zip_longest
 import numpy as np
+from astropy.visualization import simple_norm
+
 
 __all__ = [
     "plot_example_dataset",
@@ -281,4 +283,60 @@ def plot_pixel_trace(image_trace, center_pix, ax=None, config=None, **kwargs):
     ax.set_title(f"Pixel trace for {center_pix}")
     ax.set_xlabel("Number of Iterations")
     ax.legend()
+    return ax
+
+
+def plot_pixel_trace_neighbours(
+        image_trace, center_pix, radius_pix=1, cmap="Greys",  ax=None, **kwargs
+):
+    """Plot pixel traces in a given region.
+
+    The distance to the center is encoded in the color the trace it plotted with.
+
+    Parameters
+    ----------
+    image_trace : `~numpy.ndarray`
+        Image traces array
+    center_pix : tuple of int
+        Pixel indices, order is (x, y). By default the trace at the center is plotted.
+    radius_pix : float
+        Radius in which the traces are plotted.
+    cmap : str
+        Colormapt o plot the traces with.
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
+    **kwargs : dict
+        Keyword arguments forwarded to `~matplotlib.pyplot.plot`
+
+    Returns
+    -------
+    ax : `~matplotlib.pyplot.Axes`
+        Plotting axes
+
+    """
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    if ax is None:
+        ax = plt.gca()
+
+    _, ny, nx = image_trace.shape
+    y, x = np.arange(ny).reshape((-1, 1)), np.arange(nx)
+    offset_pix = np.sqrt((y - center_pix[1]) ** 2 + (x - center_pix[0]) ** 2)
+    idx = np.where((offset_pix < radius_pix) & (offset_pix > 0))
+
+    cmap = matplotlib.cm.get_cmap(cmap)
+    norm = simple_norm(data=offset_pix[idx])
+
+    idx = idx + (offset_pix[idx],)
+
+    kwargs.setdefault("zorder", 0)
+    kwargs.setdefault("alpha", 0.5)
+
+    for idx_x, idx_y, offset in zip(*idx):
+        trace = image_trace[(slice(None), idx_x, idx_y)]
+        value = norm(offset)
+        color = tuple(cmap(value)[0])
+        ax.plot(trace, color=color,  **kwargs)
+
     return ax
