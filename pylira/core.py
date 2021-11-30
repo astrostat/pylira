@@ -1,6 +1,7 @@
 from pathlib import Path
 import numpy as np
 from astropy.table import Table
+from astropy.visualization import simple_norm
 from . import image_analysis
 from .utils.io import (
     read_parameter_trace_file,
@@ -8,7 +9,12 @@ from .utils.io import (
     IO_FORMATS_WRITE,
     IO_FORMATS_READ,
 )
-from .utils.plot import plot_parameter_traces, plot_parameter_distributions, plot_pixel_trace
+from .utils.plot import (
+    plot_parameter_traces,
+    plot_parameter_distributions,
+    plot_pixel_trace,
+    plot_pixel_trace_neighbours
+)
 
 
 DTYPE_DEFAULT = np.float64
@@ -253,25 +259,22 @@ class LIRADeconvolverResult:
 
         return self._parameter_trace
 
-    def plot_pixel_trace(self, center_pix=None, figsize=(16, 6)):
-        """Plot pixel traces in a given region
+    def plot_pixel_traces_region(self, center_pix, radius_pix=0, figsize=(16, 6)):
+        """Plot pixel traces in a given region.
 
-        Parameters
-        ----------
-        center_pix : tuple of int
-             Pixel indices, order is (x, y).
-        figsize : tuple of float
+         Parameters
+         ----------
+         center_pix : tuple of int
+              Pixel indices, order is (x, y). By default the trace at the center is plotted.
+         radius_pix : float
+            Radius in which the traces are plotted.
+         figsize : tuple of float
             Figure size
-
-        """
+         """
         import matplotlib.pyplot as plt
         from matplotlib.patches import Circle
 
         fig = plt.figure(figsize=figsize)
-
-        if center_pix is None:
-            # choose center as default
-            center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
 
         data = self.posterior_mean_from_trace
 
@@ -279,15 +282,68 @@ class LIRADeconvolverResult:
         im = ax_image.imshow(data, origin="lower")
         fig.colorbar(im, ax=ax_image, label="Posterior Mean")
 
-        artist = Circle(center_pix, radius=1, color="w", fc="None")
+        radius = max(radius_pix, 1)
+        artist = Circle(center_pix, radius=radius, color="w", fc="None")
         ax_image.add_artist(artist)
 
         ax_trace = plt.subplot(1, 2, 2, projection=self.wcs)
+
         plot_pixel_trace(
+            image_trace=self.image_trace,
+            center_pix=center_pix,
             ax=ax_trace,
+            config=self.config
+        )
+
+        plot_pixel_trace_neighbours(
+            image_trace=self.image_trace,
+            center_pix=center_pix,
+            radius_pix=radius_pix,
+            ax=ax_trace
+        )
+
+    def plot_pixel_trace(self, center_pix=None, **kwargs):
+        """Plot pixel trace at a given position.
+
+        Parameters
+        ----------
+        center_pix : tuple of int
+             Pixel indices, order is (x, y). By default the trace at the center is plotted.
+        **kwargs : dict
+            Keyword arguments forwarded to `plot_pixel_trace`
+        """
+        if center_pix is None:
+            # choose center as default
+            center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
+
+        plot_pixel_trace(
             image_trace=self.image_trace,
             config=self.config,
             center_pix=center_pix,
+            **kwargs
+        )
+
+    def plot_pixel_trace_neighbours(self, center_pix=None, radius_pix=0, **kwargs):
+        """Plot pixel traces in a given region.
+
+        Parameters
+        ----------
+        center_pix : tuple of int
+            Pixel indices, order is (x, y). By default the trace at the center is plotted.
+        radius_pix : float
+            Radius in which the traces are plotted.
+        **kwargs : dict
+            Keyword arguments forwarded to `~matplotlib.pyplot.plot`
+        """
+        if center_pix is None:
+            # choose center as default
+            center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
+
+        plot_pixel_trace_neighbours(
+            image_trace=self.image_trace,
+            center_pix=center_pix,
+            radius_pix=radius_pix,
+            **kwargs
         )
 
     def plot_posterior_mean(self, from_image_trace=False, **kwargs):
