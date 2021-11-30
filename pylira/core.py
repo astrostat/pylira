@@ -1,7 +1,6 @@
 from pathlib import Path
 import numpy as np
 from astropy.table import Table
-from astropy.visualization import simple_norm
 from . import image_analysis
 from .utils.io import (
     read_parameter_trace_file,

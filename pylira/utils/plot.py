@@ -286,7 +286,9 @@ def plot_pixel_trace(image_trace, center_pix, ax=None, config=None, **kwargs):
     return ax
 
 
-def plot_pixel_trace_neighbours(image_trace, center_pix, radius_pix=1, cmap="Greys",  ax=None, **kwargs):
+def plot_pixel_trace_neighbours(
+        image_trace, center_pix, radius_pix=1, cmap="Greys",  ax=None, **kwargs
+):
     """Plot pixel traces in a given region.
 
     The distance to the center is encoded in the color the trace it plotted with.
