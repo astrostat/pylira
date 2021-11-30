@@ -50,6 +50,8 @@ def test_lira_deconvolver():
     assert_allclose(config["alpha_init"], [1, 2, 3])
     assert not config["fit_background_scale"]
 
+    assert "alpha_init" in str(deconvolve)
+
 
 def test_lira_deconvolver_run_point_source(lira_result):
     assert(lira_result.posterior_mean[16][16] > 700)

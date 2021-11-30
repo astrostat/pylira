@@ -8,6 +8,7 @@ __all__ = [
     "plot_parameter_traces",
     "plot_parameter_distributions",
     "plot_pixel_trace",
+    "plot_pixel_trace_neighbours",
 ]
 
 
@@ -206,6 +207,7 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
 
         column = parameter_trace[name][n_burn_in:]
         is_finite = np.isfinite(column)
+
         n_vals, bins, _ = ax.hist(column[is_finite], label="Valid", **kwargs)
 
         column_burn_in = parameter_trace[name][:n_burn_in]
