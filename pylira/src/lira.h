@@ -1,13 +1,11 @@
-#include <R.h>
-#include <R_ext/Random.h>
 #define R_NO_REMAP 1
-#include <Rinternals.h>
 #define MATHLIB_STANDALONE 1
 #include <Rmath.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdexcept>
 #include <time.h>
 #include <iostream>
 
@@ -221,7 +219,7 @@ int printf_d(const char*format,...){
 /***************************************************************/
 
 void c_error(char error_text[]) { /* Print an Error Message */
-  error("%s", error_text);
+  throw std::runtime_error(error_text);
 }
 
 /***************************************************************/
@@ -1066,7 +1064,7 @@ void update_image_mrf(expmapType* expmap, cntType* src, mrfType* mrf,
     } /*j loop over src.img */
   }   /* i loop */
 
-  if (cont->em == 0) error("No code for MCMC fitting with MRF prior!!");
+  if (cont->em == 0) c_error("No code for MCMC fitting with MRF prior!!");
 
 } /*update_image_mrf */
 
@@ -1453,7 +1451,7 @@ void update_image_ml(expmapType* expmap, cntType* src, controlType* cont) {
       src->img[i][j] = exp(log(src->data[i][j]) - log(expmap->prod[i][j]));
     }
 
-  if (cont->em == 0) error("No code for MCMC fitting with flat prior (i.e, ML)!!");
+  if (cont->em == 0) c_error("No code for MCMC fitting with flat prior (i.e, ML)!!");
 
 } /* update_image_ml */
 
