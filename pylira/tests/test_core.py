@@ -69,20 +69,17 @@ def test_lira_deconvolver_run_point_source(lira_result):
     assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in lira_result.config
 
-    assert_allclose(result[16][16], 955.7, rtol=3e-2)
-    assert_allclose(result[0][0], 0.032, atol=0.1)
-
     # check total flux conservation
-    assert_allclose(result.sum(), data["flux"].sum(), rtol=3e-2)
+    assert_allclose(lira_result.posterior_mean.sum(), 984.5, atol=1)
 
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    trace_par = lira_result.parameter_trace
 
-    idx = slice(deconvolve.n_burn_in, -1)
-    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.056, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.060, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.060, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.062, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.070, rtol=5e-2)
+    idx = slice(lira_result.n_burn_in, -1)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.056, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.060, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.060, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.062, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.070, rtol=0.1)
 
 
 def test_lira_deconvolver_run_disk_source(tmpdir):
@@ -105,20 +102,19 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
-    assert(result.posterior_mean[16][16] > 0.2)
-    assert_allclose(result[16][16], 0.229, rtol=3e-2)
-    assert_allclose(result[0][0], 0.0011, atol=0.1)
+    assert_allclose(result.posterior_mean[16][16], 14.0, rtol=0.1)
+    assert_allclose(result.posterior_mean[0][0], 0.0011, atol=0.1)
 
     # check total flux conservation
     # TODO: improve accuracy
-    assert_allclose(result.sum(), 1400, rtol=0.1)
+    assert_allclose(result.posterior_mean.sum(), 1413, atol=10)
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
 
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
+    trace_par = result.parameter_trace
 
-    idx = slice(deconvolve.n_burn_in, -1)
+    idx = slice(result.n_burn_in, -1)
     assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.08, rtol=5e-2)
     assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.20, rtol=5e-2)
     assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.31, rtol=5e-2)
@@ -152,6 +148,30 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
 
     assert_allclose(result.posterior_mean, result.posterior_mean_from_trace, atol=1e-2)
 
+    assert_allclose(result.posterior_mean[16][16], 22.753878, rtol=1e-2)
+    assert_allclose(result.posterior_mean[16][16], 0.338, rtol=3e-2)
+    assert_allclose(result.posterior_mean[0][0], 0.0011, atol=0.1)
+
+    # check at point source positions
+    assert_allclose(result.posterior_mean[16][26], 151.0, rtol=3e-2)
+    assert_allclose(result.posterior_mean[16][6], 2.88, rtol=3e-2)
+    assert_allclose(result.posterior_mean[26][16], 1337.0, rtol=3e-2)
+    assert_allclose(result.posterior_mean[6][16], 319.0, rtol=3e-2)
+    assert_allclose(result.posterior_mean[0][0], 0, atol=0.1)
+
+    # check total flux conservation
+    # TODO: improve accuracy
+    assert_allclose(result.posterior_mean.sum(), 3430, rtol=0.1)
+
+    trace_par = result.parameter_trace
+
+    idx = slice(deconvolve.n_burn_in, -1)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.04, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.10, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.18, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.30, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.36, rtol=5e-2)
+
 
 def test_lira_deconvolver_result_write(tmpdir, lira_result):
     filename = tmpdir / "test.fits.gz"
@@ -168,26 +188,3 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
     assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)
 
     assert lira_result.image_trace.shape == new_result.image_trace.shape
-    assert_allclose(result[16][16], 22.753878, rtol=1e-2)
-    assert_allclose(result[16][16], 0.338, rtol=3e-2)
-    assert_allclose(result[0][0], 0.0011, atol=0.1)
-
-    # check at point source positions
-    assert_allclose(result[16][26], 151.0, rtol=3e-2)
-    assert_allclose(result[16][6], 2.88, rtol=3e-2)
-    assert_allclose(result[26][16], 1337.0, rtol=3e-2)
-    assert_allclose(result[6][16], 319.0, rtol=3e-2)
-    assert_allclose(result[0][0], 0, atol=0.1)
-
-    # check total flux conservation
-    # TODO: improve accuracy
-    assert_allclose(result.sum(), 3430, rtol=0.1)
-
-    trace_par = read_parameter_trace_file(tmpdir / "parameter-trace.txt")
-
-    idx = slice(deconvolve.n_burn_in, -1)
-    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.04, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.10, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.18, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.30, rtol=5e-2)
-    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.36, rtol=5e-2)

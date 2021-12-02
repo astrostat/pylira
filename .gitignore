@@ -18,6 +18,8 @@ MANIFEST
 .ipynb_checkpoints
 .tmp
 
+.hypothesis
+
 # Sphinx
 docs/api
 docs/_build

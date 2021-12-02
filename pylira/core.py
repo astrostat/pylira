@@ -141,6 +141,8 @@ class LIRADeconvolver:
         data["alpha_init"] = self.alpha_init.tolist()
         data.pop("filename_out")
         data.pop("filename_out_par")
+        # TOOD: serialise random state for reproducibility?
+        data.pop("random_state")
         return data
 
     def run(self, data):
