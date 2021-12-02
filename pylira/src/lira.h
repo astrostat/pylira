@@ -193,13 +193,13 @@ void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
                       int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
                       int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
                       double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
-                      double* ms_al_kap1, double* ms_al_kap3);
+                      double* ms_al_kap1, double* ms_al_kap3, unsigned int random_seed);
 
 void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
                           char* param_file_nm, controlType* cont, psfType* psf,
                           expmapType* expmap, cntType* obs, cntType* deblur,
                           cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
-                          llikeType* llike, scalemodelType* bkg_scale);
+                          llikeType* llike, scalemodelType* bkg_scale, unsigned int random_seed);
                           
 int printf_d(const char*format,...){
 #ifdef DEBUG
@@ -1575,7 +1575,7 @@ void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
                       int* nrow, int* ncol, int* nrow_psf, int* ncol_psf, int* em,
                       int* fit_bkg_scl, double* alpha_init, int* alpha_init_len,
                       double* ms_ttlcnt_pr, double* ms_ttlcnt_exp, double* ms_al_kap2,
-                      double* ms_al_kap1, double* ms_al_kap3) {
+                      double* ms_al_kap1, double* ms_al_kap3, unsigned int random_seed) {
   controlType cont;         /* the control variables */
   psfType psf;              /* The psf */
   expmapType expmap;        /* The exposure map */
@@ -1613,7 +1613,7 @@ void image_analysis_R(double* outmap, double* post_mean, double* cnt_vector,
 
   bayes_image_analysis(outmap, post_mean, *out_filename, *param_filename, &cont, &psf,
                        &expmap, &obs, &deblur, &src, &bkg, &mrf, &ms, &llike,
-                       &bkg_scale);
+                       &bkg_scale, random_seed);
 
 } /* main R interface */
 
@@ -1625,7 +1625,7 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
                           char* param_file_nm, controlType* cont, psfType* psf,
                           expmapType* expmap, cntType* obs, cntType* deblur,
                           cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
-                          llikeType* llike, scalemodelType* bkg_scale) {
+                          llikeType* llike, scalemodelType* bkg_scale, unsigned int random_seed) {
   FILE* out_file; /* the output file */
   if (!(out_file = fopen(out_file_nm, "w"))) c_error("Could not open the OUTPUT file");
 
@@ -1635,7 +1635,9 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
   print_param_file_header(param_file, cont, expmap, ms);
 
   /********** Initialize the Random Seed ************/
-  srand(time(NULL)); 
+  if (random_seed = 0) random_seed = time(NULL);
+
+  srand(random_seed);
   set_seed(rand(),rand());  
      
   //GetRNGstate(); Throws a segfault outside the R environment

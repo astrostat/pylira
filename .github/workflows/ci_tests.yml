@@ -75,6 +75,7 @@ jobs:
       run: |
         sudo apt-get install r-base-dev r-base r-mathlib
         R RHOME
+        R --version
 
     - name: Test with tox
       run: |
