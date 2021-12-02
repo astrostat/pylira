@@ -64,7 +64,7 @@ def test_lira_deconvolver():
 def test_lira_deconvolver_run_point_source(lira_result):
 
     assert lira_result.config["random_seed"] == 1346985517
-    
+
     assert_allclose(lira_result.posterior_mean[16][16], 955.7, rtol=3e-2)
     assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
 
@@ -77,7 +77,8 @@ def test_lira_deconvolver_run_point_source(lira_result):
 
     trace_par = lira_result.parameter_trace
 
-    idx = slice(lira_result.n_burn_in, -1)
+    idx = slice(lira_result.n_burn_in, None)
+    assert len(trace_par) == 1000
     assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.056, rtol=0.1)
     assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.060, rtol=0.1)
     assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.060, rtol=0.1)
@@ -120,8 +121,9 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     assert "alpha_init" in result.config
 
     trace_par = result.parameter_trace
+    assert len(trace_par) == 1000
 
-    idx = slice(result.n_burn_in, -1)
+    idx = slice(result.n_burn_in, None)
     assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.08, rtol=5e-2)
     assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.20, rtol=5e-2)
     assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.31, rtol=5e-2)
@@ -169,12 +171,14 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
 
     trace_par = result.parameter_trace
 
-    idx = slice(deconvolve.n_burn_in, -1)
-    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.032, rtol=0.1)
-    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.08, rtol=0.1)
-    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.13, rtol=0.1)
-    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.23, rtol=0.1)
-    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.36, rtol=0.1)
+    assert len(trace_par) == 1000
+
+    idx = slice(deconvolve.n_burn_in, None)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.032, rtol=0.4)
+    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.08, rtol=0.4)
+    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.13, rtol=0.4)
+    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.23, rtol=0.4)
+    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.36, rtol=0.4)
 
 
 def test_lira_deconvolver_result_write(tmpdir, lira_result):
