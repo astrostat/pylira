@@ -187,11 +187,13 @@ class LIRADeconvolver:
         parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
         image_trace = {"filename": str(self.filename_out), "format": "ascii"}
 
+        config = self.to_dict()
+        config["random_seed"] = random_seed
         return LIRADeconvolverResult(
             posterior_mean=posterior_mean,
             parameter_trace=parameter_trace,
             image_trace=image_trace,
-            config=self.to_dict()
+            config=config
         )
 
 

@@ -62,6 +62,9 @@ def test_lira_deconvolver():
 
 
 def test_lira_deconvolver_run_point_source(lira_result):
+
+    assert lira_result.config["random_seed"] == 1346985517
+    
     assert_allclose(lira_result.posterior_mean[16][16], 955.7, rtol=3e-2)
     assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
 
@@ -104,6 +107,8 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
+    assert result.config["random_seed"] == 1346985517
+
     assert_allclose(result.posterior_mean[16][16], 14.0, rtol=0.1)
     assert_allclose(result.posterior_mean[0][0], 0.0011, atol=0.1)
 
@@ -143,6 +148,7 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
     )
     result = deconvolve.run(data=data)
 
+    assert result.config["random_seed"] == 1346985517
     assert(result.posterior_mean[16][16] > 0.2)
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
