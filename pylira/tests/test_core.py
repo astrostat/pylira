@@ -73,7 +73,7 @@ def test_lira_deconvolver_run_point_source(lira_result):
     assert "alpha_init" in lira_result.config
 
     # check total flux conservation
-    assert_allclose(lira_result.posterior_mean.sum(), 985, atol=10)
+    assert_allclose(np.nansum(lira_result.posterior_mean), 985, atol=10)
 
     trace_par = lira_result.parameter_trace
 
@@ -115,7 +115,7 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
 
     # check total flux conservation
     # TODO: improve accuracy
-    assert_allclose(result.posterior_mean.sum(), 1413, atol=10)
+    assert_allclose(np.nansum(result.posterior_mean), 1413, atol=10)
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config
@@ -167,7 +167,7 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
 
     # check total flux conservation
     # TODO: improve accuracy
-    assert_allclose(result.posterior_mean.sum(), 3430, rtol=0.1)
+    assert_allclose(np.nansum(result.posterior_mean), 3430, rtol=0.1)
 
     trace_par = result.parameter_trace
 

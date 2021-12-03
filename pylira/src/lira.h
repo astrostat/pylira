@@ -1,5 +1,6 @@
 #define R_NO_REMAP 1
 #define MATHLIB_STANDALONE 1
+#include <stddef.h>
 #include <Rmath.h>
 #include <math.h>
 #include <stdio.h>
