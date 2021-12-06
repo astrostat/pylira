@@ -16,3 +16,4 @@ prune docs/api
 global-exclude *.pyc *.o
 
 graft pylira/src
+graft pylira/extern/rmath/include

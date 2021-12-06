@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 from setuptools import setup
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11.setup_helpers import Pybind11Extension
 
 
 # First provide helpful messages if contributors try and run legacy commands
@@ -79,28 +79,20 @@ except Exception:
 
 include_dirs = [
     "pylira/src/",
-    "/Library/Frameworks/R.framework/Resources/include",
-    "/opt/homebrew/Cellar/r/4.1.2/include",
-    "/usr/lib/R/include",
-    "/usr/share/R/include/",
-    "/usr/include/R",
-    "/usr/include/R/include",
-
+    "pylira/extern/rmath/include/",
 ]
 
-library_dirs = [
-    "/Library/Frameworks/R.framework/Resources/lib",
-    "/opt/homebrew/Cellar/r/4.1.2/lib",
-    "/usr/lib/R/lib",
-]
+sources = ["pylira/src/lirabind.cpp"]
+
+sources += [str(_) for _ in Path("pylira/extern/rmath/src/").glob("*.c")]
+sources += ["pylira/extern/rmath/src/standalone/sunif.c"]
 
 ext_modules = [
     Pybind11Extension(
         name="_lira",
-        sources=["pylira/src/lirabind.cpp"],
+        sources=sources,
         include_dirs=include_dirs,
-        library_dirs=library_dirs,
-        libraries=["Rmath", "R"]
+        define_macros=[('MATHLIB_STANDALONE', None)],
     ),
 ]
 
@@ -108,5 +100,4 @@ setup(
     use_scm_version={'write_to': os.path.join('pylira', 'version.py'),
                      'write_to_template': VERSION_TEMPLATE},
     ext_modules=ext_modules,
-    cmdclass={"build_ext": build_ext},
 )
