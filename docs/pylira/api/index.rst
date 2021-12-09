@@ -10,4 +10,5 @@ exposed in ``pylira.*`` namespace are public.
    :maxdepth: 2
 
    core
+   data
    utils
