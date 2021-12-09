@@ -1,5 +1,5 @@
-=========
-Changelog
-=========
+*************
+Release Notes
+*************
 
 Still empty...

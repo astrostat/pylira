@@ -1,6 +1,6 @@
-***********************
-Developer Documentation
-***********************
+***********
+Development
+***********
 
 This is the developer documentation.
 

@@ -1,11 +1,8 @@
-.. _references:
-
-Glossary and references
-=======================
+**********
+References
+**********
 
 .. _glossary:
-
-
 
 Glossary
 --------
@@ -15,7 +12,7 @@ Glossary
     LIRA
       Lira stands for (L)ow-counts (I)mage (R)econstruction and (A)nalysis.
 
-.. _publications:
+.. _references:
 
 References
 ----------
