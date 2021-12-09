@@ -104,10 +104,10 @@ release = package.__version__
 # name of a builtin theme or the name of a custom theme in html_theme_path.
 #html_theme = None
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 
 # Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
+html_sidebars = {}
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -121,6 +121,25 @@ html_logo = "pylira-logo.png"
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 #html_last_updated_fmt = ''
+
+html_context = {
+    # "github_url": "https://github.com", # or your GitHub Enterprise interprise
+    "github_user": "astrostat",
+    "github_repo": "pylira",
+    "github_version": "main",
+    "doc_path": "docs",
+}
+
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/astrostat/pylira",
+            "icon": "fab fa-github-square",
+        },
+    ],
+    "use_edit_page_button": True,
+}
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

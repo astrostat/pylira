@@ -1,6 +1,6 @@
-****************
-Example Datasets
-****************
+**********
+User Guide
+**********
 
 Illustration of example datasets.
 
