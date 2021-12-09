@@ -52,7 +52,7 @@ alpha_init = 0.1 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
 
 dec = LIRADeconvolver(
     alpha_init=alpha_init,
-    n_iter_max=3000,
+    n_iter_max=1000,
     n_burn_in=200,
     fit_background_scale=False,
 )
@@ -81,6 +81,10 @@ result = dec.run(data)
 To check the validity of the result we can plot the posterior mean:
 
 ```{code-cell} ipython3
+---
+nbsphinx-thumbnail:
+  tooltip: "Learn how to use pylira on a simple point source example."
+---
 result.plot_posterior_mean()
 ```
 
