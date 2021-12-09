@@ -1,5 +1,0 @@
-*************
-Reference/API
-*************
-
-.. automodapi:: pylira
