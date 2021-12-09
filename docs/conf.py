@@ -167,7 +167,7 @@ latex_documents = [('index', project + '.tex', project + u' Documentation',
 man_pages = [('index', project.lower(), project + u' Documentation',
               [author], 1)]
 
-extensions += ["matplotlib.sphinxext.plot_directive"]
+extensions += ["matplotlib.sphinxext.plot_directive", "nbsphinx"]
 
 # -- Options for the edit_on_github extension ---------------------------------
 
