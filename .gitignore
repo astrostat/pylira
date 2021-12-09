@@ -20,9 +20,15 @@ MANIFEST
 
 .hypothesis
 
+# Data files
+*.fits
+*.fits.gz
+*.txt
+
 # Sphinx
 docs/api
 docs/_build
+docs/tutorials/*.ipynb
 
 # Eclipse editor project files
 .project
