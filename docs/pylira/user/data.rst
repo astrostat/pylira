@@ -1,6 +1,5 @@
-**********
-User Guide
-**********
+Example Datasets
+================
 
 Illustration of example datasets.
 
@@ -9,6 +8,7 @@ Point Source and Gaussian PSF
 -----------------------------
 
 .. plot::
+    :include-source:
 
     from pylira.data import point_source_gauss_psf
     from pylira.utils.plot import plot_example_dataset
@@ -21,6 +21,7 @@ Disk Source and Gaussian PSF
 ----------------------------
 
 .. plot::
+    :include-source:
 
     from pylira.data import disk_source_gauss_psf
     from pylira.utils.plot import plot_example_dataset
@@ -33,6 +34,7 @@ Gaussian and Point Sources and Gaussian PSF
 -------------------------------------------
 
 .. plot::
+    :include-source:
 
     from pylira.data import gauss_and_point_sources_gauss_psf
     from pylira.utils.plot import plot_example_dataset
