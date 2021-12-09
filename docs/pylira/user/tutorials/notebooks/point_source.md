@@ -12,12 +12,13 @@ kernelspec:
   name: python3
 ---
 
-# Simple Point Source Examples
+# Simple Point Source Example
 
 This tutorial shows you hwo to work with ``pylira`` using a simple simulated
 point source and Gaussian shaped point spread function.
 
 We first define the required imports:
+
 ```{code-cell} ipython3
 %matplotlib inline
 import numpy as np
@@ -28,55 +29,79 @@ from pylira.utils.plot import plot_example_dataset
 from pylira import LIRADeconvolver, LIRADeconvolverResult
 ```
 
-Then we can use 
+Then we can use the method `point_source_gauss_psf` to get a pre-defined test
+dataset:
+
 ```{code-cell} ipython3
 data = point_source_gauss_psf()
+print(data.keys())
 ```
+
+The `data` variable is a `dict` containing the `counts`, `psf`, `exposure`,
+`background` and ground truth for `flux`. We ca illutrated the data using:
 
 ```{code-cell} ipython3
 plot_example_dataset(data)
 ```
 
-```{code-cell} ipython3
-data = gauss_and_point_sources_gauss_psf()
-data["flux_init"] = data["flux"]
+Next we define the `LIRADeconvolver` class, which holds the configuration
+the algorithm will be run with:
 
+```{code-cell} ipython3
 alpha_init = 0.1 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
 
 dec = LIRADeconvolver(
     alpha_init=alpha_init,
     n_iter_max=3000,
     n_burn_in=200,
-    ms_al_kap1=0,
-    ms_al_kap2=1000,
-    ms_al_kap3=10,
     fit_background_scale=False,
-    random_state=np.random.RandomState(156)
 )
 ```
+
+We can print the instance to see the full configuration:
+
+```{code-cell} ipython3
+print(dec)
+```
+
+Now we have to define the initial guess for the flux and add it to the `data` dictionary.
+For this we use the reserved `"flux_init"`key:
+
+```{code-cell} ipython3
+data["flux_init"] = np.ones(data["counts"].shape)
+```
+
+Finally we can run the LIRA algorithm using `.run()`:
 
 ```{code-cell} ipython3
 %%time
 result = dec.run(data)
-result.write("test.fits.gz", overwrite=True)
+```
+
+To check the validity of the result we can plot the posterior mean:
+
+```{code-cell} ipython3
+result.plot_posterior_mean()
+```
+
+As well as the parameter traces:
+
+```{code-cell} ipython3
+result.plot_parameter_traces()
+```
+
+We can also plot the parameter distributions:
+
+```{code-cell} ipython3
+result.plot_parameter_distributions()
+```
+
+And pixel traces in a given region, to check for correlations with neighbouring pixels:
+
+```{code-cell} ipython3
+result.plot_pixel_traces_region(center_pix=(16, 16), radius_pix=2)
 ```
 
 ```{code-cell} ipython3
-res = LIRADeconvolverResult.read("test.fits.gz")
-```
 
-```{code-cell} ipython3
-res.plot_posterior_mean(from_image_trace=True)
-```
-
-```{code-cell} ipython3
-res.plot_parameter_traces()
-```
-
-```{code-cell} ipython3
-res.plot_parameter_distributions()
-```
-
-```{code-cell} ipython3
-res.plot_pixel_traces_region(center_pix=(16, 16), radius_pix=4)
 ```

@@ -28,7 +28,7 @@ MANIFEST
 # Sphinx
 docs/api
 docs/_build
-docs/tutorials/*.ipynb
+docs/pylira/user/tutorials/notebooks/*.ipynb
 
 # Eclipse editor project files
 .project
