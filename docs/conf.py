@@ -167,7 +167,17 @@ latex_documents = [('index', project + '.tex', project + u' Documentation',
 man_pages = [('index', project.lower(), project + u' Documentation',
               [author], 1)]
 
-extensions += ["matplotlib.sphinxext.plot_directive", "nbsphinx"]
+extensions += ["matplotlib.sphinxext.plot_directive", "nbsphinx", "sphinx_gallery.load_style"]
+
+
+nbsphinx_custom_formats = {
+    '.md': ['jupytext.reads', {'fmt': 'md'}],
+}
+
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg'}",
+    "--InlineBackend.rc=figure.dpi=96",
+]
 
 # -- Options for the edit_on_github extension ---------------------------------
 
