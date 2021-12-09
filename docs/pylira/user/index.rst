@@ -22,4 +22,5 @@ This is how to use ``pylira``:
    :hidden:
 
    data
+   tutorials/index
 
