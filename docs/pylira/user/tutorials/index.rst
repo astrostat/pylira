@@ -8,3 +8,4 @@ This page shows tutorials.
     :name: rst-gallery
 
     notebooks/point_source
+    notebooks/mcmc-deconvolution-intro
