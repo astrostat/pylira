@@ -175,9 +175,17 @@ nbsphinx_custom_formats = {
 }
 
 nbsphinx_execute_arguments = [
-    "--InlineBackend.figure_formats={'svg'}",
+    "--InlineBackend.figure_formats={'png'}",
     "--InlineBackend.rc=figure.dpi=96",
 ]
+
+nbsphinx_epilog = """
+{% set docname = env.doc2path(env.docname, base=None) | replace('md', 'ipynb') | replace('pylira/user/tutorials/notebooks/', '')%}
+
+.. raw:: html
+
+    Notebook file for download: <a href="{{ docname|e }}">{{ docname|e }}</a>
+"""
 
 # -- Options for the edit_on_github extension ---------------------------------
 

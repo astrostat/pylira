@@ -38,7 +38,7 @@ print(data.keys())
 ```
 
 The `data` variable is a `dict` containing the `counts`, `psf`, `exposure`,
-`background` and ground truth for `flux`. We ca illutrated the data using:
+`background` and ground truth for `flux`. We can illustrate the data using:
 
 ```{code-cell} ipython3
 plot_example_dataset(data)
@@ -83,7 +83,7 @@ To check the validity of the result we can plot the posterior mean:
 ```{code-cell} ipython3
 ---
 nbsphinx-thumbnail:
-  tooltip: "Learn how to use pylira on a simple point source example."
+  tooltip: Learn how to use pylira on a simple point source example.
 ---
 result.plot_posterior_mean()
 ```
@@ -104,8 +104,4 @@ And pixel traces in a given region, to check for correlations with neighbouring 
 
 ```{code-cell} ipython3
 result.plot_pixel_traces_region(center_pix=(16, 16), radius_pix=2)
-```
-
-```{code-cell} ipython3
-
 ```
