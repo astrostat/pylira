@@ -23,7 +23,7 @@ We start with defining the required imports:
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from astropy.convolution import convolve_fft
+from pylira.utils.convolution import fftconvolve
 from pylira.data import gauss_and_point_sources_gauss_psf
 from pylira.utils.plot import plot_example_dataset
 ```
@@ -46,7 +46,7 @@ We start by defining the model function to compute the predicted number of count
 ```{code-cell} ipython3
 def compute_npred(flux, psf, background, exposure):
     """Compute predicted number of counts"""
-    npred = convolve_fft((flux + background) * exposure, psf)
+    npred = fftconvolve((flux + background) * exposure, psf)
     # The FFT can produce noise, which could cause values to be negative
     npred = np.clip(npred, 0, np.inf)
     return npred
