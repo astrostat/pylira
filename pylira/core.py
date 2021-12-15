@@ -415,7 +415,7 @@ class LIRADeconvolverResult:
             value=0,
             min=0,
             max=self.image_trace.shape[0] - 1,
-            description=f"Select idx: ",
+            description="Select idx: ",
             continuous_update=False,
             style={"description_width": "initial"},
             layout={"width": "50%"},
