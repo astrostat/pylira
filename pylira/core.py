@@ -396,6 +396,37 @@ class LIRADeconvolverResult:
         im = ax.imshow(data, origin="lower", **kwargs)
         fig.colorbar(im, ax=ax, label="Posterior Mean")
 
+    def plot_image_trace_interactive(self, **kwargs):
+        """Plot image trace interactively
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments forwarded to `~matplotlib.pyplot.imshow`
+        """
+        import matplotlib.pyplot as plt
+        from ipywidgets import IntSlider
+        from ipywidgets.widgets.interaction import interact
+
+        kwargs.setdefault("interpolation", "nearest")
+        kwargs.setdefault("origin", "lower")
+
+        slider = IntSlider(
+            value=0,
+            min=0,
+            max=self.image_trace.shape[0] - 1,
+            description=f"Select idx: ",
+            continuous_update=False,
+            style={"description_width": "initial"},
+            layout={"width": "50%"},
+        )
+
+        @interact(idx=slider)
+        def _plot_interactive(idx):
+            ax = plt.subplot(projection=self.wcs)
+            im = ax.imshow(self.image_trace[idx], **kwargs)
+            plt.colorbar(im, ax=ax, label="Flux")
+
     def plot_parameter_traces(self, **kwargs):
         """Plot parameter traces
 
