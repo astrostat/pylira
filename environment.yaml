@@ -1,0 +1,29 @@
+# Conda environment for pylira development
+#
+# Install:    conda env create -f environment.yaml
+# Activate:   conda activate pylira-dev
+# Deactivate: conda deactivate
+
+name: pylira-dev
+
+channels:
+  - conda-forge
+
+dependencies:
+    - python<3.10
+    - numpy
+    - astropy
+    - pybind11
+    - matplotlib
+    - ipywidgets
+    - jupyter
+    - pytest-astropy
+    - sphinx-astropy
+    - pydata-sphinx-theme
+    - nbsphinx
+    - jupytext
+    - ipykernel
+    - sphinx-gallery
+    - black
+    - isort
+    - tox
