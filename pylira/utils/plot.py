@@ -80,8 +80,8 @@ def plot_trace(ax, idx, trace, n_burn_in, **kwargs):
     y1, y2 = mean - std, mean + std
     ax.fill_between(
         idx[valid],
-        y1,
-        y2,
+        np.array([y1]),
+        np.array([y2]),
         color="tab:orange",
         alpha=0.2,
         zorder=9,
@@ -228,8 +228,8 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
 
         ax.fill_betweenx(
             np.linspace(0, y_max, 10),
-            x1,
-            x2,
+            np.array([x1]),
+            np.array([x2]),
             color="tab:orange",
             alpha=0.2,
             zorder=9,

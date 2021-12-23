@@ -86,7 +86,9 @@ include_dirs = ["pylira/src/"]
 process = subprocess.run(["R", "RHOME"], capture_output=True, encoding="utf-8")
 r_home = Path(process.stdout.strip())
 
-if not r_home.exists():
+if r_home.exists():
+    print(f"Found existing R installation in {r_home}")
+else:
     raise ValueError("pylira requires a working R installation")
 
 include_dirs += [str(r_home / "include/")]
