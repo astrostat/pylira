@@ -7,9 +7,10 @@
 import os
 import sys
 from pathlib import Path
-
+import subprocess
 from setuptools import setup
-from pybind11.setup_helpers import Pybind11Extension
+from setuptools.command.build_clib import build_clib
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 
 # First provide helpful messages if contributors try and run legacy commands
@@ -77,22 +78,30 @@ except Exception:
 """.lstrip()
 
 
-include_dirs = [
-    "pylira/src/",
-    "pylira/extern/rmath/include/",
-]
-
 sources = ["pylira/src/lirabind.cpp"]
+include_dirs = ["pylira/src/"]
 
-sources += [str(_) for _ in Path("pylira/extern/rmath/src/").glob("*.c")]
-sources += ["pylira/extern/rmath/src/standalone/sunif.c"]
+# Add R install dir
+
+process = subprocess.run(["R", "RHOME"], capture_output=True, encoding="utf-8")
+r_home = Path(process.stdout.strip())
+
+if not r_home.exists():
+    raise ValueError("pylira requires a working R installation")
+
+include_dirs += [str(r_home / "include/")]
+library_dirs = [
+    str(r_home.parent),
+    str(r_home / "library"),
+]
 
 ext_modules = [
     Pybind11Extension(
         name="_lira",
         sources=sources,
         include_dirs=include_dirs,
-        define_macros=[('MATHLIB_STANDALONE', None)],
+        libraries=["Rmath"],
+        library_dirs=library_dirs,
     ),
 ]
 
@@ -100,4 +109,5 @@ setup(
     use_scm_version={'write_to': os.path.join('pylira', 'version.py'),
                      'write_to_template': VERSION_TEMPLATE},
     ext_modules=ext_modules,
+    cmdclass={'build_ext': build_ext},
 )
