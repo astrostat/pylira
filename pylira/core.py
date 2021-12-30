@@ -50,7 +50,7 @@ class LIRADeconvolver:
         Output filename
     filename_out_par: str or `Path`
         Parameter output filename
-    random_state : `~numpy.ransom.RandomState`
+    random_state : `~numpy.random.RandomState`
         Random state
 
     Examples

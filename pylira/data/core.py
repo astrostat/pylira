@@ -15,6 +15,7 @@ def point_source_gauss_psf(
         sigma_psf=3,
         source_level=1000,
         background_level=2,
+        random_state=None,
 ):
     """Get point source with Gaussian PSF test data.
 
@@ -32,13 +33,16 @@ def point_source_gauss_psf(
         Total integrated counts of the source
     background_level : float
         Background level in counts / pixel.
+    random_state : `~numpy.random.RandomState`
+        Random state
 
     Returns
     -------
     data : dict of `~numpy.ndarray`
         Data dictionary
     """
-    np.random.seed(836)
+    if random_state is None:
+        random_state = np.random.RandomState(None)
 
     background = background_level * np.ones(shape)
     exposure = np.ones(shape)
@@ -49,7 +53,7 @@ def point_source_gauss_psf(
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
     npred = background + convolve_fft(flux * exposure, psf)
 
-    counts = np.random.poisson(npred)
+    counts = random_state.poisson(npred)
     return {
         "counts": counts,
         "psf": psf.array,
@@ -66,6 +70,7 @@ def disk_source_gauss_psf(
         source_level=1000,
         source_radius=3,
         background_level=2,
+        random_state=None,
 ):
     """Get disk source with Gaussian PSF test data.
 
@@ -85,13 +90,16 @@ def disk_source_gauss_psf(
         Radius of the disk source
     background_level : float
         Background level in counts / pixel.
+    random_state : `~numpy.random.RandomState`
+        Random state
 
     Returns
     -------
     data : dict of `~numpy.ndarray`
         Data dictionary
     """
-    np.random.seed(836)
+    if random_state is None:
+        random_state = np.random.RandomState(None)
 
     background = background_level * np.ones(shape)
     exposure = np.ones(shape) + 0.5 * np.linspace(-1, 1, shape[0])
@@ -103,7 +111,7 @@ def disk_source_gauss_psf(
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
     npred = convolve_fft((flux + background) * exposure, psf)
 
-    counts = np.random.poisson(npred)
+    counts = random_state.poisson(npred)
     return {
         "counts": counts,
         "psf": psf.array,
@@ -120,6 +128,7 @@ def gauss_and_point_sources_gauss_psf(
         source_level=1000,
         source_radius=2,
         background_level=2,
+        random_state=None,
 ):
     """Get data with a Gaussian source in the center and point sources of varying brightness
     of 100%, 30%, 10% and 3% of the Gaussian source.
@@ -140,13 +149,16 @@ def gauss_and_point_sources_gauss_psf(
         Radius of the disk source
     background_level : float
         Background level in counts / pixel.
+    random_state : `~numpy.random.RandomState`
+        Random state
 
     Returns
     -------
     data : dict of `~numpy.ndarray`
         Data dictionary
     """
-    np.random.seed(836)
+    if random_state is None:
+        random_state = np.random.RandomState(None)
 
     background = background_level * np.ones(shape)
     exposure = np.ones(shape) + 0.5 * np.linspace(-1, 1, shape[0]).reshape((-1, 1))
@@ -161,7 +173,7 @@ def gauss_and_point_sources_gauss_psf(
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
     npred = convolve_fft((flux + background) * exposure, psf)
 
-    counts = np.random.poisson(npred)
+    counts = random_state.poisson(npred)
     return {
         "counts": counts,
         "psf": psf.array,
