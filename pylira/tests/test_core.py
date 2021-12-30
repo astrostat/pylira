@@ -12,7 +12,8 @@ from pylira import LIRADeconvolver, LIRADeconvolverResult
 
 @pytest.fixture(scope="session")
 def lira_result(tmpdir_factory):
-    data = point_source_gauss_psf()
+    random_state = np.random.RandomState(836)
+    data = point_source_gauss_psf(random_state=random_state)
     data["flux_init"] = data["flux"]
 
     alpha_init = 0.05 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
@@ -131,7 +132,8 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
-    data = gauss_and_point_sources_gauss_psf()
+    random_state = np.random.RandomState(836)
+    data = gauss_and_point_sources_gauss_psf(random_state=random_state)
     data["flux_init"] = data["flux"]
 
     alpha_init = 0.1 * np.ones(np.log2(data["counts"].shape[0]).astype(int))
