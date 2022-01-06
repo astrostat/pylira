@@ -223,4 +223,3 @@ def lincoln(psf=Gaussian2DKernel(3), random_state=None):
         "background": background,
         "flux": flux
     }
-
