@@ -4,7 +4,8 @@ import pytest
 from pylira.data import (
     point_source_gauss_psf,
     disk_source_gauss_psf,
-    gauss_and_point_sources_gauss_psf
+    gauss_and_point_sources_gauss_psf,
+    lincoln,
 )
 
 
@@ -41,3 +42,13 @@ def test_data_gauss_and_point_sources_gauss_psf(random_state):
     assert_allclose(data["background"][0][0], 2.)
     assert_allclose(data["psf"][0][0], 4.477632e-09, rtol=1e-5)
     assert_allclose(data["flux"][16][16], 36.664897, rtol=1e-5)
+
+
+def test_data_lincoln(random_state):
+    data = lincoln(random_state=random_state)
+
+    assert_allclose(data["counts"][0][0], 1)
+    assert_allclose(data["exposure"][0][0], 1)
+    assert_allclose(data["background"][0][0], 0)
+    assert_allclose(data["psf"][0][0], 1.990059e-09, rtol=1e-5)
+    assert_allclose(data["flux"][16][16], 3, rtol=1e-5)
