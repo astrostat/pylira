@@ -1,11 +1,13 @@
 import numpy as np
 from astropy.convolution import Gaussian2DKernel, Tophat2DKernel, convolve_fft
+from astropy.utils.data import get_pkg_data_filename
 
 
 __all__ = [
     "point_source_gauss_psf",
     "disk_source_gauss_psf",
-    "gauss_and_point_sources_gauss_psf"
+    "gauss_and_point_sources_gauss_psf",
+    "lincoln"
 ]
 
 
@@ -181,3 +183,44 @@ def gauss_and_point_sources_gauss_psf(
         "background": background,
         "flux": flux
     }
+
+
+def lincoln(psf=Gaussian2DKernel(3), random_state=None):
+    """Get Abraham Lincoln image similar to [Esch2004]_.
+
+    The exposure is unity and background is zero.
+
+    Parameters
+    ----------
+    psf : `~astropy.convolution.Kernel2D`
+        PSF Kernel to be used. Default is Gaussian of sigma = 3 pixels.
+    random_state : `~numpy.random.RandomState`
+        Random state
+
+    Returns
+    -------
+    data : dict of `~numpy.ndarray`
+        Data dictionary
+    """
+    import matplotlib.image as mpimg
+
+    if random_state is None:
+        random_state = np.random.RandomState(None)
+
+    filename = get_pkg_data_filename("files/lincoln.png", package="pylira.data")
+    flux = np.sum(mpimg.imread(filename), axis=-1)
+    flux = flux.max() - flux
+
+    background = np.zeros(flux.shape)
+    exposure = np.ones(flux.shape)
+
+    npred = np.clip(convolve_fft((flux + background) * exposure, psf), 0, np.inf)
+    counts = random_state.poisson(npred)
+    return {
+        "counts": counts,
+        "psf": psf.array,
+        "exposure": exposure,
+        "background": background,
+        "flux": flux
+    }
+
