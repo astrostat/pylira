@@ -25,7 +25,7 @@ def f_hyperprior_esch(alpha, delta=1, index_alpha=1, index=0):
     return prefactor * exponential
 
 
-def f_hyperprior_lira(alpha, ms_al_kap1, ms_al_kap2, ms_al_kap3):
+def f_hyperprior_lira(alpha, ms_al_kap1=0, ms_al_kap2=1000, ms_al_kap3=3):
     """Hyperprior distribution following LIRA implementation
 
     Parameters
