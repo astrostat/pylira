@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.3
+    jupytext_version: 1.13.7
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -25,7 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pylira.data import point_source_gauss_psf, gauss_and_point_sources_gauss_psf
-from pylira.utils.plot import plot_example_dataset
+from pylira.utils.plot import plot_example_dataset, plot_hyperpriors_lira
 from pylira import LIRADeconvolver, LIRADeconvolverResult
 ```
 
@@ -62,6 +62,19 @@ We can print the instance to see the full configuration:
 
 ```{code-cell} ipython3
 print(dec)
+```
+
+Now we can also visualize the hyperprior distribution of the alpha parameter:
+
+```{code-cell} ipython3
+plot_hyperpriors_lira(
+    ncols=1,
+    figsize=(8, 5),
+    alphas=np.linspace(0, 0.3, 100),
+    ms_al_kap1=0,
+    ms_al_kap2=1000,
+    ms_al_kap3=3
+);
 ```
 
 Now we have to define the initial guess for the flux and add it to the `data` dictionary.
@@ -104,4 +117,8 @@ And pixel traces in a given region, to check for correlations with neighbouring 
 
 ```{code-cell} ipython3
 result.plot_pixel_traces_region(center_pix=(16, 16), radius_pix=2)
+```
+
+```{code-cell} ipython3
+
 ```

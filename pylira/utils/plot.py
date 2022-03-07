@@ -1,6 +1,7 @@
 from itertools import zip_longest
 import numpy as np
 from astropy.visualization import simple_norm
+from .priors import f_hyperprior_lira
 
 
 __all__ = [
@@ -342,3 +343,65 @@ def plot_pixel_trace_neighbours(
         ax.plot(trace, color=color,  **kwargs)
 
     return ax
+
+
+def plot_hyperpriors_lira(
+    figsize=(12, 4),
+    ncols=2,
+    alphas=None,
+    ms_al_kap1=0,
+    ms_al_kap2=1000,
+    ms_al_kap3=3,
+    **kwargs
+):
+    """Plot hyperprior distributions
+
+    Parameters
+    ----------
+    figsize: tuple of float
+        Figure size
+    ncols : int
+        Number of columns
+    alphas : `~numpy.ndarray`
+        Alpha values
+    ms_al_kap1: float or `~numpy.ndarray`
+        Multiscale prior parameter.
+    ms_al_kap2: float or `~numpy.ndarray`
+        Multiscale prior parameter.
+    ms_al_kap3: float or `~numpy.ndarray`
+        Multiscale prior parameter.
+
+    Returns
+    -------
+    axes : `~matplotlib.pyplot.Axes`
+        Plotting axes
+
+    """
+    import matplotlib.pyplot as plt
+
+    ms_al_kap1 = np.atleast_1d(ms_al_kap1)
+    ms_al_kap2 = np.atleast_1d(ms_al_kap2)
+    ms_al_kap3 = np.atleast_1d(ms_al_kap3)
+
+    if alphas is None:
+        alphas = np.linspace(0, 3, 100)
+
+    nrows = 1 + (len(ms_al_kap1) - 1) // ncols
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+
+    if not isinstance(axes, np.ndarray):
+        axes = np.asanyarray([axes])
+
+    for idx, ax in enumerate(axes.flat):
+        values = f_hyperprior_lira(
+            alpha=alphas,
+            ms_al_kap1=ms_al_kap1[idx],
+            ms_al_kap2=ms_al_kap2[idx],
+            ms_al_kap3=ms_al_kap3[idx]
+        )
+        ax.plot(alphas, values, **kwargs)
+        ax.set_xlabel("Alpha")
+        ax.set_ylabel("PDF / A.U.")
+
+    return axes
