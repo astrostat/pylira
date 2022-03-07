@@ -405,5 +405,3 @@ def plot_hyperpriors_lira(
         ax.set_ylabel("PDF / A.U.")
 
     return axes
-
-
