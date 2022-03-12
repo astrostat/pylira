@@ -97,21 +97,21 @@ def random_coin(p):
 def deconvolve_mcmc(log_posterior, flux_init, data, n_samples, flux_min=1e-2):
     """Deconvolve using Baysian MCMC"""
     image_trace, log_post_trace = [], []
-    
+
     while len(image_trace) < n_samples:
         flux = rng.gamma(np.clip(flux_init, flux_min, np.inf))
-        
+
         prob = log_posterior(flux=flux, **data)
         prob_init = log_posterior(flux=flux_init, **data)
-        
+
         acceptance = min(np.exp(prob_init - prob), 1)
-        
+
         if random_coin(acceptance) and np.isfinite(prob):
             flux_init = flux
 
         image_trace.append(flux)
         log_post_trace.append(prob)
-    
+
     return {
         "image-trace": np.array(image_trace),
         "log-posterior-trace": np.array(log_post_trace),
@@ -144,6 +144,10 @@ plt.plot(result["log-posterior-trace"])
 And finally plot the mean posterior as and estimate for the deconvolved flux:
 
 ```{code-cell} ipython3
+---
+nbsphinx-thumbnail:
+  tooltip: Learn the basics of the MCMC deconvolution.
+---
 n_burn_in = 5000
 posterior_mean = np.mean(result["image-trace"][n_burn_in:], axis=0)
 plt.imshow(posterior_mean, origin="lower")
