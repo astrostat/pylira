@@ -12,7 +12,7 @@ from .utils.plot import (
     plot_parameter_traces,
     plot_parameter_distributions,
     plot_pixel_trace,
-    plot_pixel_trace_neighbours
+    plot_pixel_trace_neighbours,
 )
 
 
@@ -72,20 +72,20 @@ class LIRADeconvolver:
     """
 
     def __init__(
-            self,
-            alpha_init,
-            n_iter_max=3000,
-            n_burn_in=1000,
-            fit_background_scale=False,
-            save_thin=True,
-            ms_ttlcnt_pr=1,
-            ms_ttlcnt_exp=0.05,
-            ms_al_kap1=0.0,
-            ms_al_kap2=1000.0,
-            ms_al_kap3=3.0,
-            filename_out="output.txt",
-            filename_out_par="output-par.txt",
-            random_state=None
+        self,
+        alpha_init,
+        n_iter_max=3000,
+        n_burn_in=1000,
+        fit_background_scale=False,
+        save_thin=True,
+        ms_ttlcnt_pr=1,
+        ms_ttlcnt_exp=0.05,
+        ms_al_kap1=0.0,
+        ms_al_kap2=1000.0,
+        ms_al_kap3=3.0,
+        filename_out="output.txt",
+        filename_out_par="output-par.txt",
+        random_state=None,
     ):
         self.alpha_init = np.array(alpha_init, dtype=DTYPE_DEFAULT)
         self.n_iter_max = n_iter_max
@@ -121,12 +121,14 @@ class LIRADeconvolver:
         obs_shape = obs_arr.shape[0]
         if obs_shape & (obs_shape - 1) != 0:
             raise ValueError(
-                f"Size of the input observation must be a power of 2. Size given: {obs_shape}")
+                f"Size of the input observation must be a power of 2. Size given: {obs_shape}"
+            )
 
         if len(self.alpha_init) != np.log2(obs_shape):
             raise ValueError(
                 f"Number of elements in alpha_init must be {np.log2(obs_shape)}.\
-                     Size given: {len(self.alpha_init)} ")
+                     Size given: {len(self.alpha_init)} "
+            )
 
     def to_dict(self):
         """Convert deconvolver configuration to dict, with simple data types.
@@ -164,25 +166,25 @@ class LIRADeconvolver:
         random_seed = self.random_state.randint(1, np.iinfo(np.uint32).max)
 
         posterior_mean = image_analysis(
-                observed_im=data["counts"],
-                start_im=data["flux_init"],
-                psf_im=data["psf"],
-                expmap_im=data["exposure"],
-                baseline_im=data["background"],
-                max_iter=self.n_iter_max,
-                burn_in=self.n_burn_in,
-                save_thin=self.save_thin,
-                fit_bkgscl=int(self.fit_background_scale),
-                out_img_file=str(self.filename_out),
-                out_param_file=str(self.filename_out_par),
-                alpha_init=self.alpha_init,
-                ms_ttlcnt_pr=self.ms_ttlcnt_pr,
-                ms_ttlcnt_exp=self.ms_ttlcnt_exp,
-                ms_al_kap1=self.ms_al_kap1,
-                ms_al_kap2=self.ms_al_kap2,
-                ms_al_kap3=self.ms_al_kap3,
-                random_seed=random_seed,
-            )
+            observed_im=data["counts"],
+            start_im=data["flux_init"],
+            psf_im=data["psf"],
+            expmap_im=data["exposure"],
+            baseline_im=data["background"],
+            max_iter=self.n_iter_max,
+            burn_in=self.n_burn_in,
+            save_thin=self.save_thin,
+            fit_bkgscl=int(self.fit_background_scale),
+            out_img_file=str(self.filename_out),
+            out_param_file=str(self.filename_out_par),
+            alpha_init=self.alpha_init,
+            ms_ttlcnt_pr=self.ms_ttlcnt_pr,
+            ms_ttlcnt_exp=self.ms_ttlcnt_exp,
+            ms_al_kap1=self.ms_al_kap1,
+            ms_al_kap2=self.ms_al_kap2,
+            ms_al_kap3=self.ms_al_kap3,
+            random_seed=random_seed,
+        )
 
         parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
         image_trace = {"filename": str(self.filename_out), "format": "ascii"}
@@ -193,7 +195,7 @@ class LIRADeconvolver:
             posterior_mean=posterior_mean,
             parameter_trace=parameter_trace,
             image_trace=image_trace,
-            config=config
+            config=config,
         )
 
 
@@ -215,13 +217,14 @@ class LIRADeconvolverResult:
     wcs : `~astropy.wcs.WCS`
         World coordinate transform object
     """
+
     def __init__(
-            self,
-            config,
-            posterior_mean=None,
-            parameter_trace=None,
-            image_trace=None,
-            wcs=None
+        self,
+        config,
+        posterior_mean=None,
+        parameter_trace=None,
+        image_trace=None,
+        wcs=None,
     ):
         self._config = config
         self._posterior_mean = posterior_mean
@@ -264,7 +267,7 @@ class LIRADeconvolverResult:
     @property
     def posterior_mean_from_trace(self):
         """Posterior mean computed from trace(`~numpy.ndarray`)"""
-        return np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
+        return np.nanmean(self.image_trace[self.n_burn_in :], axis=0)
 
     @property
     def image_trace(self):
@@ -289,15 +292,15 @@ class LIRADeconvolverResult:
     def plot_pixel_traces_region(self, center_pix, radius_pix=0, figsize=(16, 6)):
         """Plot pixel traces in a given region.
 
-         Parameters
-         ----------
-         center_pix : tuple of int
-              Pixel indices, order is (x, y). By default the trace at the center is plotted.
-         radius_pix : float
-            Radius in which the traces are plotted.
-         figsize : tuple of float
-            Figure size
-         """
+        Parameters
+        ----------
+        center_pix : tuple of int
+             Pixel indices, order is (x, y). By default the trace at the center is plotted.
+        radius_pix : float
+           Radius in which the traces are plotted.
+        figsize : tuple of float
+           Figure size
+        """
         import matplotlib.pyplot as plt
         from matplotlib.patches import Circle
 
@@ -319,14 +322,14 @@ class LIRADeconvolverResult:
             image_trace=self.image_trace,
             center_pix=center_pix,
             ax=ax_trace,
-            config=self.config
+            config=self.config,
         )
 
         plot_pixel_trace_neighbours(
             image_trace=self.image_trace,
             center_pix=center_pix,
             radius_pix=radius_pix,
-            ax=ax_trace
+            ax=ax_trace,
         )
 
     def plot_pixel_trace(self, center_pix=None, **kwargs):
@@ -347,7 +350,7 @@ class LIRADeconvolverResult:
             image_trace=self.image_trace,
             config=self.config,
             center_pix=center_pix,
-            **kwargs
+            **kwargs,
         )
 
     def plot_pixel_trace_neighbours(self, center_pix=None, radius_pix=0, **kwargs):
@@ -370,7 +373,7 @@ class LIRADeconvolverResult:
             image_trace=self.image_trace,
             center_pix=center_pix,
             radius_pix=radius_pix,
-            **kwargs
+            **kwargs,
         )
 
     def plot_posterior_mean(self, from_image_trace=False, **kwargs):
@@ -462,7 +465,9 @@ class LIRADeconvolverResult:
         filename = Path(filename)
 
         if format not in IO_FORMATS_WRITE:
-            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS_WRITE)}")
+            raise ValueError(
+                f"Not a valid format '{format}', choose from {list(IO_FORMATS_WRITE)}"
+            )
 
         writer = IO_FORMATS_WRITE[format]
         writer(result=self, filename=filename, overwrite=overwrite)
@@ -486,7 +491,9 @@ class LIRADeconvolverResult:
         filename = Path(filename)
 
         if format not in IO_FORMATS_READ:
-            raise ValueError(f"Not a valid format '{format}', choose from {list(IO_FORMATS_READ)}")
+            raise ValueError(
+                f"Not a valid format '{format}', choose from {list(IO_FORMATS_READ)}"
+            )
 
         reader = IO_FORMATS_READ[format]
         kwargs = reader(filename=filename)

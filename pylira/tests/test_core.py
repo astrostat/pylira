@@ -5,7 +5,7 @@ import pylira
 from pylira.data import (
     point_source_gauss_psf,
     disk_source_gauss_psf,
-    gauss_and_point_sources_gauss_psf
+    gauss_and_point_sources_gauss_psf,
 )
 from pylira import LIRADeconvolver, LIRADeconvolverResult
 
@@ -26,7 +26,7 @@ def lira_result(tmpdir_factory):
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
         fit_background_scale=True,
-        random_state=np.random.RandomState(156)
+        random_state=np.random.RandomState(156),
     )
     return deconvolve.run(data=data)
 
@@ -48,12 +48,10 @@ def test_image_analysis():
 
 
 def test_lira_deconvolver():
-    deconvolve = LIRADeconvolver(
-        alpha_init=np.array([1, 2, 3])
-    )
+    deconvolve = LIRADeconvolver(alpha_init=np.array([1, 2, 3]))
 
     assert deconvolve.alpha_init.dtype == np.float64
-    assert_allclose(deconvolve.alpha_init, [1., 2., 3.])
+    assert_allclose(deconvolve.alpha_init, [1.0, 2.0, 3.0])
 
     config = deconvolve.to_dict()
 
@@ -67,9 +65,11 @@ def test_lira_deconvolver_run_point_source(lira_result):
     assert lira_result.config["random_seed"] == 1346985517
 
     assert_allclose(lira_result.posterior_mean[16][16], 955.7, rtol=3e-2)
-    assert_allclose(lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2)
+    assert_allclose(
+        lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2
+    )
 
-    assert (lira_result.posterior_mean[16][16] > 700)
+    assert lira_result.posterior_mean[16][16] > 700
     assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in lira_result.config
 
@@ -105,7 +105,7 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
         fit_background_scale=True,
-        random_state=np.random.RandomState(156)
+        random_state=np.random.RandomState(156),
     )
     result = deconvolve.run(data=data)
 
@@ -148,12 +148,12 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
         fit_background_scale=False,
         filename_out=tmpdir / "image-trace.txt",
         filename_out_par=tmpdir / "parameter-trace.txt",
-        random_state=np.random.RandomState(156)
+        random_state=np.random.RandomState(156),
     )
     result = deconvolve.run(data=data)
 
     assert result.config["random_seed"] == 1346985517
-    assert(result.posterior_mean[16][16] > 0.2)
+    assert result.posterior_mean[16][16] > 0.2
 
     assert result.parameter_trace["smoothingParam0"][-1] > 0
     assert "alpha_init" in result.config

@@ -73,24 +73,21 @@ def write_to_fits(result, filename, overwrite):
         header = None
 
     primary_hdu = fits.PrimaryHDU(
-        header=header, data=result.posterior_mean,
+        header=header,
+        data=result.posterior_mean,
     )
 
     table = result.parameter_trace.copy()
     table.meta = None
-    parameter_trace_hdu = fits.BinTableHDU(
-        table, name="PARAMETER_TRACE"
-    )
+    parameter_trace_hdu = fits.BinTableHDU(table, name="PARAMETER_TRACE")
 
-    image_trace_hdu = fits.ImageHDU(
-       data=result.image_trace, name="IMAGE_TRACE"
-    )
+    image_trace_hdu = fits.ImageHDU(data=result.image_trace, name="IMAGE_TRACE")
 
     config_hdu = fits.BinTableHDU(result.config_table, name="CONFIG")
 
-    hdulist = fits.HDUList([
-        primary_hdu, parameter_trace_hdu, image_trace_hdu, config_hdu
-    ])
+    hdulist = fits.HDUList(
+        [primary_hdu, parameter_trace_hdu, image_trace_hdu, config_hdu]
+    )
 
     hdulist.writeto(filename, overwrite=overwrite)
 
@@ -125,14 +122,10 @@ def read_from_fits(filename):
         "config": config,
         "parameter_trace": paramter_trace,
         "image_trace": image_trace,
-        "wcs": wcs
+        "wcs": wcs,
     }
 
 
-IO_FORMATS_WRITE = {
-    "fits": write_to_fits
-}
+IO_FORMATS_WRITE = {"fits": write_to_fits}
 
-IO_FORMATS_READ = {
-    "fits": read_from_fits
-}
+IO_FORMATS_READ = {"fits": read_from_fits}

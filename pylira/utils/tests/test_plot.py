@@ -3,7 +3,7 @@ from pylira.utils.plot import (
     plot_parameter_traces,
     plot_parameter_distributions,
     plot_pixel_trace,
-    plot_pixel_trace_neighbours
+    plot_pixel_trace_neighbours,
 )
 
 from pylira.utils.io import read_parameter_trace_file, read_image_trace_file
@@ -30,7 +30,10 @@ def test_plot_pixel_trace():
 
     image_trace = read_image_trace_file(filename)
 
-    ax = plot_pixel_trace(image_trace=image_trace, center_pix=(3, 3), )
+    ax = plot_pixel_trace(
+        image_trace=image_trace,
+        center_pix=(3, 3),
+    )
     assert ax is not None
 
 
@@ -39,5 +42,7 @@ def test_plot_pixel_trace_neighbours():
 
     image_trace = read_image_trace_file(filename)
 
-    ax = plot_pixel_trace_neighbours(image_trace=image_trace, center_pix=(3, 3), radius_pix=3)
+    ax = plot_pixel_trace_neighbours(
+        image_trace=image_trace, center_pix=(3, 3), radius_pix=3
+    )
     assert ax is not None

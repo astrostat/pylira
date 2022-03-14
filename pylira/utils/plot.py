@@ -62,20 +62,12 @@ def plot_trace(ax, idx, trace, n_burn_in, **kwargs):
     burn_in = slice(0, n_burn_in)
     valid = slice(n_burn_in, -1)
 
-    ax.plot(
-        idx[burn_in],
-        trace[burn_in],
-        alpha=0.3,
-        label="Burn in",
-        **kwargs
-    )
+    ax.plot(idx[burn_in], trace[burn_in], alpha=0.3, label="Burn in", **kwargs)
     ax.plot(idx[valid], trace[valid], label="Valid", **kwargs)
     ax.set_xlabel("Number of Iterations")
 
     mean = np.mean(trace[valid])
-    ax.hlines(
-        mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean"
-    )
+    ax.hlines(mean, n_burn_in, len(idx), color="tab:orange", zorder=10, label="Mean")
 
     std = np.std(trace[valid])
     y1, y2 = mean - std, mean + std
@@ -90,7 +82,9 @@ def plot_trace(ax, idx, trace, n_burn_in, **kwargs):
     )
 
 
-def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
+def plot_parameter_traces(
+    parameter_trace, config=None, figsize=None, ncols=3, **kwargs
+):
     """Plot parameters traces
 
     Parameters
@@ -126,10 +120,7 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
         figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
 
     fig, axes = plt.subplots(
-        ncols=ncols,
-        nrows=nrows,
-        figsize=figsize,
-        gridspec_kw={"hspace": 0.25}
+        ncols=ncols, nrows=nrows, figsize=figsize, gridspec_kw={"hspace": 0.25}
     )
 
     n_burn_in = config.get("n_burn_in", 0)
@@ -149,7 +140,9 @@ def plot_parameter_traces(parameter_trace, config=None, figsize=None, ncols=3, *
     return axes
 
 
-def plot_parameter_distributions(parameter_trace, config=None, figsize=None, ncols=3, **kwargs):
+def plot_parameter_distributions(
+    parameter_trace, config=None, figsize=None, ncols=3, **kwargs
+):
     """Plot parameters traces
 
     Parameters
@@ -188,10 +181,7 @@ def plot_parameter_distributions(parameter_trace, config=None, figsize=None, nco
         figsize = get_grid_figsize(width=16, ncols=ncols, nrows=nrows)
 
     fig, axes = plt.subplots(
-        ncols=ncols,
-        nrows=nrows,
-        figsize=figsize,
-        gridspec_kw={"hspace": 0.25}
+        ncols=ncols, nrows=nrows, figsize=figsize, gridspec_kw={"hspace": 0.25}
     )
 
     kwargs.setdefault("color", "tab:blue")
@@ -290,7 +280,7 @@ def plot_pixel_trace(image_trace, center_pix, ax=None, config=None, **kwargs):
 
 
 def plot_pixel_trace_neighbours(
-        image_trace, center_pix, radius_pix=1, cmap="Greys",  ax=None, **kwargs
+    image_trace, center_pix, radius_pix=1, cmap="Greys", ax=None, **kwargs
 ):
     """Plot pixel traces in a given region.
 
@@ -340,7 +330,7 @@ def plot_pixel_trace_neighbours(
         trace = image_trace[(slice(None), idx_x, idx_y)]
         value = norm(offset)
         color = tuple(cmap(value)[0])
-        ax.plot(trace, color=color,  **kwargs)
+        ax.plot(trace, color=color, **kwargs)
 
     return ax
 

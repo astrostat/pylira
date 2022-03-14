@@ -1,1 +1,1 @@
-from .core import * # NOQA
+from .core import *  # NOQA

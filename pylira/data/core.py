@@ -7,17 +7,17 @@ __all__ = [
     "point_source_gauss_psf",
     "disk_source_gauss_psf",
     "gauss_and_point_sources_gauss_psf",
-    "lincoln"
+    "lincoln",
 ]
 
 
 def point_source_gauss_psf(
-        shape=(32, 32),
-        shape_psf=(17, 17),
-        sigma_psf=3,
-        source_level=1000,
-        background_level=2,
-        random_state=None,
+    shape=(32, 32),
+    shape_psf=(17, 17),
+    sigma_psf=3,
+    source_level=1000,
+    background_level=2,
+    random_state=None,
 ):
     """Get point source with Gaussian PSF test data.
 
@@ -61,18 +61,18 @@ def point_source_gauss_psf(
         "psf": psf.array,
         "exposure": exposure,
         "background": background,
-        "flux": flux
+        "flux": flux,
     }
 
 
 def disk_source_gauss_psf(
-        shape=(32, 32),
-        shape_psf=(17, 17),
-        sigma_psf=3,
-        source_level=1000,
-        source_radius=3,
-        background_level=2,
-        random_state=None,
+    shape=(32, 32),
+    shape_psf=(17, 17),
+    sigma_psf=3,
+    source_level=1000,
+    source_radius=3,
+    background_level=2,
+    random_state=None,
 ):
     """Get disk source with Gaussian PSF test data.
 
@@ -106,9 +106,12 @@ def disk_source_gauss_psf(
     background = background_level * np.ones(shape)
     exposure = np.ones(shape) + 0.5 * np.linspace(-1, 1, shape[0])
 
-    flux = source_level * Tophat2DKernel(
-        radius=source_radius, x_size=shape[1], y_size=shape[1], mode="oversample"
-    ).array
+    flux = (
+        source_level
+        * Tophat2DKernel(
+            radius=source_radius, x_size=shape[1], y_size=shape[1], mode="oversample"
+        ).array
+    )
 
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
     npred = convolve_fft((flux + background) * exposure, psf)
@@ -119,18 +122,18 @@ def disk_source_gauss_psf(
         "psf": psf.array,
         "exposure": exposure,
         "background": background,
-        "flux": flux
+        "flux": flux,
     }
 
 
 def gauss_and_point_sources_gauss_psf(
-        shape=(32, 32),
-        shape_psf=(17, 17),
-        sigma_psf=2,
-        source_level=1000,
-        source_radius=2,
-        background_level=2,
-        random_state=None,
+    shape=(32, 32),
+    shape_psf=(17, 17),
+    sigma_psf=2,
+    source_level=1000,
+    source_radius=2,
+    background_level=2,
+    random_state=None,
 ):
     """Get data with a Gaussian source in the center and point sources of varying brightness
     of 100%, 30%, 10% and 3% of the Gaussian source.
@@ -165,11 +168,16 @@ def gauss_and_point_sources_gauss_psf(
     background = background_level * np.ones(shape)
     exposure = np.ones(shape) + 0.5 * np.linspace(-1, 1, shape[0]).reshape((-1, 1))
 
-    flux = source_level * Gaussian2DKernel(
-        source_radius, x_size=shape[1], y_size=shape[1], mode="oversample"
-    ).array
+    flux = (
+        source_level
+        * Gaussian2DKernel(
+            source_radius, x_size=shape[1], y_size=shape[1], mode="oversample"
+        ).array
+    )
 
-    for fraction, idx_x, idx_y in zip([1, 0.3, 0.1, 0.03], [16, 16, 26, 6], [26, 6, 16, 16]):
+    for fraction, idx_x, idx_y in zip(
+        [1, 0.3, 0.1, 0.03], [16, 16, 26, 6], [26, 6, 16, 16]
+    ):
         flux[idx_y, idx_x] = fraction * source_level
 
     psf = Gaussian2DKernel(sigma_psf, x_size=shape_psf[1], y_size=shape_psf[1])
@@ -181,7 +189,7 @@ def gauss_and_point_sources_gauss_psf(
         "psf": psf.array,
         "exposure": exposure,
         "background": background,
-        "flux": flux
+        "flux": flux,
     }
 
 
@@ -221,5 +229,5 @@ def lincoln(psf=Gaussian2DKernel(3), random_state=None):
         "psf": psf.array,
         "exposure": exposure,
         "background": background,
-        "flux": flux
+        "flux": flux,
     }
