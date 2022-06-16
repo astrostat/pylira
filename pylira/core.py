@@ -530,15 +530,17 @@ class LIRASignificanceEstimator:
         self._result_replicates = result_replicates
         self._labels_im = labels_im
 
-        self._labels = np.array([str(i) for i in np.unique(labels_im.flatten())])
+        self._labels = np.array([str(i)
+                                for i in np.unique(labels_im.flatten())])
 
-    def _estimate_xi(self, result,data):
+    def _estimate_xi(self, result, data):
         xi_regions = []
         burnin = result.config['n_burn_in']
         n_iter = result.config['n_iter_max']
         thin = result.config['save_thin']
         fit_bkgscl = result.config['fit_background_scale']
-        bkg_scale_trace = result.parameter_trace['bkgScale'] if 'bkgScale' in result.parameter_trace.keys() else np.ones(result.parameter_trace['iteration'].shape[0])
+        bkg_scale_trace = result.parameter_trace['bkgScale'] if 'bkgScale' in result.parameter_trace.keys(
+        ) else np.ones(result.parameter_trace['iteration'].shape[0])
         image_dim = data['background'].shape[0]
         image_trace = result.image_trace
 
@@ -548,11 +550,12 @@ class LIRASignificanceEstimator:
             baseline_im, self._labels_im, self._labels, np.sum, float, 0)
 
         # loop over each image from the trace and estimate xi
-        iter=0
+        iter = 0
         for i in range(burnin, n_iter, thin):
 
             tau_1 = labeled_comprehension(
-                image_trace[iter,:,:], self._labels_im, self._labels, np.sum, float, 0
+                image_trace[iter, :,
+                            :], self._labels_im, self._labels, np.sum, float, 0
             )
 
             tau_0 = baseline_sum
@@ -561,7 +564,7 @@ class LIRASignificanceEstimator:
 
             xi_regions.append(tau_1/(tau_1+tau_0))
 
-            iter=iter+1
+            iter = iter+1
 
         # each row is a distribution of xi for one region
         xi_regions = np.array(xi_regions).T
@@ -569,52 +572,48 @@ class LIRASignificanceEstimator:
         return {
             self._labels[i]: xi_regions[i] for i in range(self._labels.shape[0])
         }
-    
-    def _estimate_test_statistic(self,tail,observed_dist):
-        return (observed_dist>=tail).sum()/observed_dist.shape[0]
 
-    def _estimate_pval_ul(self,gamma,test_stat):
+    def _estimate_test_statistic(self, tail, observed_dist):
+        return (observed_dist >= tail).sum()/observed_dist.shape[0]
+
+    def _estimate_pval_ul(self, gamma, test_stat):
         """
         Stein et al. (2015) eq. 22
         """
         return gamma/test_stat
 
+    def estimate_p_values(self, data, gamma=0.005):
 
-
-    def estimate_p_values(self,data,gamma=0.005):
-
-        xi_dist_observed_im = self._estimate_xi(self._result_observed_im,data)
-        xi_dist_replicates = [self._estimate_xi(result_replicate,data) for result_replicate in self._result_replicates]
+        xi_dist_observed_im = self._estimate_xi(self._result_observed_im, data)
+        xi_dist_replicates = [self._estimate_xi(
+            result_replicate, data) for result_replicate in self._result_replicates]
 
         xi_dist_merged_replicates = {
             self._labels[i]: [] for i in range(self._labels.shape[0])
         }
 
         for xi_replicate in xi_dist_replicates:
-            for k,v in xi_replicate.items():
-                xi_dist_merged_replicates[k] = np.concatenate((xi_dist_merged_replicates[k],v))
-
+            for k, v in xi_replicate.items():
+                xi_dist_merged_replicates[k] = np.concatenate(
+                    (xi_dist_merged_replicates[k], v))
 
         xi_dist_merged_replicates = {
-            k: v.flatten() for k,v in xi_dist_merged_replicates.items()
+            k: v.flatten() for k, v in xi_dist_merged_replicates.items()
         }
 
-        
-        #find the 1-gamma percentile
+        # find the 1-gamma percentile
         tail_1_gamma = {
-            k: np.percentile(v,(1-gamma)*100) for k,v in xi_dist_merged_replicates.items()
+            k: np.percentile(v, (1-gamma)*100) for k, v in xi_dist_merged_replicates.items()
         }
 
-        #find the number of values in the xi_dist_observed beyond these percentiles
+        # find the number of values in the xi_dist_observed beyond these percentiles
         test_statistic = {
-            k: self._estimate_test_statistic(v,xi_dist_observed_im[k]) for k,v in tail_1_gamma.items()
+            k: self._estimate_test_statistic(v, xi_dist_observed_im[k]) for k, v in tail_1_gamma.items()
         }
 
-        #estimate upper limit on p-values
+        # estimate upper limit on p-values
         p_value_ul = {
-            k: self._estimate_pval_ul(gamma,v) for k,v in test_statistic.items()
+            k: self._estimate_pval_ul(gamma, v) for k, v in test_statistic.items()
         }
 
         return p_value_ul
-
-
