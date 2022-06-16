@@ -221,7 +221,7 @@ def test_lira_significance_estimator(lira_result):
     test_labels[15:18, 15:18] = 1
 
     sig_est = LIRASignificanceEstimator(lira_result, replica_res, test_labels)
-    pvals,_,_,_,_ = sig_est.estimate_p_values(data)
+    pvals, _, _, _, _ = sig_est.estimate_p_values(data)
 
-    assert pvals['0.0'] == 0.45
-    assert pvals['1.0'] == 0.45
+    assert pvals['0.0'] == 0.99
+    assert pvals['1.0'] == 0.99
