@@ -616,4 +616,56 @@ class LIRASignificanceEstimator:
             k: self._estimate_pval_ul(gamma, v) for k, v in test_statistic.items()
         }
 
-        return p_value_ul
+        return p_value_ul, xi_dist_merged_replicates, xi_dist_observed_im, tail_1_gamma, test_statistic
+
+    def _plot_xi(self, xi_dist, ax, ls='--', c='gray', tol=1e-10):
+        from scipy import stats
+        tol = 1e-10
+        xi_dist_c = deepcopy(xi_dist)
+        xi_dist_c[xi_dist_c <= tol] = tol
+
+        xi_dist_c = np.log10(xi_dist_c)
+
+        kernel = stats.gaussian_kde(xi_dist_c)
+        eval_points = np.linspace(np.min(xi_dist_c), np.max(xi_dist_c))
+        kde = kernel(eval_points)
+
+        ax.plot(eval_points, kde, ls=ls, c=c)
+
+    def plot_xi_dist(self, xi_obs, xi_repl, region_id, figsize=(12, 7)):
+        """
+        Plot the posterior distributions of xi for a region
+
+        Parameters
+        ----------
+        xi_obs : `~numpy.ndarray`
+            Posterior distribution of xi for the observation
+        xi_repl : `~numpy.ndarray`
+            Posterior distribution of xi for all the replicates
+        region_id : int
+            Integer representing the region
+        figsize : tuple
+            Figure size
+        """
+        import matplotlib.pyplot as plt
+
+        fig, axes = plt.subplots(1, 1, figsize=figsize)
+
+        n_replicates = int(
+            xi_repl[region_id].shape[0]/xi_obs[region_id].shape[0])
+        n_iters = xi_obs[region_id].shape[0]
+
+        # plot the replicate distribution
+        for i in range(0, n_replicates*n_iters, n_iters):
+            self._plot_xi(xi_repl[region_id][i:i+n_iters], axes)
+
+        # plot the mean distribution
+        self._plot_xi(xi_repl[region_id], axes, ls='-', c='black')
+
+        # plot the observed distribution
+        self._plot_xi(xi_obs[region_id], axes, ls='-', c='blue')
+
+        axes.set_xlabel(r'Posterior distribution (log$_{10}\xi$)')
+        axes.set_ylabel('Density')
+
+        axes.set_title(f'Region: {region_id}')
