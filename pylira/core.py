@@ -3,6 +3,7 @@ import numpy as np
 from astropy.table import Table
 from scipy.ndimage import labeled_comprehension
 from . import image_analysis
+from copy import deepcopy
 from .utils.io import (
     read_parameter_trace_file,
     read_image_trace_file,
@@ -539,9 +540,9 @@ class LIRASignificanceEstimator:
         n_iter = result.config['n_iter_max']
         thin = result.config['save_thin']
         fit_bkgscl = result.config['fit_background_scale']
-        bkg_scale_trace = result.parameter_trace['bkgScale'] if 'bkgScale' in result.parameter_trace.keys(
+        bkg_scale_trace = result.parameter_trace['bkgScale'] \
+            if 'bkgScale' in result.parameter_trace.keys(
         ) else np.ones(result.parameter_trace['iteration'].shape[0])
-        image_dim = data['background'].shape[0]
         image_trace = result.image_trace
 
         baseline_im = data['background']
@@ -608,7 +609,8 @@ class LIRASignificanceEstimator:
 
         # find the number of values in the xi_dist_observed beyond these percentiles
         test_statistic = {
-            k: self._estimate_test_statistic(v, xi_dist_observed_im[k]) for k, v in tail_1_gamma.items()
+            k: self._estimate_test_statistic(v, xi_dist_observed_im[k])
+            for k, v in tail_1_gamma.items()
         }
 
         # estimate upper limit on p-values
@@ -616,7 +618,8 @@ class LIRASignificanceEstimator:
             k: self._estimate_pval_ul(gamma, v) for k, v in test_statistic.items()
         }
 
-        return p_value_ul, xi_dist_merged_replicates, xi_dist_observed_im, tail_1_gamma, test_statistic
+        return p_value_ul, xi_dist_merged_replicates,\
+            xi_dist_observed_im, tail_1_gamma, test_statistic
 
     def _plot_xi(self, xi_dist, ax, ls='--', c='gray', tol=1e-10):
         from scipy import stats
