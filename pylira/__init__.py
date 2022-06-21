@@ -7,6 +7,6 @@ from ._astropy_init import *  # noqa
 
 # ----------------------------------------------------------------------------
 from _lira import image_analysis  # noqa
-from .core import LIRADeconvolver, LIRADeconvolverResult  # noqa
+from .core import LIRADeconvolver, LIRADeconvolverResult, LIRASignificanceEstimator  # noqa
 
-__all__ = ["LIRADeconvolver", "LIRADeconvolverResult"]
+__all__ = ["LIRADeconvolver", "LIRADeconvolverResult", "LIRASignificanceEstimator"]

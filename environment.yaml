@@ -15,6 +15,7 @@ dependencies:
     - astropy
     - pybind11
     - matplotlib
+    - scipy
     - ipywidgets
     - jupyter
     - pytest-astropy
