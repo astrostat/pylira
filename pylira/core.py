@@ -263,6 +263,11 @@ class LIRADeconvolverResult:
         return self.config.get("n_burn_in", 0)
 
     @property
+    def n_iter_max(self):
+        """Number of max. iterations"""
+        return self.config["n_iter_max"]
+
+    @property
     def posterior_mean(self):
         """Posterior mean (`~numpy.ndarray`)"""
         return self._posterior_mean
@@ -293,7 +298,7 @@ class LIRADeconvolverResult:
 
         return self._parameter_trace
 
-    def plot_pixel_traces_region(self, center_pix, radius_pix=0, figsize=(16, 6)):
+    def plot_pixel_traces_region(self, center_pix, radius_pix=0, figsize=(16, 6), **kwargs):
         """Plot pixel traces in a given region.
 
         Parameters
@@ -313,14 +318,14 @@ class LIRADeconvolverResult:
         data = self.posterior_mean_from_trace
 
         ax_image = plt.subplot(1, 2, 1, projection=self.wcs)
-        im = ax_image.imshow(data, origin="lower")
+        im = ax_image.imshow(data, origin="lower", **kwargs)
         fig.colorbar(im, ax=ax_image, label="Posterior Mean")
 
         radius = max(radius_pix, 1)
         artist = Circle(center_pix, radius=radius, color="w", fc="None")
         ax_image.add_artist(artist)
 
-        ax_trace = plt.subplot(1, 2, 2, projection=self.wcs)
+        ax_trace = plt.subplot(1, 2, 2)
 
         plot_pixel_trace(
             image_trace=self.image_trace,
@@ -335,6 +340,10 @@ class LIRADeconvolverResult:
             radius_pix=radius_pix,
             ax=ax_trace,
         )
+        return {
+            "ax-image": ax_image,
+            "ax-trace": ax_trace,
+        }
 
     def plot_pixel_trace(self, center_pix=None, **kwargs):
         """Plot pixel trace at a given position.
@@ -433,6 +442,56 @@ class LIRADeconvolverResult:
             ax = plt.subplot(projection=self.wcs)
             im = ax.imshow(self.image_trace[idx], **kwargs)
             plt.colorbar(im, ax=ax, label="Flux")
+
+    def plot_image_trace_animation(
+        self, ax=None, interval=20, repeat=True, n_frames=None, cumulative=False, **kwargs
+    ):
+        """Plot image trace animation
+
+        Parameters
+        ----------
+        ax :
+
+
+        Returns
+        -------
+        anim : `~matplotlib.animation.FuncAnimation`
+            Func animation object.
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.animation import FuncAnimation
+
+        if ax is None:
+            ax = plt.subplot(projection=self.wcs)
+
+        if n_frames is None:
+            n_frames = self.n_iter_max
+
+        kwargs.setdefault("origin", "lower")
+        data = np.zeros(self.posterior_mean.shape)
+        image = ax.imshow(data, **kwargs)
+        y, x = self.posterior_mean.shape
+        text = ax.text(x - 20, y - 10, s="", color="w", va="center", ha="center")
+
+        def animate(idx, im, txt, result):
+            if cumulative:
+                data = np.mean(result.image_trace[:idx], axis=0)
+            else:
+                data = result.image_trace[idx]
+            im.set_data(data)
+            txt.set_text(f"$N_{{Iter}} = {idx}$")
+            return image,
+
+        anim = FuncAnimation(
+            fig=ax.figure,
+            func=animate,
+            fargs=[image, text, self],
+            frames=n_frames,
+            interval=interval,
+            blit=True,
+            repeat=repeat,
+        )
+        return anim
 
     def plot_parameter_traces(self, **kwargs):
         """Plot parameter traces
