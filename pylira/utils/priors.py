@@ -21,7 +21,7 @@ def f_hyperprior_esch(alpha, delta=1, index_alpha=1, index=0):
         Value
     """
     prefactor = (alpha * delta) ** index
-    exponential = np.exp(-delta * alpha ** index_alpha / index_alpha)
+    exponential = np.exp(-delta * alpha**index_alpha / index_alpha)
     return prefactor * exponential
 
 
@@ -48,4 +48,6 @@ def f_hyperprior_lira(alpha, ms_al_kap1=0, ms_al_kap2=1000, ms_al_kap3=3):
     delta = ms_al_kap2 * ms_al_kap3
     index = ms_al_kap1
     index_alpha = ms_al_kap3
-    return f_hyperprior_esch(alpha=alpha, delta=delta, index=index, index_alpha=index_alpha)
+    return f_hyperprior_esch(
+        alpha=alpha, delta=delta, index=index, index_alpha=index_alpha
+    )

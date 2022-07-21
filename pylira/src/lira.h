@@ -201,7 +201,7 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
                           expmapType* expmap, cntType* obs, cntType* deblur,
                           cntType* src, cntType* bkg, mrfType* mrf, msType* ms,
                           llikeType* llike, scalemodelType* bkg_scale, unsigned int random_seed);
-                          
+
 int printf_d(const char*format,...){
 #ifdef DEBUG
   va_list vl;
@@ -1636,11 +1636,11 @@ void bayes_image_analysis(double* outmap, double* post_mean, char* out_file_nm,
   print_param_file_header(param_file, cont, expmap, ms);
 
   /********** Initialize the Random Seed ************/
-  if (random_seed = 0) random_seed = time(NULL);
+  if (random_seed == 0) random_seed = time(NULL);
 
-  srand(random_seed);
-  set_seed(rand(),rand());  
-     
+  std::srand(random_seed);
+  set_seed(rand(),rand());
+
   //GetRNGstate(); Throws a segfault outside the R environment
 
   /* Compute probability of counts spilling off detector */

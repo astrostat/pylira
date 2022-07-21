@@ -342,7 +342,7 @@ def plot_hyperpriors_lira(
     ms_al_kap1=0,
     ms_al_kap2=1000,
     ms_al_kap3=3,
-    **kwargs
+    **kwargs,
 ):
     """Plot hyperprior distributions
 
@@ -388,7 +388,7 @@ def plot_hyperpriors_lira(
             alpha=alphas,
             ms_al_kap1=ms_al_kap1[idx],
             ms_al_kap2=ms_al_kap2[idx],
-            ms_al_kap3=ms_al_kap3[idx]
+            ms_al_kap3=ms_al_kap3[idx],
         )
         ax.plot(alphas, values, **kwargs)
         ax.set_xlabel("Alpha")

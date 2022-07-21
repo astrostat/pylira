@@ -225,3 +225,66 @@ def test_lira_significance_estimator(lira_result):
 
     assert pvals['0.0'] == 0.99
     assert pvals['1.0'] == 0.99
+
+
+def test_random_seed_same():
+    random_state = np.random.RandomState(334)
+
+    data = point_source_gauss_psf(random_state=random_state)
+
+    data["flux_init"] = np.ones((32, 32))
+    alpha_init = np.ones(5)
+
+    deconvolve_1 = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=10,
+        n_burn_in=0,
+        random_state=np.random.RandomState(334),
+    )
+    result_1 = deconvolve_1.run(data=data)
+
+    deconvolve_2 = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=10,
+        n_burn_in=0,
+        random_state=np.random.RandomState(334),
+    )
+    result_2 = deconvolve_2.run(data=data)
+
+    assert result_1.config["random_seed"] == 1022788739
+    assert result_2.config["random_seed"] == 1022788739
+
+    assert_allclose(
+        result_1.posterior_mean[0, 0], result_2.posterior_mean[0, 0], rtol=1e-5
+    )
+
+
+def test_random_seed_different():
+    random_state = np.random.RandomState(334)
+
+    data = point_source_gauss_psf(random_state=random_state)
+    data["flux_init"] = np.ones((32, 32))
+    alpha_init = np.ones(5)
+
+    deconvolve_1 = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=10,
+        n_burn_in=0,
+        random_state=np.random.RandomState(394),
+    )
+    result_1 = deconvolve_1.run(data=data)
+
+    deconvolve_2 = LIRADeconvolver(
+        alpha_init=alpha_init,
+        n_iter_max=10,
+        n_burn_in=0,
+        random_state=np.random.RandomState(434),
+    )
+    result_2 = deconvolve_2.run(data=data)
+
+    assert result_1.config["random_seed"] == 2187641588
+    assert result_2.config["random_seed"] == 1518241554
+
+    assert not np.allclose(
+        result_1.posterior_mean[0, 0], result_2.posterior_mean[0, 0]
+    )
