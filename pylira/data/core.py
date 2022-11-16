@@ -1,12 +1,15 @@
 import numpy as np
 from astropy.convolution import Gaussian2DKernel, Tophat2DKernel, convolve_fft
 from astropy.utils.data import get_pkg_data_filename
+from astropy.io import fits
+from astropy.wcs import WCS
 
 __all__ = [
     "point_source_gauss_psf",
     "disk_source_gauss_psf",
     "gauss_and_point_sources_gauss_psf",
     "lincoln",
+    "chandra_gc",
 ]
 
 
@@ -229,4 +232,34 @@ def lincoln(psf=Gaussian2DKernel(3), random_state=None):
         "exposure": exposure,
         "background": background,
         "flux": flux,
+    }
+
+
+def chandra_gc():
+    """Get chandra Galactic Center example dataset.
+
+    The exposure is assumed unity and background is zero.
+
+    Returns
+    -------
+    data : dict of `~numpy.ndarray`
+        Data dictionary
+    """
+    filename = get_pkg_data_filename("files/lincoln.png", package="pylira.data")
+    counts = fits.getdata(filename)
+    
+    filename = get_pkg_data_filename("files/lincoln.png", package="pylira.data")
+    psf = fits.getdata(filename)
+
+    background = np.zeros(counts.shape)
+    exposure = np.ones(counts.shape)
+
+    header = fits.getheader(filename)
+
+    return {
+        "counts": counts,
+        "psf": psf,
+        "exposure": exposure,
+        "background": background,
+        "wcs": WCS(header),
     }
