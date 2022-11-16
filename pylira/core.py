@@ -1,22 +1,21 @@
+from copy import deepcopy
 from pathlib import Path
 import numpy as np
-from astropy.table import Table
 from scipy.ndimage import labeled_comprehension
+from astropy.table import Table
 from . import image_analysis
-from copy import deepcopy
 from .utils.io import (
-    read_parameter_trace_file,
-    read_image_trace_file,
-    IO_FORMATS_WRITE,
     IO_FORMATS_READ,
+    IO_FORMATS_WRITE,
+    read_image_trace_file,
+    read_parameter_trace_file,
 )
 from .utils.plot import (
-    plot_parameter_traces,
     plot_parameter_distributions,
+    plot_parameter_traces,
     plot_pixel_trace,
     plot_pixel_trace_neighbours,
 )
-
 
 DTYPE_DEFAULT = np.float64
 
@@ -188,8 +187,7 @@ class LIRADeconvolver:
             random_seed=random_seed,
         )
 
-        parameter_trace = {"filename": str(
-            self.filename_out_par), "format": "ascii"}
+        parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
         image_trace = {"filename": str(self.filename_out), "format": "ascii"}
 
         config = self.to_dict()
@@ -291,8 +289,7 @@ class LIRADeconvolverResult:
     def parameter_trace(self):
         """Parameter trace (`~astropy.table.Table`)"""
         if isinstance(self._parameter_trace, dict):
-            self._parameter_trace = read_parameter_trace_file(
-                **self._parameter_trace)
+            self._parameter_trace = read_parameter_trace_file(**self._parameter_trace)
             # TODO: add config to meta data of table, not sure whether it's the right place.
             self._parameter_trace.meta.update(self.config)
 
@@ -524,8 +521,7 @@ class LIRADeconvolverResult:
         **kwargs : dict
             Keyword arguments forwarded to `plot_parameter_traces`
         """
-        plot_parameter_traces(self.parameter_trace,
-                              config=self.config, **kwargs)
+        plot_parameter_traces(self.parameter_trace, config=self.config, **kwargs)
 
     def plot_parameter_distributions(self, **kwargs):
         """Plot parameter distributions
@@ -535,8 +531,7 @@ class LIRADeconvolverResult:
         **kwargs : dict
             Keyword arguments forwarded to `plot_parameter_distributions`
         """
-        plot_parameter_distributions(
-            self.parameter_trace, config=self.config, **kwargs)
+        plot_parameter_distributions(self.parameter_trace, config=self.config, **kwargs)
 
     def write(self, filename, overwrite=False, format="fits"):
         """Write result fo file
@@ -613,63 +608,64 @@ class LIRASignificanceEstimator:
         self._result_replicates = result_replicates
         self._labels_im = labels_im
 
-        self._labels = np.array([str(i)
-                                for i in np.unique(labels_im.flatten())])
+        self._labels = np.array([str(i) for i in np.unique(labels_im.flatten())])
 
     def _estimate_xi(self, result, data):
         xi_regions = []
-        burnin = result.config['n_burn_in']
-        n_iter = result.config['n_iter_max']
-        thin = result.config['save_thin']
-        fit_bkgscl = result.config['fit_background_scale']
-        bkg_scale_trace = result.parameter_trace['bkgScale'] \
-            if 'bkgScale' in result.parameter_trace.keys(
-        ) else np.ones(result.parameter_trace['iteration'].shape[0])
+        burnin = result.config["n_burn_in"]
+        n_iter = result.config["n_iter_max"]
+        thin = result.config["save_thin"]
+        fit_bkgscl = result.config["fit_background_scale"]
+        bkg_scale_trace = (
+            result.parameter_trace["bkgScale"]
+            if "bkgScale" in result.parameter_trace.keys()
+            else np.ones(result.parameter_trace["iteration"].shape[0])
+        )
         image_trace = result.image_trace
 
-        baseline_im = data['background']
+        baseline_im = data["background"]
 
         baseline_sum = labeled_comprehension(
-            baseline_im, self._labels_im, self._labels, np.sum, float, 0)
+            baseline_im, self._labels_im, self._labels, np.sum, float, 0
+        )
 
         # loop over each image from the trace and estimate xi
         iter = 0
         for i in range(burnin, n_iter, thin):
 
             tau_1 = labeled_comprehension(
-                image_trace[iter, :,
-                            :], self._labels_im, self._labels, np.sum, float, 0
+                image_trace[iter, :, :], self._labels_im, self._labels, np.sum, float, 0
             )
 
             tau_0 = baseline_sum
             if fit_bkgscl == 1:
                 tau_0 = baseline_sum * bkg_scale_trace[iter]
 
-            xi_regions.append(tau_1/(tau_1+tau_0))
+            xi_regions.append(tau_1 / (tau_1 + tau_0))
 
-            iter = iter+1
+            iter = iter + 1
 
         # each row is a distribution of xi for one region
         xi_regions = np.array(xi_regions).T
 
-        return {
-            self._labels[i]: xi_regions[i] for i in range(self._labels.shape[0])
-        }
+        return {self._labels[i]: xi_regions[i] for i in range(self._labels.shape[0])}
 
     def _estimate_test_statistic(self, tail, observed_dist):
-        return (observed_dist >= tail).sum()/observed_dist.shape[0]
+        return (observed_dist >= tail).sum() / observed_dist.shape[0]
 
     def _estimate_pval_ul(self, gamma, test_stat):
         """
         Stein et al. (2015) eq. 22
         """
-        return gamma/test_stat
+        return gamma / test_stat
 
     def estimate_p_values(self, data, gamma=0.005):
 
         xi_dist_observed_im = self._estimate_xi(self._result_observed_im, data)
-        xi_dist_replicates = [self._estimate_xi(
-            result_replicate, data) for result_replicate in self._result_replicates]
+        xi_dist_replicates = [
+            self._estimate_xi(result_replicate, data)
+            for result_replicate in self._result_replicates
+        ]
 
         xi_dist_merged_replicates = {
             self._labels[i]: [] for i in range(self._labels.shape[0])
@@ -678,7 +674,8 @@ class LIRASignificanceEstimator:
         for xi_replicate in xi_dist_replicates:
             for k, v in xi_replicate.items():
                 xi_dist_merged_replicates[k] = np.concatenate(
-                    (xi_dist_merged_replicates[k], v))
+                    (xi_dist_merged_replicates[k], v)
+                )
 
         xi_dist_merged_replicates = {
             k: v.flatten() for k, v in xi_dist_merged_replicates.items()
@@ -686,7 +683,8 @@ class LIRASignificanceEstimator:
 
         # find the 1-gamma percentile
         tail_1_gamma = {
-            k: np.percentile(v, (1-gamma)*100) for k, v in xi_dist_merged_replicates.items()
+            k: np.percentile(v, (1 - gamma) * 100)
+            for k, v in xi_dist_merged_replicates.items()
         }
 
         # find the number of values in the xi_dist_observed beyond these percentiles
@@ -700,11 +698,17 @@ class LIRASignificanceEstimator:
             k: self._estimate_pval_ul(gamma, v) for k, v in test_statistic.items()
         }
 
-        return p_value_ul, xi_dist_merged_replicates,\
-            xi_dist_observed_im, tail_1_gamma, test_statistic
+        return (
+            p_value_ul,
+            xi_dist_merged_replicates,
+            xi_dist_observed_im,
+            tail_1_gamma,
+            test_statistic,
+        )
 
-    def _plot_xi(self, xi_dist, ax, ls='--', c='gray', tol=1e-10):
+    def _plot_xi(self, xi_dist, ax, ls="--", c="gray", tol=1e-10):
         from scipy import stats
+
         tol = 1e-10
         xi_dist_c = deepcopy(xi_dist)
         xi_dist_c[xi_dist_c <= tol] = tol
@@ -736,21 +740,20 @@ class LIRASignificanceEstimator:
 
         fig, axes = plt.subplots(1, 1, figsize=figsize)
 
-        n_replicates = int(
-            xi_repl[region_id].shape[0]/xi_obs[region_id].shape[0])
+        n_replicates = int(xi_repl[region_id].shape[0] / xi_obs[region_id].shape[0])
         n_iters = xi_obs[region_id].shape[0]
 
         # plot the replicate distribution
-        for i in range(0, n_replicates*n_iters, n_iters):
-            self._plot_xi(xi_repl[region_id][i:i+n_iters], axes)
+        for i in range(0, n_replicates * n_iters, n_iters):
+            self._plot_xi(xi_repl[region_id][i : i + n_iters], axes)
 
         # plot the mean distribution
-        self._plot_xi(xi_repl[region_id], axes, ls='-', c='black')
+        self._plot_xi(xi_repl[region_id], axes, ls="-", c="black")
 
         # plot the observed distribution
-        self._plot_xi(xi_obs[region_id], axes, ls='-', c='blue')
+        self._plot_xi(xi_obs[region_id], axes, ls="-", c="blue")
 
-        axes.set_xlabel(r'Posterior distribution (log$_{10}\xi$)')
-        axes.set_ylabel('Density')
+        axes.set_xlabel(r"Posterior distribution (log$_{10}\xi$)")
+        axes.set_ylabel("Density")
 
-        axes.set_title(f'Region: {region_id}')
+        axes.set_title(f"Region: {region_id}")

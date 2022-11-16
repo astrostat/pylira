@@ -1,11 +1,11 @@
+import pytest
 import numpy as np
 from numpy.testing import assert_allclose
-import pytest
 from pylira.data import (
-    point_source_gauss_psf,
     disk_source_gauss_psf,
     gauss_and_point_sources_gauss_psf,
     lincoln,
+    point_source_gauss_psf,
 )
 
 

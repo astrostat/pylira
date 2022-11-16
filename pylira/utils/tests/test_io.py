@@ -1,6 +1,6 @@
 from numpy.testing import assert_allclose
-from pylira.utils.io import read_parameter_trace_file, read_image_trace_file
 from astropy.utils.data import get_pkg_data_filename
+from pylira.utils.io import read_image_trace_file, read_parameter_trace_file
 
 
 def test_read_parameter_trace_file():
