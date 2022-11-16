@@ -41,3 +41,16 @@ Gaussian and Point Sources and Gaussian PSF
 
     data = gauss_and_point_sources_gauss_psf()
     plot_example_dataset(data)
+
+
+Chandra Galactic Center Example
+-------------------------------
+
+.. plot::
+    :include-source:
+
+    from pylira.data import chandra_gc
+    from pylira.utils.plot import plot_example_dataset
+
+    data = chandra_gc(obs_id=4683)
+    plot_example_dataset(data)
