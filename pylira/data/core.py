@@ -235,26 +235,30 @@ def lincoln(psf=Gaussian2DKernel(3), random_state=None):
     }
 
 
-def chandra_gc():
-    """Get chandra Galactic Center example dataset.
+def chandra_gc(obs_id=4683):
+    """Get Chandra Galactic Center example dataset.
 
     The exposure is assumed unity and background is zero.
+
+    Parameters
+    ----------
+    obs_id : {4683, 4684}
+        Which observation id
 
     Returns
     -------
     data : dict of `~numpy.ndarray`
         Data dictionary
     """
-    filename = get_pkg_data_filename("files/lincoln.png", package="pylira.data")
+    filename = get_pkg_data_filename(f"files/chandra-counts-obs-id-{obs_id}.fits.gz", package="pylira.data")
     counts = fits.getdata(filename)
+    header = fits.getheader(filename)
     
-    filename = get_pkg_data_filename("files/lincoln.png", package="pylira.data")
+    filename = get_pkg_data_filename(f"files/chandra-psf-obs-id-{obs_id}.fits.gz", package="pylira.data")
     psf = fits.getdata(filename)
 
     background = np.zeros(counts.shape)
     exposure = np.ones(counts.shape)
-
-    header = fits.getheader(filename)
 
     return {
         "counts": counts,
