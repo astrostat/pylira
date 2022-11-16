@@ -28,3 +28,4 @@ dependencies:
     - black
     - isort
     - tox
+    - pre-commit
