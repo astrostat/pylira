@@ -275,7 +275,7 @@ class LIRADeconvolverResult:
     @property
     def posterior_mean_from_trace(self):
         """Posterior mean computed from trace(`~numpy.ndarray`)"""
-        return np.nanmean(self.image_trace[self.n_burn_in:], axis=0)
+        return np.nanmean(self.image_trace[self.n_burn_in :], axis=0)
 
     @property
     def image_trace(self):
@@ -298,7 +298,9 @@ class LIRADeconvolverResult:
 
         return self._parameter_trace
 
-    def plot_pixel_traces_region(self, center_pix, radius_pix=0, figsize=(16, 6), **kwargs):
+    def plot_pixel_traces_region(
+        self, center_pix, radius_pix=0, figsize=(16, 6), **kwargs
+    ):
         """Plot pixel traces in a given region.
 
         Parameters
@@ -444,13 +446,31 @@ class LIRADeconvolverResult:
             plt.colorbar(im, ax=ax, label="Flux")
 
     def plot_image_trace_animation(
-        self, ax=None, interval=20, repeat=True, n_frames=None, cumulative=False, **kwargs
+        self,
+        ax=None,
+        interval=20,
+        repeat=True,
+        n_frames=None,
+        cumulative=False,
+        label_dxy=(20, 10),
+        **kwargs,
     ):
         """Plot image trace animation
 
         Parameters
         ----------
-        ax :
+        ax : `~matplotlib.pyplot.Axes`
+            Plot axes
+        interval : int
+            Interval im ms.
+        repeat : bool
+            Repeat animation
+        n_frames : int
+            Number of frames
+        cumulative : bool
+            Cumulated mean of the samples.
+        label_dxy : tuple of int
+            Shift of the frame label.
 
 
         Returns
@@ -468,10 +488,13 @@ class LIRADeconvolverResult:
             n_frames = self.n_iter_max
 
         kwargs.setdefault("origin", "lower")
+
         data = np.zeros(self.posterior_mean.shape)
         image = ax.imshow(data, **kwargs)
+
         y, x = self.posterior_mean.shape
-        text = ax.text(x - 20, y - 10, s="", color="w", va="center", ha="center")
+        dx, dy = label_dxy
+        text = ax.text(x - dx, y - dy, s="", color="w", va="center", ha="center")
 
         def animate(idx, im, txt, result):
             if cumulative:
@@ -480,7 +503,7 @@ class LIRADeconvolverResult:
                 data = result.image_trace[idx]
             im.set_data(data)
             txt.set_text(f"$N_{{Iter}} = {idx}$")
-            return image,
+            return (image,)
 
         anim = FuncAnimation(
             fig=ax.figure,
