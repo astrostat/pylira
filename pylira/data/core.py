@@ -1,7 +1,7 @@
 import numpy as np
 from astropy.convolution import Gaussian2DKernel, Tophat2DKernel, convolve_fft
-from astropy.utils.data import get_pkg_data_filename
 from astropy.io import fits
+from astropy.utils.data import get_pkg_data_filename
 from astropy.wcs import WCS
 
 __all__ = [
@@ -235,7 +235,7 @@ def lincoln(psf=Gaussian2DKernel(3), random_state=None):
     }
 
 
-def chandra_gc(obs_id=4683):
+def chandra_gc(obs_id=4683, cutout=True):
     """Get Chandra Galactic Center example dataset.
 
     The exposure is assumed unity and background is zero.
@@ -244,18 +244,32 @@ def chandra_gc(obs_id=4683):
     ----------
     obs_id : {4683, 4684}
         Which observation id
+    cutout : bool
+        Use a smaller data cutout
 
     Returns
     -------
     data : dict of `~numpy.ndarray`
         Data dictionary
     """
-    filename = get_pkg_data_filename(f"files/chandra-counts-obs-id-{obs_id}.fits.gz", package="pylira.data")
+    filename = get_pkg_data_filename(
+        f"files/chandra-counts-obs-id-{obs_id}.fits.gz", package="pylira.data"
+    )
     counts = fits.getdata(filename)
-    header = fits.getheader(filename)
-    
-    filename = get_pkg_data_filename(f"files/chandra-psf-obs-id-{obs_id}.fits.gz", package="pylira.data")
+    wcs = WCS(fits.getheader(filename))
+
+    filename = get_pkg_data_filename(
+        f"files/chandra-psf-obs-id-{obs_id}.fits.gz", package="pylira.data"
+    )
     psf = fits.getdata(filename)
+
+    if cutout:
+        psf_cutout = (slice(14, 31), slice(15, 32))
+        psf = psf[psf_cutout]
+
+        counts_cutout = (slice(65, 193), slice(64, 192))
+        counts = counts[counts_cutout]
+        wcs = wcs[counts_cutout]
 
     background = np.zeros(counts.shape)
     exposure = np.ones(counts.shape)
@@ -265,5 +279,5 @@ def chandra_gc(obs_id=4683):
         "psf": psf,
         "exposure": exposure,
         "background": background,
-        "wcs": WCS(header),
+        "wcs": wcs,
     }
