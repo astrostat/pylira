@@ -3,7 +3,6 @@ import numpy as np
 from astropy.visualization import simple_norm
 from .priors import f_hyperprior_lira
 
-
 __all__ = [
     "plot_example_dataset",
     "plot_parameter_traces",

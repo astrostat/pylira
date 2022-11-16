@@ -3,10 +3,13 @@
 # Packages may add whatever they like to this file, but
 # should keep this content at the top.
 # ----------------------------------------------------------------------------
-from ._astropy_init import *  # noqa
-
 # ----------------------------------------------------------------------------
 from _lira import image_analysis  # noqa
-from .core import LIRADeconvolver, LIRADeconvolverResult, LIRASignificanceEstimator  # noqa
+from ._astropy_init import *  # noqa
+from .core import (  # noqa
+    LIRADeconvolver,
+    LIRADeconvolverResult,
+    LIRASignificanceEstimator,
+)
 
 __all__ = ["LIRADeconvolver", "LIRADeconvolverResult", "LIRASignificanceEstimator"]

@@ -2,7 +2,6 @@ import numpy as np
 from astropy.convolution import Gaussian2DKernel, Tophat2DKernel, convolve_fft
 from astropy.utils.data import get_pkg_data_filename
 
-
 __all__ = [
     "point_source_gauss_psf",
     "disk_source_gauss_psf",

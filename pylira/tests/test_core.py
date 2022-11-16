@@ -1,14 +1,14 @@
+from copy import deepcopy
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 import pylira
-from copy import deepcopy
+from pylira import LIRADeconvolver, LIRADeconvolverResult, LIRASignificanceEstimator
 from pylira.data import (
-    point_source_gauss_psf,
     disk_source_gauss_psf,
     gauss_and_point_sources_gauss_psf,
+    point_source_gauss_psf,
 )
-from pylira import LIRADeconvolver, LIRADeconvolverResult, LIRASignificanceEstimator
 
 
 @pytest.fixture(scope="session")
@@ -81,16 +81,11 @@ def test_lira_deconvolver_run_point_source(lira_result):
 
     idx = slice(lira_result.n_burn_in, None)
     assert len(trace_par) == 1000
-    assert_allclose(
-        np.mean(trace_par["smoothingParam0"][idx]), 0.056, rtol=0.1)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam1"][idx]), 0.060, rtol=0.1)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam2"][idx]), 0.060, rtol=0.1)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam3"][idx]), 0.062, rtol=0.1)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam4"][idx]), 0.070, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.056, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.060, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.060, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.062, rtol=0.1)
+    assert_allclose(np.mean(trace_par["smoothingParam4"][idx]), 0.070, rtol=0.1)
 
 
 @pytest.mark.xfail
@@ -131,14 +126,10 @@ def test_lira_deconvolver_run_disk_source(tmpdir):
     assert len(trace_par) == 1000
 
     idx = slice(result.n_burn_in, None)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam0"][idx]), 0.08, rtol=5e-2)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam1"][idx]), 0.20, rtol=5e-2)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam2"][idx]), 0.31, rtol=5e-2)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam3"][idx]), 0.34, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.08, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.20, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.31, rtol=5e-2)
+    assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.34, rtol=5e-2)
 
 
 def test_lira_deconvolver_run_gauss_source(tmpdir):
@@ -186,8 +177,7 @@ def test_lira_deconvolver_run_gauss_source(tmpdir):
     assert len(trace_par) == 1000
 
     idx = slice(deconvolve.n_burn_in, None)
-    assert_allclose(
-        np.mean(trace_par["smoothingParam0"][idx]), 0.032, rtol=0.4)
+    assert_allclose(np.mean(trace_par["smoothingParam0"][idx]), 0.032, rtol=0.4)
     assert_allclose(np.mean(trace_par["smoothingParam1"][idx]), 0.08, rtol=0.4)
     assert_allclose(np.mean(trace_par["smoothingParam2"][idx]), 0.13, rtol=0.4)
     assert_allclose(np.mean(trace_par["smoothingParam3"][idx]), 0.23, rtol=0.4)
@@ -205,8 +195,7 @@ def test_lira_deconvolver_result_read(tmpdir, lira_result):
 
     new_result = LIRADeconvolverResult.read(filename)
 
-    assert_allclose(
-        lira_result.config["alpha_init"], new_result.config["alpha_init"])
+    assert_allclose(lira_result.config["alpha_init"], new_result.config["alpha_init"])
     assert_allclose(lira_result.posterior_mean, new_result.posterior_mean)
 
     assert lira_result.image_trace.shape == new_result.image_trace.shape
@@ -217,14 +206,14 @@ def test_lira_significance_estimator(lira_result):
     random_state = np.random.RandomState(836)
     data = point_source_gauss_psf(random_state=random_state)
 
-    test_labels = np.zeros(data['background'].shape)
+    test_labels = np.zeros(data["background"].shape)
     test_labels[15:18, 15:18] = 1
 
     sig_est = LIRASignificanceEstimator(lira_result, replica_res, test_labels)
     pvals, _, _, _, _ = sig_est.estimate_p_values(data)
 
-    assert pvals['0.0'] == 0.99
-    assert pvals['1.0'] == 0.99
+    assert pvals["0.0"] == 0.99
+    assert pvals["1.0"] == 0.99
 
 
 def test_random_seed_same():
@@ -285,6 +274,4 @@ def test_random_seed_different():
     assert result_1.config["random_seed"] == 2187641588
     assert result_2.config["random_seed"] == 1518241554
 
-    assert not np.allclose(
-        result_1.posterior_mean[0, 0], result_2.posterior_mean[0, 0]
-    )
+    assert not np.allclose(result_1.posterior_mean[0, 0], result_2.posterior_mean[0, 0])

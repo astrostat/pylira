@@ -8,7 +8,6 @@ get picked up when running the tests inside an interpreter using
 """
 
 import os
-
 from astropy.version import version as astropy_version
 
 # For Astropy 3.0 and later, we can use the standalone pytest plugin
