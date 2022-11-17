@@ -706,22 +706,21 @@ class LIRASignificanceEstimator:
             test_statistic,
         )
 
-    def _plot_xi(self, xi_dist, ax, ls="--", c="gray", tol=1e-10):
+    def _plot_xi(self, xi_dist, ax, ls="--", c="gray", tol=1e-10, label=None):
         from scipy import stats
 
-        tol = 1e-10
         xi_dist_c = deepcopy(xi_dist)
         xi_dist_c[xi_dist_c <= tol] = tol
 
         xi_dist_c = np.log10(xi_dist_c)
 
         kernel = stats.gaussian_kde(xi_dist_c)
-        eval_points = np.linspace(np.min(xi_dist_c), np.max(xi_dist_c))
+        eval_points = np.linspace(np.min(xi_dist_c), 0, 100)
         kde = kernel(eval_points)
 
-        ax.plot(eval_points, kde, ls=ls, c=c)
+        ax.plot(eval_points, kde, ls=ls, c=c, label=label)
 
-    def plot_xi_dist(self, xi_obs, xi_repl, region_id, figsize=(12, 7)):
+    def plot_xi_dist(self, xi_obs, xi_repl, region_id, figsize=(8, 5)):
         """
         Plot the posterior distributions of xi for a region
 
@@ -738,22 +737,28 @@ class LIRASignificanceEstimator:
         """
         import matplotlib.pyplot as plt
 
-        fig, axes = plt.subplots(1, 1, figsize=figsize)
+        fig, ax = plt.subplots(1, 1, figsize=figsize)
 
         n_replicates = int(xi_repl[region_id].shape[0] / xi_obs[region_id].shape[0])
         n_iters = xi_obs[region_id].shape[0]
 
         # plot the replicate distribution
         for i in range(0, n_replicates * n_iters, n_iters):
-            self._plot_xi(xi_repl[region_id][i : i + n_iters], axes)
+            self._plot_xi(xi_repl[region_id][i : i + n_iters], ax)
 
         # plot the mean distribution
-        self._plot_xi(xi_repl[region_id], axes, ls="-", c="black")
+        self._plot_xi(
+            xi_repl[region_id], ax, ls="-", c="black", label="Mean null distribution"
+        )
 
         # plot the observed distribution
-        self._plot_xi(xi_obs[region_id], axes, ls="-", c="blue")
+        self._plot_xi(
+            xi_obs[region_id], ax, ls="-", c="blue", label="Best fit distribution"
+        )
 
-        axes.set_xlabel(r"Posterior distribution (log$_{10}\xi$)")
-        axes.set_ylabel("Density")
+        ax.set_xlabel(r"Posterior distribution (log$_{10}\xi$)")
+        ax.set_ylabel("Density")
 
-        axes.set_title(f"Region: {region_id}")
+        ax.set_title(f"Region: {region_id}")
+        plt.legend()
+        return ax
