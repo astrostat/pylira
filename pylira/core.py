@@ -110,8 +110,8 @@ class LIRADeconvolver:
 
         return info.expandtabs(tabsize=4)
 
-    def _check_input_sizes(self, obs_arr):
-        obs_shape = obs_arr.shape[0]
+    def _check_input_sizes(self, shape):
+        obs_shape = shape[0]
         if obs_shape & (obs_shape - 1) != 0:
             raise ValueError(
                 f"Size of the input observation must be a power of 2. Size given: {obs_shape}"
@@ -156,8 +156,15 @@ class LIRADeconvolver:
             for name, arr in data.items()
             if name != "wcs"
         }
+        shape_counts = data["counts"].shape
+        self._check_input_sizes(shape_counts)
 
-        self._check_input_sizes(data["counts"])
+        for name in ["background", "exposure", "flux_init"]:
+            shape = data[name].shape
+            if shape != shape_counts:
+                raise ValueError(
+                    f"Quantity '{name}' has a shape of {shape}, however {shape_counts} is expected."
+                )
 
         random_seed = self.random_state.randint(1, np.iinfo(np.uint32).max)
 
