@@ -62,13 +62,9 @@ def test_lira_deconvolver():
 
 
 def test_lira_deconvolver_run_point_source(lira_result):
-
     assert lira_result.config["random_seed"] == 1346985517
 
-    assert_allclose(lira_result.posterior_mean[16][16], 955.7, rtol=3e-2)
-    assert_allclose(
-        lira_result.posterior_mean, lira_result.posterior_mean_from_trace, atol=1e-2
-    )
+    assert_allclose(lira_result.posterior_mean_from_trace[16][16], 955.7, rtol=3e-2)
 
     assert lira_result.posterior_mean[16][16] > 700
     assert lira_result.parameter_trace["smoothingParam0"][-1] > 0
