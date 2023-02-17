@@ -1,3 +1,4 @@
+import tempfile
 from copy import deepcopy
 from pathlib import Path
 import numpy as np
@@ -47,10 +48,6 @@ class LIRADeconvolver:
         Multiscale prior TODO: improve description
     ms_al_kap3: float
         Multiscale prior TODO: improve description
-    filename_out: str or `Path`
-        Output filename
-    filename_out_par: str or `Path`
-        Parameter output filename
     random_state : `~numpy.random.RandomState`
         Random state
 
@@ -84,8 +81,8 @@ class LIRADeconvolver:
         ms_al_kap1=0.0,
         ms_al_kap2=1000.0,
         ms_al_kap3=3.0,
-        filename_out="output.txt",
-        filename_out_par="output-par.txt",
+        filename_out=None,
+        filename_out_par=None,
         random_state=None,
     ):
         self.alpha_init = np.array(alpha_init, dtype=DTYPE_DEFAULT)
@@ -98,12 +95,6 @@ class LIRADeconvolver:
         self.ms_al_kap1 = ms_al_kap1
         self.ms_al_kap2 = ms_al_kap2
         self.ms_al_kap3 = ms_al_kap3
-        self.filename_out = Path(filename_out)
-        self.filename_out_par = Path(filename_out_par)
-
-        if random_state is None:
-            random_state = np.random.RandomState(None)
-
         self.random_state = random_state
 
     def __str__(self):
@@ -161,34 +152,48 @@ class LIRADeconvolver:
         result : `LIRADeconvolverResult`
             Result object.
         """
-        data = {name: arr.astype(DTYPE_DEFAULT) for name, arr in data.items()}
+        data = {
+            name: arr.astype(DTYPE_DEFAULT)
+            for name, arr in data.items()
+            if name != "wcs"
+        }
+
         self._check_input_sizes(data["counts"])
 
         random_seed = self.random_state.randint(1, np.iinfo(np.uint32).max)
 
-        posterior_mean = image_analysis(
-            observed_im=data["counts"],
-            start_im=data["flux_init"],
-            psf_im=data["psf"],
-            expmap_im=data["exposure"],
-            baseline_im=data["background"],
-            out_img_file=str(self.filename_out),
-            out_param_file=str(self.filename_out_par),
-            max_iter=self.n_iter_max,
-            burn_in=self.n_burn_in,
-            save_thin=self.save_thin,
-            fit_bkgscl=int(self.fit_background_scale),
-            alpha_init=self.alpha_init,
-            ms_ttlcnt_pr=self.ms_ttlcnt_pr,
-            ms_ttlcnt_exp=self.ms_ttlcnt_exp,
-            ms_al_kap1=self.ms_al_kap1,
-            ms_al_kap2=self.ms_al_kap2,
-            ms_al_kap3=self.ms_al_kap3,
-            random_seed=random_seed,
-        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filename_image_trace = str(tmpdir / "image-trace.tx")
+            filename_parameter_trace = str(tmpdir / "parameter-trace.txt")
 
-        parameter_trace = {"filename": str(self.filename_out_par), "format": "ascii"}
-        image_trace = {"filename": str(self.filename_out), "format": "ascii"}
+            posterior_mean = image_analysis(
+                observed_im=data["counts"],
+                start_im=data["flux_init"],
+                psf_im=data["psf"],
+                expmap_im=data["exposure"],
+                baseline_im=data["background"],
+                out_img_file=filename_image_trace,
+                out_param_file=filename_parameter_trace,
+                max_iter=self.n_iter_max,
+                burn_in=self.n_burn_in,
+                save_thin=self.save_thin,
+                fit_bkgscl=int(self.fit_background_scale),
+                alpha_init=self.alpha_init,
+                ms_ttlcnt_pr=self.ms_ttlcnt_pr,
+                ms_ttlcnt_exp=self.ms_ttlcnt_exp,
+                ms_al_kap1=self.ms_al_kap1,
+                ms_al_kap2=self.ms_al_kap2,
+                ms_al_kap3=self.ms_al_kap3,
+                random_seed=random_seed,
+            )
+
+            parameter_trace = read_parameter_trace_file(
+                filename=filename_parameter_trace, format="ascii"
+            )
+
+            image_trace = read_image_trace_file(
+                filename=filename_image_trace, format="ascii"
+            )
 
         config = self.to_dict()
         config["random_seed"] = random_seed
@@ -632,7 +637,6 @@ class LIRASignificanceEstimator:
         # loop over each image from the trace and estimate xi
         iter = 0
         for i in range(burnin, n_iter, thin):
-
             tau_1 = labeled_comprehension(
                 image_trace[iter, :, :], self._labels_im, self._labels, np.sum, float, 0
             )
@@ -660,7 +664,6 @@ class LIRASignificanceEstimator:
         return gamma / test_stat
 
     def estimate_p_values(self, data, gamma=0.005):
-
         xi_dist_observed_im = self._estimate_xi(self._result_observed_im, data)
         xi_dist_replicates = [
             self._estimate_xi(result_replicate, data)
