@@ -1,3 +1,4 @@
+import os
 import tempfile
 from copy import deepcopy
 from pathlib import Path
@@ -133,8 +134,6 @@ class LIRADeconvolver:
         data = {}
         data.update(self.__dict__)
         data["alpha_init"] = self.alpha_init.tolist()
-        data.pop("filename_out")
-        data.pop("filename_out_par")
         # TOOD: serialise random state for reproducibility?
         data.pop("random_state")
         return data
@@ -163,8 +162,8 @@ class LIRADeconvolver:
         random_seed = self.random_state.randint(1, np.iinfo(np.uint32).max)
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            filename_image_trace = str(tmpdir / "image-trace.tx")
-            filename_parameter_trace = str(tmpdir / "parameter-trace.txt")
+            filename_image_trace = str(os.path.join(tmpdir, "image-trace.tx"))
+            filename_parameter_trace = str(os.path.join(tmpdir, "parameter-trace.txt"))
 
             posterior_mean = image_analysis(
                 observed_im=data["counts"],
