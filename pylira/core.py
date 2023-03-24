@@ -96,6 +96,10 @@ class LIRADeconvolver:
         self.ms_al_kap1 = ms_al_kap1
         self.ms_al_kap2 = ms_al_kap2
         self.ms_al_kap3 = ms_al_kap3
+        
+        if random_state is None:
+            random_state = np.random.RandomState()
+
         self.random_state = random_state
 
     def __str__(self):
