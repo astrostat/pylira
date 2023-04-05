@@ -85,18 +85,16 @@ def test_lira_deconvolver_run_point_source(lira_result):
 
 
 def test_reduce_write_read(tmpdir, lira_result):
-    reduced = lira_result.reduce_to_mean_std()
-
     filename = tmpdir / "reduced.fits"
-    reduced.write(filename)
+    lira_result.reduce_to_mean_std().write(filename)
 
-    reduced_new = LIRADeconvolverResult.read(filename)
+    reduced = LIRADeconvolverResult.read(filename)
 
     assert_allclose(
-        reduced.posterior_mean_from_trace, reduced_new.posterior_mean, rtol=1e-5
+        lira_result.posterior_mean_from_trace, reduced.posterior_mean, rtol=1e-5
     )
     assert_allclose(
-        reduced.posterior_std_from_trace, reduced_new.posterior_std, rtol=1e-5
+        lira_result.posterior_std_from_trace, reduced.posterior_std, rtol=1e-5
     )
 
 
