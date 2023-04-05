@@ -207,8 +207,12 @@ class LIRADeconvolver:
 
         config = self.to_dict()
         config["random_seed"] = random_seed
+
+        posterior_std = np.nanstd(image_trace[self.n_burn_in :], axis=0)
+
         return LIRADeconvolverResult(
             posterior_mean=posterior_mean,
+            posterior_std=posterior_std,
             parameter_trace=parameter_trace,
             image_trace=image_trace,
             config=config,
@@ -297,19 +301,22 @@ class LIRADeconvolverResult:
     @property
     def posterior_mean_from_trace(self):
         """Posterior mean computed from trace(`~numpy.ndarray`)"""
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         return np.nanmean(self.image_trace[self.n_burn_in :], axis=0)
 
     @property
     def posterior_std_from_trace(self):
         """Posterior std computed from trace(`~numpy.ndarray`)"""
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         return np.nanstd(self.image_trace[self.n_burn_in :], axis=0)
 
     @property
     def image_trace(self):
         """Image trace (`~numpy.ndarray`)"""
-        if self._image_trace is None:
-            raise ValueError("No image trace available.")
-
         # TODO: this currently handles only in memory data, this might not scale for
         # many iterations and/or large images
         if isinstance(self._image_trace, dict):
@@ -386,6 +393,9 @@ class LIRADeconvolverResult:
         **kwargs : dict
             Keyword arguments forwarded to `plot_pixel_trace`
         """
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         if center_pix is None:
             # choose center as default
             center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
@@ -409,6 +419,9 @@ class LIRADeconvolverResult:
         **kwargs : dict
             Keyword arguments forwarded to `~matplotlib.pyplot.plot`
         """
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         if center_pix is None:
             # choose center as default
             center_pix = tuple(np.array(self.posterior_mean.shape) // 2)
@@ -451,6 +464,9 @@ class LIRADeconvolverResult:
         **kwargs : dict
             Keyword arguments forwarded to `~matplotlib.pyplot.imshow`
         """
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         import matplotlib.pyplot as plt
         from ipywidgets import IntSlider
         from ipywidgets.widgets.interaction import interact
@@ -507,6 +523,9 @@ class LIRADeconvolverResult:
         anim : `~matplotlib.animation.FuncAnimation`
             Func animation object.
         """
+        if self.image_trace is None:
+            raise ValueError("No image trace available.")
+
         import matplotlib.pyplot as plt
         from matplotlib.animation import FuncAnimation
 

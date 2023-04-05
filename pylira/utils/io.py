@@ -82,7 +82,7 @@ def write_to_fits(result, filename, overwrite):
     hdulist.append(primary_hdu)
 
     posterior_std_hdu = fits.ImageHDU(
-        data=result.posterior_std_from_trace,
+        data=result.posterior_std,
         name="POSTERIOR_STD",
     )
     hdulist.append(posterior_std_hdu)
