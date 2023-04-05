@@ -224,6 +224,8 @@ class LIRADeconvolverResult:
         Configuration from the `LIRADeconvolver`
     posterior_mean : `~numpy.ndarray`
         Posterior mean
+    posterior_std : `~numpy.ndarray`
+        Posterior standard deviation
     parameter_trace : `~astropy.table.Table` or dict
         Parameter trace. If a dict is provided it triggers the lazy loading.
         The dict must contain the argument to `read_parameter_trace_file`.
@@ -238,12 +240,14 @@ class LIRADeconvolverResult:
         self,
         config,
         posterior_mean=None,
+        posterior_std=None,
         parameter_trace=None,
         image_trace=None,
         wcs=None,
     ):
         self._config = config
         self._posterior_mean = posterior_mean
+        self._posterior_std = posterior_std
         self._wcs = wcs
         self._image_trace = image_trace
         self._parameter_trace = parameter_trace
@@ -286,13 +290,26 @@ class LIRADeconvolverResult:
         return self._posterior_mean
 
     @property
+    def posterior_std(self):
+        """Posterior standard deviation (`~numpy.ndarray`)"""
+        return self._posterior_std
+
+    @property
     def posterior_mean_from_trace(self):
         """Posterior mean computed from trace(`~numpy.ndarray`)"""
         return np.nanmean(self.image_trace[self.n_burn_in :], axis=0)
 
     @property
+    def posterior_std_from_trace(self):
+        """Posterior std computed from trace(`~numpy.ndarray`)"""
+        return np.nanstd(self.image_trace[self.n_burn_in :], axis=0)
+
+    @property
     def image_trace(self):
         """Image trace (`~numpy.ndarray`)"""
+        if self._image_trace is None:
+            raise ValueError("No image trace available.")
+
         # TODO: this currently handles only in memory data, this might not scale for
         # many iterations and/or large images
         if isinstance(self._image_trace, dict):
@@ -596,6 +613,22 @@ class LIRADeconvolverResult:
         reader = IO_FORMATS_READ[format]
         kwargs = reader(filename=filename)
         return cls(**kwargs)
+
+    def reduce_to_mean_std(self):
+        """Reduce to mean and std
+
+        Returns
+        -------
+        result : `~LIRADeconvolverResult`
+            Reduced result object
+        """
+        return self.__class__(
+            config=deepcopy(self.config),
+            posterior_mean=self.posterior_mean_from_trace,
+            posterior_std=self.posterior_std_from_trace,
+            wcs=deepcopy(self.wcs),
+            parameter_trace=deepcopy(self.parameter_trace),
+        )
 
 
 class LIRASignificanceEstimator:

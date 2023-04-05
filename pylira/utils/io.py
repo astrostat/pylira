@@ -72,22 +72,35 @@ def write_to_fits(result, filename, overwrite):
     else:
         header = None
 
+    hdulist = fits.HDUList()
+
+    # Primary HDU
     primary_hdu = fits.PrimaryHDU(
         header=header,
         data=result.posterior_mean,
     )
+    hdulist.append(primary_hdu)
 
+    posterior_std_hdu = fits.ImageHDU(
+        data=result.posterior_std_from_trace,
+        name="POSTERIOR_STD",
+    )
+    hdulist.append(posterior_std_hdu)
+
+    # Parameter trace HDU
     table = result.parameter_trace.copy()
     table.meta = None
     parameter_trace_hdu = fits.BinTableHDU(table, name="PARAMETER_TRACE")
+    hdulist.append(parameter_trace_hdu)
 
-    image_trace_hdu = fits.ImageHDU(data=result.image_trace, name="IMAGE_TRACE")
+    # Image trace HDU
+    if result.image_trace is not None:
+        image_trace_hdu = fits.ImageHDU(data=result.image_trace, name="IMAGE_TRACE")
+        hdulist.append(image_trace_hdu)
 
+    # Config HDU
     config_hdu = fits.BinTableHDU(result.config_table, name="CONFIG")
-
-    hdulist = fits.HDUList(
-        [primary_hdu, parameter_trace_hdu, image_trace_hdu, config_hdu]
-    )
+    hdulist.append(config_hdu)
 
     hdulist.writeto(filename, overwrite=overwrite)
 
@@ -115,10 +128,13 @@ def read_from_fits(filename):
     paramter_trace = Table.read(hdulist["PARAMETER_TRACE"])
     posterior_mean = hdulist["PRIMARY"].data
 
+    posterior_std = hdulist["POSTERIOR_STD"].data
+
     # define location for lazy loading
     image_trace = {"filename": filename, "format": "fits"}
     return {
         "posterior_mean": posterior_mean,
+        "posterior_std": posterior_std,
         "config": config,
         "parameter_trace": paramter_trace,
         "image_trace": image_trace,
