@@ -1,4 +1,4 @@
-A Python package for Bayesian low-counts image reconstruction and analysis
+A Python Package for Bayesian Low-Counts Image Reconstruction and Analysis
 --------------------------------------------------------------------------
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
